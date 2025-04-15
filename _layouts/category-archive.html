@@ -1,0 +1,36 @@
+---
+layout: default
+---
+
+{% comment %} 카테고리 이름(예: "2025-04")에서 연도와 월 추출 {% endcomment %}
+{% assign cat = page.title %}  <!-- autopages.title 설정으로 page.title에 "YYYY-MM"이 들어있음 -->
+{% assign year = cat | split: "-" | first %}
+{% assign monthNum = cat | split: "-" | last %}
+{% assign monthDisplay = monthNum %}
+{% if monthNum[0] == '0' %}{% assign monthDisplay = monthNum | remove_first: '0' %}{% endif %}
+
+<h2>📁 {{ year }}년 {{ monthDisplay }}월 글 목록</h2>
+<ul class="post-list">
+  {% for post in paginator.posts %}
+    <li>
+      <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+      <small>({{ post.date | date: "%Y-%m-%d" }})</small>
+    </li>
+  {% endfor %}
+</ul>
+
+{% assign latest_post = paginator.posts[0] %}
+<div class="latest-post">
+  <h3>{{ latest_post.title }}</h3>
+  <p><em>{{ latest_post.date | date: "%Y년 %m월 %d일" }}</em></p>
+  {{ latest_post.content }}
+</div>
+
+<div class="pagination">
+  {% if paginator.previous_page %}
+    <a href="{{ paginator.previous_page_path | relative_url }}">&larr; 이전 페이지</a>
+  {% endif %}
+  {% if paginator.next_page %}
+    <a href="{{ paginator.next_page_path | relative_url }}">다음 페이지 &rarr;</a>
+  {% endif %}
+</div>
