@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Organize markdown files into year/month folders
+      - name: Move and organize blog posts + generate _index.md
         run: |
           echo "📁 정렬 시작"
           mkdir -p docs/blog/posts
@@ -33,6 +33,18 @@ jobs:
 
             mkdir -p "$dest_dir"
             git mv "$file" "$dest_file"
+
+            # ✅ _index.md 자동 생성
+            index_file="$dest_dir/_index.md"
+            if [ ! -f "$index_file" ]; then
+              echo "---" > "$index_file"
+              echo "title: ${year}년 ${month}월 문서 모음" >> "$index_file"
+              echo "---" >> "$index_file"
+              echo "# ${year}년 ${month}월 문서 모음입니다." >> "$index_file"
+              echo "" >> "$index_file"
+              echo "_자동 생성된 안내 파일입니다._" >> "$index_file"
+              git add "$index_file"
+            fi
           done
 
       - name: Commit & Push changes
@@ -40,5 +52,6 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add docs/blog/posts || true
-          git commit -m "🗂 자동 문서 이동 완료" || echo "변경사항 없음"
+          git rm docs/*.md || true
+          git commit -m "🗂 자동 문서 이동 및 _index.md 생성 완료" || echo "변경사항 없음"
           git push
