@@ -8,9 +8,7 @@ theme:
 
 use_directory_urls: true
 
-extra:
-  blog:
-    date: !ENV ["BLOG_DATE", "2025-04-15"]
+extra: {}
 
 plugins:
   - search
