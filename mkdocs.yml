@@ -6,7 +6,7 @@ nav:
 - 홈: index.md
 - 문서 분류:
   - '2025':
-    - 4월: 2025/04/index.md
+    - 4월: 2025/04/
 plugins:
 - search
 - blog:
