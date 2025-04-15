@@ -1,4 +1,4 @@
-name: Organize Blog Posts by Date
+name: Organize Blog Posts by Date and Setup Index Pages
 
 on:
   push:
@@ -14,9 +14,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Move and organize blog posts + generate _index.md
+      - name: Move blog posts and generate index pages
         run: |
-          echo "📁 정렬 시작"
+          echo "📁 시작: 문서 정리 및 인덱스 자동 생성"
           mkdir -p docs/blog/posts
           shopt -s nullglob
           for file in docs/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*.md; do
@@ -34,18 +34,42 @@ jobs:
             mkdir -p "$dest_dir"
             git mv "$file" "$dest_file"
 
-            # ✅ _index.md 자동 생성
+            # 📄 월별 _index.md 생성
             index_file="$dest_dir/_index.md"
             if [ ! -f "$index_file" ]; then
               echo "---" > "$index_file"
               echo "title: ${year}년 ${month}월 문서 모음" >> "$index_file"
               echo "---" >> "$index_file"
               echo "# ${year}년 ${month}월 문서 모음입니다." >> "$index_file"
-              echo "" >> "$index_file"
-              echo "_자동 생성된 안내 파일입니다._" >> "$index_file"
+              echo "_자동 생성된 월별 소개입니다._" >> "$index_file"
               git add "$index_file"
             fi
           done
+
+          # 🏠 docs/index.md 생성
+          home_file="docs/index.md"
+          if [ ! -f "$home_file" ]; then
+            echo "---" > "$home_file"
+            echo "title: 홈" >> "$home_file"
+            echo "---" >> "$home_file"
+            echo "# Citec 문서에 오신 것을 환영합니다 📝" >> "$home_file"
+            echo "" >> "$home_file"
+            echo "→ [블로그 문서 보기](blog/)" >> "$home_file"
+            git add "$home_file"
+          fi
+
+          # 📰 docs/blog/index.md 생성
+          blog_file="docs/blog/index.md"
+          if [ ! -f "$blog_file" ]; then
+            echo "---" > "$blog_file"
+            echo "title: 블로그" >> "$blog_file"
+            echo "template: blog.html" >> "$blog_file"
+            echo "---" >> "$blog_file"
+            echo "# 🗂 블로그 최신 문서 목록" >> "$blog_file"
+            echo "" >> "$blog_file"
+            echo "좌측에서 연도와 월을 클릭하거나 아래에서 최신 문서를 탐색하세요." >> "$blog_file"
+            git add "$blog_file"
+          fi
 
       - name: Commit & Push changes
         run: |
@@ -53,5 +77,5 @@ jobs:
           git config user.email "github-actions@github.com"
           git add docs/blog/posts || true
           git rm docs/*.md || true
-          git commit -m "🗂 자동 문서 이동 및 _index.md 생성 완료" || echo "변경사항 없음"
+          git commit -m "🔁 자동 문서 이동 및 index.md/_index.md 생성 완료" || echo "변경사항 없음"
           git push
