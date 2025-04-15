@@ -1,5 +1,5 @@
 site_name: Grok Tech-docs
-site_description: "Grok 문서들 (최신 글 순)"
+site_description: "Grok 문서들 (자동 날짜 분류)"
 site_url: "https://pjhwa.github.io/citec/"
 
 theme:
@@ -16,11 +16,9 @@ plugins:
   - search
   - blog:
       blog_dir: .
-      blog_toc: true     # 각 문서 오른쪽에 목차 표시
-      post_url_date_format: yyyy/MM      # URL 경로를 /yyyy/MM/slug 형식으로 구성
-      categories: true   # 연도/월별 자동 분류 사용
       archive: false
-      draft: false
+      categories: true      # 연도/월별 자동 분류
+      pagination_per_page: 5
 
 markdown_extensions:
   - admonition
