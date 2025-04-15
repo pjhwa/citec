@@ -1,4 +1,5 @@
 ---
+title: "{{ category.name }}"
 hide:
   - toc
 ---
