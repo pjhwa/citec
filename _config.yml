@@ -1,9 +1,0 @@
-title: My Blog
-description: A blog created with GitHub Pages and Jekyll
-theme: minima
-baseurl: "/citec"
-url: "https://pjhwa.github.io"
-
-header_pages:
-  - index.md
-  - archive.md
