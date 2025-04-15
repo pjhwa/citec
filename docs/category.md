@@ -1,6 +1,5 @@
 ---
 title: "{{ category.name }}"
-template: category.html
 hide:
   - toc
 ---
