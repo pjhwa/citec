@@ -6,7 +6,7 @@ theme:
   name: material
   language: ko
   features:
-    - navigation.sections   # ← 중요: 계층 구조로 사이드바 구성
+    - navigation.sections
     - navigation.indexes
 
 plugins:
