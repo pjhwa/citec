@@ -1,0 +1,19 @@
+site_name: Grok Docs
+site_description: "Grok 문서 모음"
+site_url: "https://pjhwa.github.io/citec/"
+
+theme:
+  name: material
+  language: ko
+  features:
+    - navigation.indexes
+
+plugins:
+  - search
+  - blog:
+      archive_date_format: MMMM yyyy
+      pagination_per_page: 5
+
+nav:
+  - 홈: index.md
+  - 블로그: blog/index.md
