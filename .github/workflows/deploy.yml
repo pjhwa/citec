@@ -1,0 +1,33 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: ["main"]   # main 브랜치에 푸시될 때 실행
+
+permissions:
+  contents: write        # GH Pages 브랜치에 푸시 권한 필요
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: actions/setup-ruby@v3
+        with:
+          ruby-version: '3.1'
+
+      - name: Install Jekyll
+        run: bundle install
+
+      - name: Build site with Jekyll
+        run: bundle exec jekyll build  # _site 디렉터리에 정적 사이트 생성
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages    # 배포 대상 브랜치
+          publish_dir: ./_site        # 빌드된 사이트 디렉터리
