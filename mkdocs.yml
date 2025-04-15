@@ -1,5 +1,5 @@
-site_name: CI-TEC Documentation   # 사이트 이름
-site_description: "CI-TEC 문서 모음 (최신 글 순)"   # 사이트 설명
+site_name: Grok Tech-docs   # 사이트 이름
+site_description: "Grok 문서들 (최신 글 순)"   # 사이트 설명
 site_url: "https://pjhwa.github.io/citec/"   # 사이트 URL
 
 theme:
