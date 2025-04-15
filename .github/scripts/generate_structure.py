@@ -7,7 +7,7 @@ from collections import defaultdict
 DOCS_DIR = Path("docs")
 MKDOCS_YML = Path("mkdocs.yml")
 CATEGORY_TEMPLATE = (
-    "---\ntitle: \"{title}\"\nhide:\n  - toc\n---\n\n{% include \"category.md\" %}\n"
+    "---\ntitle: \"{title}\"\nhide:\n  - toc\n---\n\n{{% include \"category.md\" %}}\n"
 )
 
 def parse_date_from_md(md_file):
