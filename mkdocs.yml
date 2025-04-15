@@ -13,7 +13,9 @@ theme:
 plugins:
   - search
   - blog:
-      archive_date_format: MMMM yyyy
+      blog_dir: blog/posts
+      archive: true
+      archive_date_format: yyyy년 MM월
       pagination_per_page: 5
 
 nav:
