@@ -1,11 +1,9 @@
 ---
-title: "{{ category.name }}"
 hide:
   - toc
 ---
 
-# 📅 {{ category.name }} 문서
-
+{% if page.posts %}
 ## 최근 문서 목록
 
 {% for post in page.posts %}
@@ -18,8 +16,7 @@ hide:
 
 ---
 
-## 📝 가장 최근 문서 본문
+## 가장 최근 문서 보기
 
-{% if page.posts %}
 {{ page.posts[0].content }}
 {% endif %}
