@@ -16,3 +16,7 @@ plugins:
 markdown_extensions:
   - admonition
   - codehilite
+
+nav:
+  - 홈: index.md
+  - 모든 문서: posts/index.md   # (선택) blog_dir을 기본값 'blog'로 쓸 경우 예시
