@@ -1,0 +1,17 @@
+name: Publish MkDocs site to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]  # main 브랜치에 푸시될 때 실행
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Deploy to GitHub Pages
+        uses: mhausenblas/mkdocs-deploy-gh-pages@v1.26
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
