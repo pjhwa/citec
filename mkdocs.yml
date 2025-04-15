@@ -6,9 +6,8 @@ theme:
   name: material
   language: ko
   features:
-    - navigation.tabs
-    - navigation.indexes
     - navigation.sections   # ← 중요: 계층 구조로 사이드바 구성
+    - navigation.indexes
 
 plugins:
   - search
