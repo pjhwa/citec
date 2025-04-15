@@ -1,26 +1,23 @@
-site_name: Grok Tech-docs
-site_description: "Grok 문서들 (자동 날짜 분류)"
-site_url: "https://pjhwa.github.io/citec/"
-
-theme:
-  name: material
-  language: ko
-
-use_directory_urls: true
-
 extra: {}
-
-plugins:
-  - search
-  - blog:
-      blog_dir: .
-      archive: false
-      categories: true      # 연도/월별 자동 분류
-      pagination_per_page: 5
-
 markdown_extensions:
-  - admonition
-  - codehilite
-
+- admonition
+- codehilite
 nav:
-  - 홈: index.md
+- 홈: index.md
+- 문서 분류:
+  - '2025':
+    - 4월: 2025/04/index.md
+plugins:
+- search
+- blog:
+    archive: false
+    blog_dir: .
+    categories: true
+    pagination_per_page: 5
+site_description: Grok 문서들 (자동 날짜 분류)
+site_name: Grok Tech-docs
+site_url: https://pjhwa.github.io/citec/
+theme:
+  language: ko
+  name: material
+use_directory_urls: true
