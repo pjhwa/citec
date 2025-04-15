@@ -49,7 +49,13 @@ def main():
         date_str = parse_date_from_md(md_file)
         if not date_str:
             continue
-        dt = datetime.strptime(date_str, "%Y-%m-%d")
+        # 유연하게 datetime 처리
+        if isinstance(date_str, datetime):
+            dt = date_str
+        elif hasattr(date_str, "year") and hasattr(date_str, "month"):
+            dt = datetime(date_str.year, date_str.month, date_str.day)
+        else:
+            dt = datetime.strptime(str(date_str), "%Y-%m-%d")
         year, month = str(dt.year), f"{dt.month:02d}"
         structure[year].add(month)
         ensure_index_file(year, month)
