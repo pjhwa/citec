@@ -1,0 +1,44 @@
+name: Organize Blog Posts by Date
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/*.md'
+
+jobs:
+  organize:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Organize markdown files into year/month folders
+        run: |
+          echo "📁 정렬 시작"
+          mkdir -p docs/blog/posts
+          shopt -s nullglob
+          for file in docs/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*.md; do
+            filename=$(basename "$file")
+            datepart=$(echo "$filename" | cut -d'-' -f1-3)
+            year=$(echo "$datepart" | cut -d'-' -f1)
+            month=$(echo "$datepart" | cut -d'-' -f2)
+            title=$(echo "$filename" | cut -d'-' -f4- | sed 's/.md$//')
+
+            dest_dir="docs/blog/posts/$year/$month"
+            dest_file="$dest_dir/$title.md"
+
+            echo "→ $file → $dest_file"
+
+            mkdir -p "$dest_dir"
+            git mv "$file" "$dest_file"
+          done
+
+      - name: Commit & Push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add docs/blog/posts || true
+          git commit -m "🗂 자동 문서 이동 완료" || echo "변경사항 없음"
+          git push
