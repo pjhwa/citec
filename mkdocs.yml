@@ -1,0 +1,18 @@
+site_name: CI-TEC Documentation   # 사이트 이름
+site_description: "CI-TEC 문서 모음 (최신 글 순)"   # 사이트 설명
+site_url: "https://pjhwa.github.io/citec/"   # 사이트 URL
+
+theme:
+  name: material                # Material 테마 적용
+  language: ko                  # 사이트 언어 (ko: 한국어)
+
+plugins:
+  - search                      # 검색 기능 플러그인 (Material 테마 기본 포함)
+  - blog:
+      blog_dir: .               # 블로그 디렉토리 위치 ('.'로 설정하면 docs/가 블로그 루트)
+      archive: false            # (선택) 별도 Archive 페이지 비활성화
+      draft: false              # (선택) 초안 기능 비활성화
+
+markdown_extensions:
+  - admonition
+  - codehilite
