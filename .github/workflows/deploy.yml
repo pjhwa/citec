@@ -20,5 +20,14 @@ jobs:
       - name: Install dependencies
         run: pip install mkdocs mkdocs-material mkdocs-blog-plugin
 
-      - name: Build and Deploy
-        run: mkdocs gh-deploy --force
+      - name: Pull latest gh-pages
+        run: git fetch origin gh-pages:gh-pages || true
+
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+      - name: Deploy to GitHub Pages
+        run: |
+          mkdocs gh-deploy --clean --force --remote-branch gh-pages
