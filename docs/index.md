@@ -1,24 +1,11 @@
 ---
-title: "Grok 문서 모음"
+title: "Grok 문서 홈"
 hide:
-  - navigation
   - toc
 ---
 
-# 🗂️ 최신 문서 보기
+# 📚 Grok 문서 홈
 
-## 📅 월별 문서
+좌측 메뉴에서 연도 > 월을 클릭하면 해당 월의 문서를 볼 수 있습니다.
 
-{% set month = config.extra.blog.date | date(format="%Y-%m") %}
-
-{% for post in blog.posts | selectattr("date", "string", month) | reverse[:5] %}
-- [{{ post.title }}]({{ post.url }})
-{% endfor %}
-
----
-
-## 📝 이달의 첫 문서
-
-{% if blog.posts %}
-{{ blog.posts[-1].content }}
-{% endif %}
+최신 문서를 자동으로 정리하고 표시합니다.
