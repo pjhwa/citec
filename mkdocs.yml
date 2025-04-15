@@ -6,6 +6,12 @@ theme:
   name: material
   language: ko
 
+use_directory_urls: true
+
+extra:
+  blog:
+    date: !ENV ["BLOG_DATE", "2025-04-15"]
+
 plugins:
   - search
   - blog:
