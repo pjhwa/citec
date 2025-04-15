@@ -1,17 +1,20 @@
-site_name: Grok Tech-docs   # 사이트 이름
-site_description: "Grok 문서들 (최신 글 순)"   # 사이트 설명
-site_url: "https://pjhwa.github.io/citec/"   # 사이트 URL
+site_name: Grok Tech-docs
+site_description: "Grok 문서들 (최신 글 순)"
+site_url: "https://pjhwa.github.io/citec/"
 
 theme:
-  name: material                # Material 테마 적용
-  language: ko                  # 사이트 언어 (ko: 한국어)
+  name: material
+  language: ko
 
 plugins:
-  - search                      # 검색 기능 플러그인 (Material 테마 기본 포함)
+  - search
   - blog:
-      blog_dir: .               # 블로그 디렉토리 위치 ('.'로 설정하면 docs/가 블로그 루트)
-      archive: false            # (선택) 별도 Archive 페이지 비활성화
-      draft: false              # (선택) 초안 기능 비활성화
+      blog_dir: .
+      blog_toc: true     # 각 문서 오른쪽에 목차 표시
+      post_url_date_format: yyyy/MM      # URL 경로를 /yyyy/MM/slug 형식으로 구성
+      categories: true   # 연도/월별 자동 분류 사용
+      archive: false
+      draft: false
 
 markdown_extensions:
   - admonition
@@ -19,4 +22,3 @@ markdown_extensions:
 
 nav:
   - 홈: index.md
-  - 모든 문서: posts/index.md   # (선택) blog_dir을 기본값 'blog'로 쓸 경우 예시
