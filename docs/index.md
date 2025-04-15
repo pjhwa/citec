@@ -1,8 +1,24 @@
 ---
-title: "Home"
-date: 2025-04-15
+title: "Grok 문서 모음"
+hide:
+  - navigation
+  - toc
 ---
 
-# Grok Tech-docs
+# 🗂️ 최신 문서 보기
 
-이곳은 Grok을 닥달해서 만들어낸 기술 문서들을 최신 순으로 정리한 페이지입니다.
+## 📅 월별 문서
+
+{% set month = config.extra.blog.date | date(format="%Y-%m") %}
+
+{% for post in blog.posts | selectattr("date", "string", month) | reverse[:5] %}
+- [{{ post.title }}]({{ post.url }})
+{% endfor %}
+
+---
+
+## 📝 이달의 첫 문서
+
+{% if blog.posts %}
+{{ blog.posts[-1].content }}
+{% endif %}
