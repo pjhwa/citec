@@ -4,24 +4,30 @@
 <div class="blog-container">
   <h1 class="blog-title">📝 최신 블로그 글</h1>
   <div class="blog-grid">
-    {% for post in blog.posts | slice(0, 5) %}
-    <div class="blog-card">
-      {% if post.meta.thumbnail %}
-        <a href="{{ post.url }}"><img src="{{ post.meta.thumbnail }}" class="thumb"></a>
-      {% endif %}
-      <div class="blog-info">
-        <a href="{{ post.url }}"><h2 class="title">{{ post.title }}</h2></a>
-        <p class="date">{{ post.meta.date }}</p>
-        {% if post.meta.tags %}
-        <p class="tags">
-          {% for tag in post.meta.tags %}
-            <span class="tag">#{{ tag }}</span>
-          {% endfor %}
-        </p>
+
+    {% if blog and blog.posts %}
+      {% for post in blog.posts | slice(0, 5) %}
+      <div class="blog-card">
+        {% if post.meta.thumbnail %}
+          <a href="{{ post.url }}"><img src="{{ post.meta.thumbnail }}" class="thumb"></a>
         {% endif %}
+        <div class="blog-info">
+          <a href="{{ post.url }}"><h2 class="title">{{ post.title }}</h2></a>
+          <p class="date">{{ post.meta.date }}</p>
+          {% if post.meta.tags %}
+          <p class="tags">
+            {% for tag in post.meta.tags %}
+              <span class="tag">#{{ tag }}</span>
+            {% endfor %}
+          </p>
+          {% endif %}
+        </div>
       </div>
-    </div>
-    {% endfor %}
+      {% endfor %}
+    {% else %}
+      <p style="text-align:center;">게시된 블로그 글이 없습니다.</p>
+    {% endif %}
+
   </div>
   <p><a class="more-link" href="/citec/blog/">더 많은 글 보기 →</a></p>
 </div>
