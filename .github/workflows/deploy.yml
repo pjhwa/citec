@@ -1,8 +1,10 @@
 name: Deploy MkDocs to GitHub Pages
 
 on:
-  push:
-    branches: [ main ]
+  workflow_run:
+    workflows: ["Organize Blog Posts by Date"]
+    types:
+      - completed
 
 jobs:
   deploy:
