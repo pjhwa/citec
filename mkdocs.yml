@@ -20,4 +20,4 @@ plugins:
 
 nav:
   - 홈: index.md
-  - 블로그: blog/
+  - 블로그: blog/posts/index.md
