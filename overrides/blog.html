@@ -3,22 +3,26 @@
 {% block content %}
   <h1>{{ page.title }}</h1>
 
-  <ul>
+  {% if blog %}
+    <ul>
     {% for post in blog.posts %}
       <li>
-        <a href="{{ post.url }}">{{ post.title }}</a> - {{ post.date.strftime('%Y-%m-%d') }}</a>
+        <a href="{{ post.url }}">{{ post.title }}</a> - {{ post.date.strftime('%Y-%m-%d') }}
       </li>
     {% endfor %}
-  </ul>
+    </ul>
 
-  {% if blog.pagination %}
-    <nav class="pagination">
-      {% if blog.previous_page %}
-        <a href="{{ blog.previous_page.url }}">&laquo; 이전</a>
-      {% endif %}
-      {% if blog.next_page %}
-        <a href="{{ blog.next_page.url }}">다음 &raquo;</a>
-      {% endif %}
-    </nav>
+    {% if blog.pagination %}
+      <nav class="pagination">
+        {% if blog.previous_page %}
+          <a href="{{ blog.previous_page.url }}">&laquo; 이전</a>
+        {% endif %}
+        {% if blog.next_page %}
+          <a href="{{ blog.next_page.url }}">다음 &raquo;</a>
+        {% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <p><em>블로그 데이터를 불러올 수 없습니다. 플러그인 설치 여부를 확인하세요.</em></p>
   {% endif %}
 {% endblock %}
