@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # 🔥 전체 커밋 히스토리를 가져와야 최신 상태 반영
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -22,10 +22,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install dependencies
-        run: pip install mkdocs mkdocs-material mkdocs-blog-plugin 
-
-      - name: Pull latest gh-pages
-        run: git fetch origin gh-pages:gh-pages || true
+        run: pip install mkdocs mkdocs-material mkdocs-blog-plugin
 
       - name: Configure git
         run: |
@@ -33,5 +30,4 @@ jobs:
           git config --global user.email "github-actions@github.com"
 
       - name: Deploy to GitHub Pages
-        run: |
-          mkdocs gh-deploy --clean --force --remote-branch gh-pages
+        run: mkdocs gh-deploy --clean --force --remote-branch gh-pages
