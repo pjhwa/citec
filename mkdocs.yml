@@ -19,5 +19,5 @@ plugins:
 
 nav:
   - 홈: index.md
-  - 블로그: 
+  - 블로그: blog/index.md
       - blog/posts/index.md
