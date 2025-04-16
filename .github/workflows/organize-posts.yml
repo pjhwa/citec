@@ -25,10 +25,9 @@ jobs:
             datepart=$(echo "$filename" | cut -d'-' -f1-3)
             year=$(echo "$datepart" | cut -d'-' -f1)
             month=$(echo "$datepart" | cut -d'-' -f2)
-            title=$(echo "$filename" | cut -d'-' -f4- | sed 's/.md$//')
 
             dest_dir="docs/blog/posts/$year/$month"
-            dest_file="$dest_dir/$title.md"
+            dest_file="$dest_dir/$filename"
 
             echo "→ $file → $dest_file"
 
