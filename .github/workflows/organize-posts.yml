@@ -16,11 +16,9 @@ jobs:
 
       - name: Move blog posts and generate index pages
         run: |
-          echo "📁 시작: 문서 정리 및 인덱스 자동 생성"
           mkdir -p docs/blog/posts
           shopt -s nullglob
 
-          # 날짜 패턴 문서를 연도/월별 디렉토리로 이동
           for file in docs/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*.md; do
             filename=$(basename "$file")
             datepart=$(echo "$filename" | cut -d'-' -f1-3)
@@ -30,12 +28,9 @@ jobs:
             dest_dir="docs/blog/posts/$year/$month"
             dest_file="$dest_dir/$filename"
 
-            echo "→ $file → $dest_file"
-
             mkdir -p "$dest_dir"
             git mv "$file" "$dest_file"
 
-            # _index.md 생성
             index_file="$dest_dir/_index.md"
             if [ ! -f "$index_file" ]; then
               post_count=$(find "$dest_dir" -maxdepth 1 -type f -name '*.md' ! -name '_index.md' | wc -l)
@@ -53,24 +48,11 @@ jobs:
             fi
           done
 
-          # docs/index.md 생성 (없으면)
-          if [ ! -f docs/index.md ]; then
-            echo "---" > docs/index.md
-            echo "title: 홈" >> docs/index.md
-            echo "---" >> docs/index.md
-            echo "# Grok Docs에 오신 것을 환영합니다 📝" >> docs/index.md
-            echo "" >> docs/index.md
-            echo "→ [블로그 문서 보기](blog/)" >> docs/index.md
-            git add docs/index.md
-          fi
-
       - name: Commit and Push changes
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-          # 원본 위치에 남은 날짜형식 파일 제거
-          shopt -s nullglob
           for oldfile in docs/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*.md; do
             git rm -f "$oldfile"
           done
