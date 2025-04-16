@@ -1,54 +1,86 @@
 {% extends "main.html" %}
 {% block content %}
-  <div class="blog-container">
-    <h1 class="blog-title">📝 최신 글</h1>
-    <ul class="blog-list">
-      {% for post in blog.posts | slice(0, 5) %}
-        <li class="blog-item">
-          <a class="blog-link" href="{{ post.url }}">
-            <div class="blog-meta">{{ post.meta.date }}</div>
-            <div class="blog-title">{{ post.title }}</div>
-          </a>
-        </li>
-      {% endfor %}
-    </ul>
-    <p><a class="more-link" href="/citec/blog/">더 보기 →</a></p>
+<div class="blog-container">
+  <h1 class="blog-title">📝 최신 블로그 글</h1>
+  <div class="blog-grid">
+    {% for post in blog.posts | slice(0, 5) %}
+    <div class="blog-card">
+      {% if post.meta.thumbnail %}
+        <img src="{{ post.meta.thumbnail }}" class="thumb">
+      {% endif %}
+      <div class="blog-info">
+        <a href="{{ post.url }}"><h2 class="title">{{ post.title }}</h2></a>
+        <p class="date">{{ post.meta.date }}</p>
+        {% if post.meta.tags %}
+        <p class="tags">
+          {% for tag in post.meta.tags %}
+            <span class="tag">#{{ tag }}</span>
+          {% endfor %}
+        </p>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
   </div>
+  <p><a class="more-link" href="/citec/blog/">더 보기 →</a></p>
+</div>
 {% endblock %}
 
 {% block styles %}
 {{ super() }}
 <style>
 .blog-container {
-  max-width: 720px;
+  max-width: 960px;
   margin: 2rem auto;
-  padding: 0 1rem;
+  padding: 1rem;
 }
-.blog-title {
-  font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
-.blog-list {
-  list-style: none;
-  padding: 0;
+.blog-card {
+  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  background: #fff;
+  transition: transform 0.2s;
 }
-.blog-item {
-  margin-bottom: 1.2rem;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 1rem;
+.blog-card:hover {
+  transform: translateY(-5px);
 }
-.blog-link {
-  text-decoration: none;
-  color: inherit;
+.thumb {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
 }
-.blog-meta {
+.blog-info {
+  padding: 1rem;
+}
+.title {
+  font-size: 1.1rem;
+  margin: 0.5rem 0;
+  font-weight: 600;
+}
+.date {
   font-size: 0.9rem;
-  color: #999;
+  color: #888;
+}
+.tags {
+  margin-top: 0.5rem;
+}
+.tag {
+  background: #f0f0f0;
+  padding: 2px 8px;
+  margin-right: 5px;
+  border-radius: 8px;
+  font-size: 0.8rem;
 }
 .more-link {
-  display: inline-block;
-  margin-top: 1.5rem;
+  display: block;
+  margin: 2rem auto 0;
+  width: max-content;
   font-weight: 500;
   color: #007acc;
 }
