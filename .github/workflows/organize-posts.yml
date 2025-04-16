@@ -13,9 +13,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Move blog posts
+      - name: Move and Organize Posts
         run: |
           mkdir -p docs/blog/posts
+          touch recent.txt
+
           for file in docs/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*.md; do
             [ -e "$file" ] || continue
             filename=$(basename "$file")
@@ -24,12 +26,34 @@ jobs:
             slug="docs/blog/posts/$year/$month"
             mkdir -p "$slug"
             git mv "$file" "$slug/$filename"
-            echo "# ${year}년 ${month}월 블로그" > "$slug/index.md"
+
+            # Add to recent list
+            echo "$slug/$filename" >> recent.txt
+
+            # Create index.md if not exist
+            index_file="$slug/index.md"
+            if [ ! -f "$index_file" ]; then
+              echo "# ${year}년 ${month}월 블로그" > "$index_file"
+            fi
           done
 
-      - name: Commit changes
+      - name: Generate Blog Main Index
+        run: |
+          echo "# 📚 최신 블로그 글" > docs/blog/posts/index.md
+          echo "" >> docs/blog/posts/index.md
+          for path in $(cat recent.txt | sort -r | head -n 5); do
+            title=$(grep '^title:' "$path" | sed 's/title: //')
+            date=$(grep '^date:' "$path" | sed 's/date: //')
+            url=$(echo "$path" | sed 's/^docs\///;s/.md$//')
+            echo "- [$date | $title](/citec/$url/)" >> docs/blog/posts/index.md
+          done
+          echo "" >> docs/blog/posts/index.md
+          echo "[더 많은 글 보러가기 →](/citec/blog/)" >> docs/blog/posts/index.md
+
+      - name: Commit and Push
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
-          git commit -am "자동: 블로그 글 정리 및 이동" || echo "No changes"
+          git add docs/blog/posts
+          git commit -m "자동: 글 정리 및 최신글 index 생성" || echo "No changes"
           git push
