@@ -35,6 +35,9 @@ jobs:
             if [ ! -f "$index_file" ]; then
               echo "# ${year}년 ${month}월 블로그" > "$index_file"
             fi
+
+            # 월별 index 자동 구성
+            echo "- [${date} | ${title}](/citec/${slug}/${filename%.md}/)" >> "$slug/index.md"
           done
 
       - name: Generate Blog Main Index
