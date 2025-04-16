@@ -1,6 +1,9 @@
 ---
 title: "Scouter 설정을 통한 UDP 패킷 크기 조정으로 IP 단위 분할 방지 방법"
 date: 2025-04-16
+tags:
+  - grok
+  - blog
 ---
 # Scouter 설정을 통한 UDP 패킷 크기 조정으로 IP 단위 분할 방지 방법
 
