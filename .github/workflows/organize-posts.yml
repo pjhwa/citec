@@ -1,4 +1,4 @@
-name: Organize Blog Posts
+name: Organize and Enhance Blog
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Move and Organize Posts
+      - name: Move Posts by Date and Add Monthly Index
         run: |
           mkdir -p docs/blog/posts
           touch recent.txt
@@ -27,20 +27,20 @@ jobs:
             mkdir -p "$slug"
             git mv "$file" "$slug/$filename"
 
-            # Add to recent list
             echo "$slug/$filename" >> recent.txt
 
-            # Create index.md if not exist
-            index_file="$slug/index.md"
-            if [ ! -f "$index_file" ]; then
-              echo "# ${year}년 ${month}월 블로그" > "$index_file"
-            fi
+            # Extract title and date
+            title=$(grep '^title:' "$slug/$filename" | sed 's/title: //')
+            date=$(grep '^date:' "$slug/$filename" | sed 's/date: //')
+            post_path="${filename%.md}"
+            echo "- [$date | $title](/citec/blog/posts/$year/$month/$post_path/)" >> "$slug/index.md"
 
-            # 월별 index 자동 구성
-            echo "- [${date} | ${title}](/citec/${slug}/${filename%.md}/)" >> "$slug/index.md"
+            if [ ! -f "$slug/index.md" ]; then
+              echo "# ${year}년 ${month}월 블로그" > "$slug/index.md"
+            fi
           done
 
-      - name: Generate Blog Main Index
+      - name: Generate Blog Main Index with Recent Posts
         run: |
           echo "# 📚 최신 블로그 글" > docs/blog/posts/index.md
           echo "" >> docs/blog/posts/index.md
