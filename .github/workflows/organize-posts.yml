@@ -23,25 +23,32 @@ jobs:
             filename=$(basename "$file")
             year=$(echo $filename | cut -d'-' -f1)
             month=$(echo $filename | cut -d'-' -f2)
+            slug="${filename%.md}"
             target_dir="docs/blog/posts/$year/$month"
-            mkdir -p "$target_dir"
-            git mv "$file" "$target_dir/$filename"
-
             full_path="$target_dir/$filename"
+
+            mkdir -p "$target_dir"
+            git mv "$file" "$full_path"
+
             echo "$full_path" >> recent.txt
 
+            # 추출
             title=$(grep '^title:' "$full_path" | sed 's/title: //')
             date=$(grep '^date:' "$full_path" | sed 's/date: //')
-            slug="${filename%.md}"
             entry="- [$date | \"$title\"](/citec/blog/posts/$year/$month/$slug/)"
 
             index_file="$target_dir/index.md"
             if [ ! -f "$index_file" ]; then
-              echo "# ${year}년 ${month}월 블로그" > "$index_file"
+              echo "---" > "$index_file"
+              echo "title: ${year}년 ${month}월 블로그" >> "$index_file"
+              echo "template: blog.html" >> "$index_file"
+              echo "---" >> "$index_file"
+              echo "" >> "$index_file"
+              echo "# ${year}년 ${month}월 블로그" >> "$index_file"
               echo "" >> "$index_file"
             fi
 
-            # 중복 방지
+            # 중복 방지 후 삽입
             if ! grep -Fq "$entry" "$index_file"; then
               echo "$entry" >> "$index_file"
             fi
@@ -68,7 +75,7 @@ jobs:
             echo "" >> "$output"
             echo "[더 많은 글 보러가기 →](/citec/blog/)" >> "$output"
           else
-            echo "_게시된 글이 없습니다._" >> "$output"
+            echo "_게시된 블로그 글이 없습니다._" >> "$output"
           fi
 
       - name: Commit and Push
