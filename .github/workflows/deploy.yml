@@ -11,6 +11,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # 🔥 전체 커밋 히스토리를 가져와야 최신 상태 반영
+
 
       - name: Set up Python
         uses: actions/setup-python@v4
