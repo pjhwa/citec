@@ -1,7 +1,6 @@
 site_name: Grok Docs
-site_description: "Grok 문서 모음"
+site_description: "Grok에 물어보고 얻은 답을 정리한 블로그"
 site_url: "https://pjhwa.github.io/citec/"
-
 theme:
   name: material
   language: ko
@@ -16,11 +15,8 @@ plugins:
       blog_dir: blog/posts
       archive: true
       archive_date_format: yyyy년 MM월
-      archive_url_date_format: yyyy/MM
-      archive_url_format: "{date}"
       pagination_per_page: 5
 
 nav:
   - 홈: index.md
-  - 블로그: 
-      - blog/index.md
+  - 블로그: blog/posts/index.md
