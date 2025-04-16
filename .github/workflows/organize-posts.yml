@@ -13,50 +13,68 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Move Posts by Date and Add Monthly Index
+      - name: Move Posts and Update Monthly Index
         run: |
           mkdir -p docs/blog/posts
-          touch recent.txt
+          > recent.txt
 
           for file in docs/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*.md; do
-            [ -e "$file" ] || continue
+            [ -f "$file" ] || continue
             filename=$(basename "$file")
             year=$(echo $filename | cut -d'-' -f1)
             month=$(echo $filename | cut -d'-' -f2)
-            slug="docs/blog/posts/$year/$month"
-            mkdir -p "$slug"
-            git mv "$file" "$slug/$filename"
+            target_dir="docs/blog/posts/$year/$month"
+            mkdir -p "$target_dir"
+            git mv "$file" "$target_dir/$filename"
 
-            echo "$slug/$filename" >> recent.txt
+            full_path="$target_dir/$filename"
+            echo "$full_path" >> recent.txt
 
-            # Extract title and date
-            title=$(grep '^title:' "$slug/$filename" | sed 's/title: //')
-            date=$(grep '^date:' "$slug/$filename" | sed 's/date: //')
-            post_path="${filename%.md}"
-            echo "- [$date | $title](/citec/blog/posts/$year/$month/$post_path/)" >> "$slug/index.md"
+            title=$(grep '^title:' "$full_path" | sed 's/title: //')
+            date=$(grep '^date:' "$full_path" | sed 's/date: //')
+            slug="${filename%.md}"
+            entry="- [$date | \"$title\"](/citec/blog/posts/$year/$month/$slug/)"
 
-            if [ ! -f "$slug/index.md" ]; then
-              echo "# ${year}년 ${month}월 블로그" > "$slug/index.md"
+            index_file="$target_dir/index.md"
+            if [ ! -f "$index_file" ]; then
+              echo "# ${year}년 ${month}월 블로그" > "$index_file"
+              echo "" >> "$index_file"
+            fi
+
+            # 중복 방지
+            if ! grep -Fq "$entry" "$index_file"; then
+              echo "$entry" >> "$index_file"
             fi
           done
 
-      - name: Generate Blog Main Index with Recent Posts
+      - name: Generate Blog Root Index with Recent Posts
         run: |
-          echo "# 📚 최신 블로그 글" > docs/blog/posts/index.md
-          echo "" >> docs/blog/posts/index.md
-          for path in $(cat recent.txt | sort -r | head -n 5); do
-            title=$(grep '^title:' "$path" | sed 's/title: //')
-            date=$(grep '^date:' "$path" | sed 's/date: //')
-            url=$(echo "$path" | sed 's/^docs\///;s/.md$//')
-            echo "- [$date | $title](/citec/$url/)" >> docs/blog/posts/index.md
-          done
-          echo "" >> docs/blog/posts/index.md
-          echo "[더 많은 글 보러가기 →](/citec/blog/)" >> docs/blog/posts/index.md
+          output="docs/blog/posts/index.md"
+          echo "---" > "$output"
+          echo "template: blog.html" >> "$output"
+          echo "title: 블로그" >> "$output"
+          echo "---" >> "$output"
+          echo "" >> "$output"
+          echo "# 📚 최신 블로그 글" >> "$output"
+          echo "" >> "$output"
+
+          if [ -f recent.txt ]; then
+            for path in $(cat recent.txt | sort -r | head -n 5); do
+              title=$(grep '^title:' "$path" | sed 's/title: //')
+              date=$(grep '^date:' "$path" | sed 's/date: //')
+              url=$(echo "$path" | sed 's/^docs\///; s/\.md$//')
+              echo "- [$date | \"$title\"](/citec/$url/)" >> "$output"
+            done
+            echo "" >> "$output"
+            echo "[더 많은 글 보러가기 →](/citec/blog/)" >> "$output"
+          else
+            echo "_게시된 글이 없습니다._" >> "$output"
+          fi
 
       - name: Commit and Push
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
           git add docs/blog/posts
-          git commit -m "자동: 글 정리 및 최신글 index 생성" || echo "No changes"
+          git commit -m "자동: 블로그 글 이동 및 인덱스 생성" || echo "✅ 변경 사항 없음"
           git push
