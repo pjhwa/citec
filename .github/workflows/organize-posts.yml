@@ -85,6 +85,6 @@ jobs:
           for oldfile in docs/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*.md; do
             git rm "$oldfile"
           done
-
+          git rm docs/blog/index.md
           git commit -m "🗂 문서 정리 및 인덱스 자동 생성" || echo "변경 없음"
           git push
