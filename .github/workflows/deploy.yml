@@ -18,7 +18,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install dependencies
-        run: pip install mkdocs mkdocs-material mkdocs-blog
+        run: pip install mkdocs mkdocs-material mkdocs-blog-plugin 
 
       - name: Pull latest gh-pages
         run: git fetch origin gh-pages:gh-pages || true
