@@ -75,10 +75,5 @@ jobs:
             git rm -f "$oldfile"
           done
 
-          # 더 이상 필요 없는 blog/index.md 제거 (있을 경우만)
-          if git ls-files --error-unmatch docs/blog/index.md >/dev/null 2>&1; then
-            git rm -f docs/blog/index.md
-          fi
-
           git commit -m "🗂 문서 정리 및 인덱스 자동 생성" || echo "변경 없음"
           git push
