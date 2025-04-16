@@ -1,28 +1,14 @@
 {% extends "main.html" %}
-
 {% block content %}
   <h1>{{ page.title }}</h1>
 
-  {% if blog is defined %}
-    <ul>
-      {% for post in blog.posts[:5] %}
-        <li>
-          <a href="{{ post.url }}">{{ post.title }}</a> ({{ post.date.strftime('%Y-%m-%d') }})
-        </li>
-      {% endfor %}
-    </ul>
+  {% if page.meta.date %}
+    <p><strong>{{ page.meta.date }}</strong></p>
+  {% endif %}
 
-    {% if blog.pagination %}
-      <nav class="pagination">
-        {% if blog.previous_page %}
-          <a href="{{ blog.previous_page.url }}">&laquo; 이전</a>
-        {% endif %}
-        {% if blog.next_page %}
-          <a href="{{ blog.next_page.url }}">다음 &raquo;</a>
-        {% endif %}
-      </nav>
-    {% endif %}
-  {% else %}
-    <p><em>블로그 데이터를 불러올 수 없습니다. 플러그인 설치 여부를 확인하세요.</em></p>
+  {{ page.content }}
+
+  {% if page.meta.tags %}
+    <p><strong>Tags:</strong> {{ page.meta.tags | join(", ") }}</p>
   {% endif %}
 {% endblock %}
