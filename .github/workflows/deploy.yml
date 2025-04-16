@@ -1,33 +1,24 @@
-name: Deploy MkDocs to GitHub Pages
+name: Build and Deploy MkDocs
 
 on:
-  workflow_run:
-    workflows: ["Organize Blog Posts by Date"]
-    types:
-      - completed
+  push:
+    branches: [main]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install mkdocs mkdocs-material mkdocs-blog-plugin
-
-      - name: Configure git
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
+          pip install mkdocs-material mkdocs-blog-plugin
 
-      - name: Deploy to GitHub Pages
-        run: mkdocs gh-deploy --clean --force --remote-branch gh-pages
+      - name: Build and Deploy
+        run: mkdocs gh-deploy --force
