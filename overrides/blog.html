@@ -1,14 +1,12 @@
 {% extends "main.html" %}
 {% block content %}
-  <h1>{{ page.title }}</h1>
-
-  {% if page.meta.date %}
-    <p><strong>{{ page.meta.date }}</strong></p>
-  {% endif %}
-
-  {{ page.content }}
-
-  {% if page.meta.tags %}
-    <p><strong>Tags:</strong> {{ page.meta.tags | join(", ") }}</p>
-  {% endif %}
+<h1 class="title">📘 최신 블로그 글</h1>
+<ul>
+  {% for post in blog.posts | slice(0, 5) %}
+    <li>
+      <a href="{{ post.url }}">{{ post.meta.date }} - {{ post.title }}</a>
+    </li>
+  {% endfor %}
+</ul>
+<p><a href="{{ config.site_url }}blog/">더 보기 →</a></p>
 {% endblock %}
