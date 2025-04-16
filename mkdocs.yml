@@ -13,12 +13,11 @@ theme:
 plugins:
   - search
   - blog:
-      blog_dir: blog/posts
+      blog_dir: blog
       archive: true
       archive_date_format: yyyy년 MM월
       pagination_per_page: 5
 
 nav:
   - 홈: index.md
-  - 블로그: 
-      - blog/posts/index.md
+  - 블로그: blog/index.md
