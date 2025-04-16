@@ -1,61 +1,35 @@
-name: Organize Blog Posts by Date
+name: Organize Blog Posts
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
       - 'docs/*.md'
 
 jobs:
   organize:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Move blog posts and generate index pages
+      - name: Move blog posts
         run: |
           mkdir -p docs/blog/posts
-          shopt -s nullglob
-
           for file in docs/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*.md; do
+            [ -e "$file" ] || continue
             filename=$(basename "$file")
-            datepart=$(echo "$filename" | cut -d'-' -f1-3)
-            year=$(echo "$datepart" | cut -d'-' -f1)
-            month=$(echo "$datepart" | cut -d'-' -f2)
-
-            dest_dir="docs/blog/posts/$year/$month"
-            dest_file="$dest_dir/$filename"
-
-            mkdir -p "$dest_dir"
-            git mv "$file" "$dest_file"
-
-            index_file="$dest_dir/_index.md"
-            if [ ! -f "$index_file" ]; then
-              post_count=$(find "$dest_dir" -maxdepth 1 -type f -name '*.md' ! -name '_index.md' | wc -l)
-              last_updated=$(git log -1 --format="%ad" --date=short -- "$dest_dir" || echo "날짜 정보 없음")
-
-              echo "---" > "$index_file"
-              echo "title: ${year}년 ${month}월 문서 모음" >> "$index_file"
-              echo "---" >> "$index_file"
-              echo "# ${year}년 ${month}월 문서 모음입니다." >> "$index_file"
-              echo "- 총 문서 수: **${post_count}개**" >> "$index_file"
-              echo "- 마지막 업데이트: **${last_updated}**" >> "$index_file"
-              echo "" >> "$index_file"
-              echo "_자동 생성된 소개 파일입니다._" >> "$index_file"
-              git add "$index_file"
-            fi
+            year=$(echo $filename | cut -d'-' -f1)
+            month=$(echo $filename | cut -d'-' -f2)
+            slug="docs/blog/posts/$year/$month"
+            mkdir -p "$slug"
+            git mv "$file" "$slug/$filename"
+            echo "# ${year}년 ${month}월 블로그" > "$slug/index.md"
           done
 
-      - name: Commit and Push changes
+      - name: Commit changes
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-
-          for oldfile in docs/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*.md; do
-            git rm -f "$oldfile"
-          done
-
-          git commit -m "🗂 문서 정리 및 인덱스 자동 생성" || echo "변경 없음"
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git commit -am "자동: 블로그 글 정리 및 이동" || echo "No changes"
           git push
