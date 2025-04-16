@@ -1,4 +1,1 @@
----
-title: 블로그
-template: blog.html
----
+# 📚 블로그 전체 목록
