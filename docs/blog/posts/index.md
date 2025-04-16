@@ -1,5 +1,4 @@
-# 📚 최신 블로그 글
-
-- [2025-04-16 | "Scouter 설정을 통한 UDP 패킷 크기 조정으로 IP 단위 분할 방지 방법"](/citec/blog/posts/2025/04/2025-04-16-scouter/)
-
-[더 많은 글 보러가기 →](/citec/blog/)
+---
+title: 블로그
+template: blog.html
+---
