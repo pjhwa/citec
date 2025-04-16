@@ -1,12 +1,56 @@
 {% extends "main.html" %}
 {% block content %}
-<h1 class="title">📘 최신 블로그 글</h1>
-<ul>
-  {% for post in blog.posts | slice(0, 5) %}
-    <li>
-      <a href="{{ post.url }}">{{ post.meta.date }} - {{ post.title }}</a>
-    </li>
-  {% endfor %}
-</ul>
-<p><a href="{{ config.site_url }}blog/">더 보기 →</a></p>
+  <div class="blog-container">
+    <h1 class="blog-title">📝 최신 글</h1>
+    <ul class="blog-list">
+      {% for post in blog.posts | slice(0, 5) %}
+        <li class="blog-item">
+          <a class="blog-link" href="{{ post.url }}">
+            <div class="blog-meta">{{ post.meta.date }}</div>
+            <div class="blog-title">{{ post.title }}</div>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+    <p><a class="more-link" href="/citec/blog/">더 보기 →</a></p>
+  </div>
+{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+.blog-container {
+  max-width: 720px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+.blog-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+.blog-list {
+  list-style: none;
+  padding: 0;
+}
+.blog-item {
+  margin-bottom: 1.2rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1rem;
+}
+.blog-link {
+  text-decoration: none;
+  color: inherit;
+}
+.blog-meta {
+  font-size: 0.9rem;
+  color: #999;
+}
+.more-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  font-weight: 500;
+  color: #007acc;
+}
+</style>
 {% endblock %}
