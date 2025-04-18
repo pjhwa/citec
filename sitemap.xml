@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://pjhwa.github.io/citec/</loc>
+         <lastmod>2025-04-18</lastmod>
+    </url>
+    <url>
+         <loc>https://pjhwa.github.io/citec/2025-04-18-rook-ceph-mon-issue/</loc>
+         <lastmod>2025-04-18</lastmod>
+    </url>
+    <url>
+         <loc>https://pjhwa.github.io/citec/blog/</loc>
+         <lastmod>2025-04-18</lastmod>
+    </url>
+    <url>
+         <loc>https://pjhwa.github.io/citec/blog/posts/</loc>
+         <lastmod>2025-04-18</lastmod>
+    </url>
+    <url>
+         <loc>https://pjhwa.github.io/citec/blog/posts/2025/04/</loc>
+         <lastmod>2025-04-18</lastmod>
+    </url>
+    <url>
+         <loc>https://pjhwa.github.io/citec/blog/posts/2025/04/2025-04-15-scouter/</loc>
+         <lastmod>2025-04-18</lastmod>
+    </url>
+    <url>
+         <loc>https://pjhwa.github.io/citec/blog/posts/2025/04/2025-04-17-ceph-mon-issue/</loc>
+         <lastmod>2025-04-18</lastmod>
+    </url>
+    <url>
+         <loc>https://pjhwa.github.io/citec/blog/posts/2025/04/2025-04-17-openstack-helm-install/</loc>
+         <lastmod>2025-04-18</lastmod>
+    </url>
+</urlset>
