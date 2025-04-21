@@ -5,3 +5,4 @@
  
 - [2025-04-17 | ""Ceph 클러스터 설치 시 모니터 파드 시작 문제""](/citec/blog/posts/2025/04/2025-04-17-ceph-mon-issue/)
 - [2025-04-18 | ""Rook-Ceph 설치 중단 문제 분석 및 해결 방법""](/citec/blog/posts/2025/04/2025-04-18-rook-ceph-mon-issue/)
+- [2025-04-21 | ""Kubernetes 노드 전체를 안전하게 재부팅하는 방법""](/citec/blog/posts/2025/04/2025-04-21-k8s-reboot/)
