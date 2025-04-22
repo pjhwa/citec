@@ -1257,6 +1257,63 @@ k3                         : ok=58   changed=22   unreachable=0    failed=0    s
 k4                         : ok=58   changed=22   unreachable=0    failed=0    skipped=49   rescued=0    ignored=0
 ```
 
+Ansible 플레이북을 활용한 Kubernetes 설치 후 k1 노드에 master 역할을, 나머지 노드들에는 worker 역할을 부여한다.
+``` 
+citec@k1:~/osh$ kubectl label node k1 node-role.kubernetes.io/master=
+node/k1 labeled
+citec@k1:~/osh$ kubectl get nodes
+NAME   STATUS   ROLES                  AGE     VERSION
+k1     Ready    control-plane,master   6m26s   v1.29.15
+k2     Ready    <none>                 6m5s    v1.29.15
+k3     Ready    <none>                 6m7s    v1.29.15
+k4     Ready    <none>                 6m6s    v1.29.15
+citec@k1:~/osh$ kubectl label node k2 node-role.kubernetes.io/worker=
+node/k2 labeled
+citec@k1:~/osh$ kubectl label node k3 node-role.kubernetes.io/worker=
+node/k3 labeled
+citec@k1:~/osh$ kubectl label node k4 node-role.kubernetes.io/worker=
+node/k4 labeled
+citec@k1:~/osh$ kubectl get nodes
+NAME   STATUS   ROLES                  AGE     VERSION
+k1     Ready    control-plane,master   8m21s   v1.29.15
+k2     Ready    worker                 8m      v1.29.15
+k3     Ready    worker                 8m2s    v1.29.15
+k4     Ready    worker                 8m1s    v1.29.15
+```
+
+RBAC 권한 설정을 위해 kubernetes-admin 사용자에 cluster-admin 권한을 부여한다.
+```
+citec@k1:~/osh$ kubectl create clusterrolebinding kubernetes-admin-binding --clusterrole=cluster-admin --user=kubernetes-admin
+clusterrolebinding.rbac.authorization.k8s.io/kubernetes-admin-binding created
+citec@k1:~/osh$ kubectl get clusterrolebindings -o wide |grep kubernetes
+kubernetes-admin-binding    ClusterRole/cluster-admin       3s      kubernetes-admin
+```
+
+마스터 노드(k1)의 /var/log/syslog에 아래와 같이 kubelet이 metallb 리소스를 읽지 못하는 문제가 있을 수 있다. metallb의 Speaker 파드는 각 노드에서 실행되며, 파드 내부에서 ConfigMap, Secret 등을 mount하거나 참조하려면 해당 노드의 kubelet이 접근 권한을 가져야 하지만 system:node:<노드명> 사용자(kubelet의 신원)는 기본적으로 자신과 관련된 파드 리소스 외에는 제한된 접근 권한만 갖는다. 그래서 kubelet 로그에 오류가 발생할 수 있다. 
+```
+User "system:node:k1" cannot list resource "configmaps" in API group "" in the namespace "metallb-system"
+```
+
+kubelet 사용자에게 직접 접근 권한을 부여하여 문제를 해결한다. ClusterRole 생성(Cluster-wide 권한 정의)하고, 특정 kubelet 사용자에게 ClusterRoleBinding 하는 방법이다.
+```
+citec@k1:~/osh$ kubectl create clusterrole metallb-access \
+  --verb=get,list,watch \
+  --resource=configmaps,secrets
+clusterrole.rbac.authorization.k8s.io/metallb-access created
+
+citec@k1:~/osh$ kubectl create clusterrolebinding metallb-node-access \
+  --clusterrole=metallb-access \
+  --user=system:node:k1
+clusterrolebinding.rbac.authorization.k8s.io/metallb-node-access created
+```
+
+kubelet이 metallb-system 내 ConfigMap에 접근 가능한지 확인한다. `yes`가 표시되면 해결된 것이다.
+```
+citec@k1:~/osh$ kubectl auth can-i get configmap --as=system:node:k1 -n metallb-system
+yes
+```
+
+
 ### 시스템 초기화 방법
 
 만약, 이전에 Helm을 통해 Kubernetes와 OpenStack 설치를 진행했었다면 아래와 같은 절차로 모든 노드를 초기화한다. ansible-playbook 명령을 여러번 수행해야할 상황이 반드시 올 것이므로... :-)
