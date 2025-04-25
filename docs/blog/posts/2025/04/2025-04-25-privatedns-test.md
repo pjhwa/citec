@@ -42,18 +42,23 @@ tags: [dns, test, query, cloud, linux, windows]
 #### **Linux 환경**
 1. **수동 쿼리 테스트**
    DNS 서버 IP가 `10.0.0.1`이라고 가정하고, 다음 명령어로 확인:
+   
    ```
    dig @10.0.0.1 test.internal.xxx A
    ```
+   
    - 출력 예시:
+     
      ```
      ;; ANSWER SECTION:
      test.internal.xxx. 3600 IN A 192.168.1.100
      ```
+     
    - `192.168.1.100`이 반환되면 정상.
 
 2. **자동화 스크립트 작성**
    `/usr/local/bin/dns_check.sh` 파일을 만들어 아래 내용을 입력:
+   
    ```
    #!/bin/bash
    DNS_SERVER="10.0.0.1"  # Private DNS 서버 IP
@@ -71,26 +76,33 @@ tags: [dns, test, query, cloud, linux, windows]
    ```
 
 3. **실행 권한 부여**
+   
    ```
    chmod +x /usr/local/bin/dns_check.sh
    ```
 
 4. **Cron으로 주기적 실행**
    5분마다 실행하도록 설정:
+   
    ```
    crontab -e
    ```
+   
    다음 줄 추가:
+   
    ```
    */5 * * * * /usr/local/bin/dns_check.sh >> /var/log/dns_check.log 2>&1
    ```
 
 #### **Windows 환경**
 1. **수동 쿼리 테스트**
+
    ```
    nslookup test.internal.xxx 10.0.0.1
    ```
+
    - 출력 예시:
+     
      ```
      Server:  10.0.0.1
      Address:  10.0.0.1#53
@@ -100,6 +112,7 @@ tags: [dns, test, query, cloud, linux, windows]
 
 2. **자동화 스크립트 작성**
    `dns_check.bat` 파일을 만들어 아래 내용을 입력:
+   
    ```
    @echo off
    set DNS_SERVER=10.0.0.1
@@ -117,7 +130,7 @@ tags: [dns, test, query, cloud, linux, windows]
    )
    ```
 
-3. **작업 스케줄러로 주기적 실행**
+4. **작업 스케줄러로 주기적 실행**
    - Windows "작업 스케줄러"를 열고 새 작업을 생성.
    - **트리거**: 5분마다 실행.
    - **작업**: `C:\dns_check.bat` 실행.
