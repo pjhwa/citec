@@ -310,71 +310,71 @@ citec@k1:~/osh$ kubectl -n rook-ceph logs -f -l app=rook-ceph-operator
 로그에서 확인된 오류와 `mon a`만 오랫동안 실행된 상황을 해결하기 위해 다음 단계를 수행하세요:
 
 1. **모니터 파드 상태 확인**:
-   ```
-   kubectl -n rook-ceph get pods -l app=rook-ceph-mon
-   kubectl -n rook-ceph describe pod <mon-b-pod> <mon-c-pod>
-   ```
+```
+kubectl -n rook-ceph get pods -l app=rook-ceph-mon
+kubectl -n rook-ceph describe pod <mon-b-pod> <mon-c-pod>
+```
    - 파드 상태가 `Pending`, `CrashLoopBackOff`, 또는 `Error`인지 확인하고, 이벤트 로그에서 실패 원인을 찾으세요.
 
 2. **노드 상태 점검**:
-   ```
-   kubectl describe node k1 k2 k3
-   ```
+```
+kubectl describe node k1 k2 k3
+```
    - 노드의 리소스 상태, 테인트, 또는 스케줄링 문제를 확인하세요.
 
 3. **네트워크 연결 테스트**:
    - `mon a` 파드에서 다른 모니터 엔드포인트로 연결을 테스트하세요:
-     ```
-     kubectl -n rook-ceph exec -it <mon-a-pod> -- ping 10.96.228.121
-     kubectl -n rook-ceph exec -it <mon-a-pod> -- ceph -s
-     ```
+```
+kubectl -n rook-ceph exec -it <mon-a-pod> -- ping 10.96.228.121
+kubectl -n rook-ceph exec -it <mon-a-pod> -- ceph -s
+```
    - 네트워크 정책 또는 방화벽 설정을 확인하여 포트 6789와 3300이 열려 있는지 확인하세요.
 
 4. **CephCluster 리소스 검토**:
-   ```
-   kubectl -n rook-ceph get cephcluster rook-ceph -o yaml
-   ```
+```
+kubectl -n rook-ceph get cephcluster rook-ceph -o yaml
+```
    - `mon` 섹션에서 모니터 수(`count`), 스토리지 설정, 노드 배치 설정(`placement`, `nodeAffinity`)을 확인하세요.
    - 예시 `CephCluster` 설정:
-     ```yaml
-     spec:
-       mon:
-         count: 3
-         allowMultiplePerNode: false
-       placement:
-         mon:
-           nodeAffinity:
-             requiredDuringSchedulingIgnoredDuringExecution:
-               nodeSelectorTerms:
-               - matchExpressions:
-                 - key: kubernetes.io/hostname
-                   operator: In
-                   values:
-                   - k1
-                   - k2
-                   - k3
-     ```
+```yaml
+spec:
+  mon:
+    count: 3
+    allowMultiplePerNode: false
+  placement:
+    mon:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+              - k1
+              - k2
+              - k3
+```
 
 5. **스토리지 클래스 및 PVC 확인**:
-   ```
-   kubectl -n rook-ceph get pvc
-   kubectl -n rook-ceph get storageclass
-   ```
+```
+kubectl -n rook-ceph get pvc
+kubectl -n rook-ceph get storageclass
+```
    - 모니터 파드의 PVC가 `Bound` 상태인지 확인하고, 스토리지 클래스가 올바르게 설정되었는지 확인하세요.
 
 6. **로그 추가 확인**:
    - `mon b`와 `mon c` 파드의 로그를 확인하여 추가 오류를 찾으세요:
-     ```
-     kubectl -n rook-ceph logs <mon-b-pod>
-     kubectl -n rook-ceph logs <mon-c-pod>
-     ```
+```
+kubectl -n rook-ceph logs <mon-b-pod>
+kubectl -n rook-ceph logs <mon-c-pod>
+```
 
 7. **Rook-Ceph 재설정(선택 사항)**:
    - 문제가 해결되지 않으면, Rook-Ceph 클러스터를 삭제하고 재설치할 수 있습니다:
-     ```
-     kubectl -n rook-ceph delete cephcluster rook-ceph
-     helm uninstall rook-ceph -n rook-ceph
-     ```
+```
+kubectl -n rook-ceph delete cephcluster rook-ceph
+helm uninstall rook-ceph -n rook-ceph
+```
    - 삭제 후, 노드의 리소스와 네트워크 설정을 점검한 뒤 재배포하세요.
 
 ---
