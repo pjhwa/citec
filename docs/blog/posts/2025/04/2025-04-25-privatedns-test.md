@@ -43,37 +43,37 @@ tags: [dns, test, query, cloud, linux, windows]
 1. **수동 쿼리 테스트**
    DNS 서버 IP가 `10.0.0.1`이라고 가정하고, 다음 명령어로 확인:
    
-   ```
-   dig @10.0.0.1 test.internal.xxx A
-   ```
+```
+dig @10.0.0.1 test.internal.xxx A
+```
    
    - 출력 예시:
      
-     ```
-     ;; ANSWER SECTION:
-     test.internal.xxx. 3600 IN A 192.168.1.100
-     ```
+```
+;; ANSWER SECTION:
+test.internal.xxx. 3600 IN A 192.168.1.100
+```
      
    - `192.168.1.100`이 반환되면 정상.
 
 2. **자동화 스크립트 작성**
    `/usr/local/bin/dns_check.sh` 파일을 만들어 아래 내용을 입력:
    
-   ```
-   #!/bin/bash
-   DNS_SERVER="10.0.0.1"  # Private DNS 서버 IP
-   TEST_DOMAIN="test.internal.xxx"
-   EXPECTED_IP="192.168.1.100"
+```
+#!/bin/bash
+DNS_SERVER="10.0.0.1"  # Private DNS 서버 IP
+TEST_DOMAIN="test.internal.xxx"
+EXPECTED_IP="192.168.1.100"
    
-   RESPONSE=$(dig @$DNS_SERVER $TEST_DOMAIN A +short)
-   
-   if [ "$RESPONSE" == "$EXPECTED_IP" ]; then
-       echo "$(date): DNS 정상 작동"
-   else
-       echo "$(date): DNS 오류 감지: $RESPONSE"
-       # 여기에 알림 추가 (예: 이메일, 모니터링 시스템 호출)
-   fi
-   ```
+RESPONSE=$(dig @$DNS_SERVER $TEST_DOMAIN A +short)
+  
+if [ "$RESPONSE" == "$EXPECTED_IP" ]; then
+    echo "$(date): DNS 정상 작동"
+else
+    echo "$(date): DNS 오류 감지: $RESPONSE"
+    # 여기에 알림 추가 (예: 이메일, 모니터링 시스템 호출)
+fi
+```
 
 3. **실행 권한 부여**
    
