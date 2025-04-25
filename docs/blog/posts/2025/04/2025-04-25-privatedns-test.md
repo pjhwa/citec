@@ -42,7 +42,7 @@ tags: [dns, test, query, cloud, linux, windows]
 #### **Linux 환경**
 1. **수동 쿼리 테스트**
    DNS 서버 IP가 `10.0.0.1`이라고 가정하고, 다음 명령어로 확인:
-   ```bash
+   ```
    dig @10.0.0.1 test.internal.xxx A
    ```
    - 출력 예시:
@@ -54,7 +54,7 @@ tags: [dns, test, query, cloud, linux, windows]
 
 2. **자동화 스크립트 작성**
    `/usr/local/bin/dns_check.sh` 파일을 만들어 아래 내용을 입력:
-   ```bash
+   ```
    #!/bin/bash
    DNS_SERVER="10.0.0.1"  # Private DNS 서버 IP
    TEST_DOMAIN="test.internal.xxx"
@@ -71,23 +71,23 @@ tags: [dns, test, query, cloud, linux, windows]
    ```
 
 3. **실행 권한 부여**
-   ```bash
+   ```
    chmod +x /usr/local/bin/dns_check.sh
    ```
 
 4. **Cron으로 주기적 실행**
    5분마다 실행하도록 설정:
-   ```bash
+   ```
    crontab -e
    ```
    다음 줄 추가:
-   ```bash
+   ```
    */5 * * * * /usr/local/bin/dns_check.sh >> /var/log/dns_check.log 2>&1
    ```
 
 #### **Windows 환경**
 1. **수동 쿼리 테스트**
-   ```cmd
+   ```
    nslookup test.internal.xxx 10.0.0.1
    ```
    - 출력 예시:
@@ -100,7 +100,7 @@ tags: [dns, test, query, cloud, linux, windows]
 
 2. **자동화 스크립트 작성**
    `dns_check.bat` 파일을 만들어 아래 내용을 입력:
-   ```cmd
+   ```
    @echo off
    set DNS_SERVER=10.0.0.1
    set TEST_DOMAIN=test.internal.xxx
@@ -128,7 +128,7 @@ tags: [dns, test, query, cloud, linux, windows]
 - **로그 확인**: 주기적 쿼리 결과를 로그 파일에 기록하여 모니터링 시스템(예: Prometheus, ELK)이 이를 수집하도록 설정.
 - **알림 추가**: 쿼리 실패 시 이메일 또는 슬랙 알림을 트리거하도록 스크립트에 추가.
   - 예: Linux에서 `mail` 명령어로 이메일 전송:
-    ```bash
+    ```
     echo "DNS 오류 감지" | mail -s "DNS 모니터링 경고" admin@example.com
     ```
 
