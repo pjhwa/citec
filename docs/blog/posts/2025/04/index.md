@@ -6,3 +6,4 @@
 - [2025-04-18 | ""Rook-Ceph 설치 중단 문제 분석 및 해결 방법""](/citec/blog/posts/2025/04/2025-04-18-rook-ceph-mon-issue/)
 - [2025-04-21 | ""Kubernetes 노드 전체를 안전하게 재부팅하는 방법""](/citec/blog/posts/2025/04/2025-04-21-k8s-reboot/)
 - [2025-04-23 | ""HP-UX 10Gbe(iexgbe) 네트워크 드라이버 이슈 분석""](/citec/blog/posts/2025/04/2025-04-23-hpux-iexgbe/)
+- [2025-04-25 | ""Private DNS 내에 테스트용 DNS 레코드를 설정하고 이를 주기적으로 쿼리하는 방식""](/citec/blog/posts/2025/04/2025-04-25-privatedns-test/)
