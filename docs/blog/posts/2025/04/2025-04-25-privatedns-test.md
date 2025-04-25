@@ -77,58 +77,58 @@ fi
 
 3. **실행 권한 부여**
    
-   ```
-   chmod +x /usr/local/bin/dns_check.sh
-   ```
+```
+chmod +x /usr/local/bin/dns_check.sh
+```
 
 4. **Cron으로 주기적 실행**
    5분마다 실행하도록 설정:
    
-   ```
-   crontab -e
-   ```
+```
+crontab -e
+```
    
    다음 줄 추가:
    
-   ```
-   */5 * * * * /usr/local/bin/dns_check.sh >> /var/log/dns_check.log 2>&1
-   ```
+```
+*/5 * * * * /usr/local/bin/dns_check.sh >> /var/log/dns_check.log 2>&1
+```
 
 #### **Windows 환경**
 1. **수동 쿼리 테스트**
 
-   ```
-   nslookup test.internal.xxx 10.0.0.1
-   ```
+```
+nslookup test.internal.xxx 10.0.0.1
+```
 
    - 출력 예시:
      
-     ```
-     Server:  10.0.0.1
-     Address:  10.0.0.1#53
-     Name:    test.internal.xxx
-     Address:  192.168.1.100
-     ```
+```
+Server:  10.0.0.1
+Address:  10.0.0.1#53
+Name:    test.internal.xxx
+Address:  192.168.1.100
+```
 
 2. **자동화 스크립트 작성**
    `dns_check.bat` 파일을 만들어 아래 내용을 입력:
    
-   ```
-   @echo off
-   set DNS_SERVER=10.0.0.1
-   set TEST_DOMAIN=test.internal.xxx
-   set EXPECTED_IP=192.168.1.100
+```
+@echo off
+set DNS_SERVER=10.0.0.1
+set TEST_DOMAIN=test.internal.xxx
+set EXPECTED_IP=192.168.1.100
    
-   for /f "tokens=*" %%a in ('nslookup %TEST_DOMAIN% %DNS_SERVER% ^| findstr /c:"Address:"') do set RESPONSE=%%a
-   set RESPONSE=%RESPONSE:Address: =%
+for /f "tokens=*" %%a in ('nslookup %TEST_DOMAIN% %DNS_SERVER% ^| findstr /c:"Address:"') do set RESPONSE=%%a
+set RESPONSE=%RESPONSE:Address: =%
    
-   if "%RESPONSE%"=="%EXPECTED_IP%" (
-       echo %date% %time%: DNS 정상 작동 >> C:\dns_check.log
-   ) else (
-       echo %date% %time%: DNS 오류 감지: %RESPONSE% >> C:\dns_check.log
-       :: 여기에 알림 추가
-   )
-   ```
+if "%RESPONSE%"=="%EXPECTED_IP%" (
+    echo %date% %time%: DNS 정상 작동 >> C:\dns_check.log
+) else (
+    echo %date% %time%: DNS 오류 감지: %RESPONSE% >> C:\dns_check.log
+    :: 여기에 알림 추가
+)
+```
 
 4. **작업 스케줄러로 주기적 실행**
    - Windows "작업 스케줄러"를 열고 새 작업을 생성.
@@ -141,9 +141,9 @@ fi
 - **로그 확인**: 주기적 쿼리 결과를 로그 파일에 기록하여 모니터링 시스템(예: Prometheus, ELK)이 이를 수집하도록 설정.
 - **알림 추가**: 쿼리 실패 시 이메일 또는 슬랙 알림을 트리거하도록 스크립트에 추가.
   - 예: Linux에서 `mail` 명령어로 이메일 전송:
-    ```
-    echo "DNS 오류 감지" | mail -s "DNS 모니터링 경고" admin@example.com
-    ```
+```
+echo "DNS 오류 감지" | mail -s "DNS 모니터링 경고" admin@example.com
+```
 
 ---
 
