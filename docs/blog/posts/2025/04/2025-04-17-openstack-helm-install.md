@@ -1,7 +1,7 @@
 ---
 title: "OpenStack Helm 설치 - 1부"
 date: 2025-04-17
-tags: [openstack, helm, kubernetes, ansible]
+tags: [openstack, helm, kubernetes, ceph, keepalived, haproxy, ansible]
 ---
 
 # OpenStack Helm 설치 - 1부
