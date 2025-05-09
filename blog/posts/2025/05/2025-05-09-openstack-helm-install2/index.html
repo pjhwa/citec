@@ -1,0 +1,1686 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Grok에 물어보고 얻은 답을 정리한 블로그">
+      
+      
+      
+        <link rel="canonical" href="https://pjhwa.github.io/citec/blog/posts/2025/05/2025-05-09-openstack-helm-install2/">
+      
+      
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
+    
+    
+      
+        <title>OpenStack Helm 설치 - 2부 - Grok Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.2afb09e1.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#openstack-helm-2" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="../../../../.." title="Grok Docs" class="md-header__button md-logo" aria-label="Grok Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Grok Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              OpenStack Helm 설치 - 2부
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="검색">
+        
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            검색 초기화
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../.." title="Grok Docs" class="md-nav__button md-logo" aria-label="Grok Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Grok Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    홈
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    블로그
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            블로그
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../04/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    2025
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            2025
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    05월
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    아카이브
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치 순서가 중요한 이유
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      상세 설치 과정
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="상세 설치 과정">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rook-ceph" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rook-Ceph 스토리지 설정
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rook-Ceph 스토리지 설정">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#storageclass" class="md-nav__link">
+    <span class="md-ellipsis">
+      StorageClass 확인
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ceph-replicapool" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ceph 클러스터에 replicapool 풀 생성
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mariadb" class="md-nav__link">
+    <span class="md-ellipsis">
+      MariaDB 설치
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MariaDB 설치">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치 전 초기화 방법
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#helm-dependency-build" class="md-nav__link">
+    <span class="md-ellipsis">
+      helm dependency build 수행
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storageclass_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      StorageClass 지정
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#node-selector" class="md-nav__link">
+    <span class="md-ellipsis">
+      Node Selector 조건에 따라 레이블 설정
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      상태 확인
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      파드 상태 및 노드 위치 확인
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-f" class="md-nav__link">
+    <span class="md-ellipsis">
+      로그 실시간 확인 (-f 옵션)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rabbitmq" class="md-nav__link">
+    <span class="md-ellipsis">
+      RabbitMQ 설치
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RabbitMQ 설치">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치 전 초기화 방법
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storageclass_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      StorageClass 지정
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#helm-dependency-build_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      helm dependency build 수행
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      파드 상태 및 노드 위치 확인
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rabbitmq_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      RabbitMQ 상태 확인
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      파드 이벤트 확인
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memcached" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memcached 설치
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Memcached 설치">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#helm-dependency-build_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      helm dependency build 수행
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치 및 상태 확인
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keystone-identity-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keystone (Identity Service) 설치
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Keystone (Identity Service) 설치">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#helm-dependency-build_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      helm dependency build 실행
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      파드 상태 확인
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keystone" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keystone 접근
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#glanceimages-rbd" class="md-nav__link">
+    <span class="md-ellipsis">
+      glance.images RBD 풀 통계 확인
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ceph" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ceph 사용자 생성 및 권한 부여
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keystone_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keystone 사용자 및 서비스 등록
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#helm-dependency-build_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      helm dependency build 실행
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="openstack-helm-2">OpenStack-Helm 설치 - 2부</h1>
+<p>OpenStack-Helm은 Helm 차트를 사용하여 OpenStack 서비스를 Kubernetes에 배포한다. 각 서비스는 의존성을 가지므로, 설치 순서를 준수하고 <code>helm dependency build</code>를 통해 의존성을 해결해야 한다. 기본 설치 순서는 다음과 같다.</p>
+<ol>
+<li><strong>인프라 서비스</strong>: MariaDB, RabbitMQ, Memcached</li>
+<li><strong>코어 서비스</strong>: Keystone</li>
+<li><strong>추가 서비스</strong>: Glance, Placement, Nova, Neutron, Cinder, Horizon, Heat</li>
+</ol>
+<h3 id="_1">설치 순서가 중요한 이유</h3>
+<ul>
+<li><strong>의존성</strong>: 예를 들어, Nova는 Keystone, Glance, Neutron이 설치되어 있어야 작동한다.</li>
+<li><strong>기본 인프라</strong>: MariaDB와 RabbitMQ는 거의 모든 서비스가 사용하는 필수 구성 요소이므로 가장 먼저 설치해야 한다.</li>
+<li><strong>서비스 등록</strong>: Keystone이 설치되어야 다른 서비스들이 인증 및 등록을 할 수 있다.</li>
+</ul>
+<h2 id="_2">상세 설치 과정</h2>
+<h3 id="rook-ceph">Rook-Ceph 스토리지 설정</h3>
+<p>OpenStack 서비스는 데이터를 저장하기 위해 Rook-Ceph를 사용한다.</p>
+<h4 id="storageclass">StorageClass 확인</h4>
+<p><code>rook-ceph-block</code> StorageClass를 확인한다. </p>
+<pre><code>citec@k1:~/osh$ kubectl get storageclass
+No resources found
+</code></pre>
+<p>없을 경우, 아래 명령어로 생성한다.</p>
+<pre><code>citec@k1:~/osh$ kubectl -n rook-ceph apply -f - &lt;&lt;EOF
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: rook-ceph-block
+provisioner: rook-ceph.rbd.csi.ceph.com
+parameters:
+  clusterID: rook-ceph
+  pool: replicapool
+  imageFormat: &quot;2&quot;
+  imageFeatures: layering
+  csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
+  csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+  csi.storage.k8s.io/controller-expand-secret-name: rook-csi-rbd-provisioner
+  csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
+  csi.storage.k8s.io/node-stage-secret-name: rook-csi-rbd-node
+  csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+  csi.storage.k8s.io/fstype: ext4
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+EOF
+storageclass.storage.k8s.io/rook-ceph-block created
+
+citec@k1:~/osh$ kubectl get storageclass
+NAME              PROVISIONER                  RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+rook-ceph-block   rook-ceph.rbd.csi.ceph.com   Delete          Immediate           true                   104m
+</code></pre>
+<h4 id="ceph-replicapool">Ceph 클러스터에 <code>replicapool</code> 풀 생성</h4>
+<p><code>rook-ceph-block</code> StorageClass가 참조하는 <code>replicapool</code> 풀을 생성하고 이를 초기화한다. </p>
+<pre><code>citec@k1:~/osh$ kubectl -n rook-ceph exec -it rook-ceph-tools -- ceph osd pool create replicapool 32 32
+pool 'replicapool' created
+citec@k1:~/osh$ kubectl -n rook-ceph exec -it rook-ceph-tools -- rbd pool init replicapool
+citec@k1:~/osh$ kubectl -n rook-ceph exec -it rook-ceph-tools -- ceph osd pool ls
+.mgr
+replicapool
+</code></pre>
+<h3 id="mariadb">MariaDB 설치</h3>
+<p>MariaDB는 OpenStack의 데이터베이스 역할을 하며, 가장 먼저 설치해야 한다.</p>
+<h4 id="_3">설치 전 초기화 방법</h4>
+<p>이전에 설치했거나 설치에 실패한 경우, 이를 초기화하는 방법이다.</p>
+<pre><code>citec@k1:~/osh$ kubectl -n openstack delete pvc mysql-data-mariadb-server-0
+persistentvolumeclaim &quot;mysql-data-mariadb-server-0&quot; deleted
+citec@k1:~/osh$ helm uninstall mariadb -n openstack
+release &quot;mariadb&quot; uninstalled
+</code></pre>
+<h4 id="helm-dependency-build">helm dependency build 수행</h4>
+<p><code>helm dependency build</code>는 Helm 차트의 의존성을 해결하는 필수 단계이다. OpenStack-Helm의 각 차트는 <code>requirements.yaml</code>에 명시된 의존성을 가지며, 이 명령어를 실행하면 의존성을 다운로드하고 빌드한다. 모든 서비스 설치 전에 해당 차트 디렉토리에서 실행해야 한다.</p>
+<pre><code>citec@k1:~/osh$ cd openstack-helm
+citec@k1:~/osh/openstack-helm$ helm dependency build mariadb
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the &quot;metallb&quot; chart repository
+...Successfully got an update from the &quot;ingress-nginx&quot; chart repository
+...Successfully got an update from the &quot;rook-release&quot; chart repository
+Update Complete. ⎈Happy Helming!⎈
+Saving 1 charts
+Deleting outdated charts
+</code></pre>
+<h4 id="storageclass_1">StorageClass 지정</h4>
+<p><code>mariadb-values.yaml</code> 파일을 생성하고, StorageClass를 <code>rook-ceph-block</code>으로 설정한다.</p>
+<pre><code>citec@k1:~/osh/openstack-helm$ cd ~/osh
+citec@k1:~/osh$ helm show values openstack-helm/mariadb &gt; openstack/mariadb-values.yaml
+</code></pre>
+<p><code>mariadb-values.yaml</code> 파일에서 <code>volume:</code> 섹션의 <code>class_name: general</code> 부분을 수정한다.</p>
+<pre><code>citec@k1:~/osh$ vi openstack/mariadb-values.yaml
+volume:
+  enabled: true
+  class_name: rook-ceph-block
+  size: 5Gi
+  backup:
+    enabled: true
+    class_name: rook-ceph-block
+    size: 5Gi
+</code></pre>
+<h4 id="node-selector">Node Selector 조건에 따라 레이블 설정</h4>
+<p>mariadb 파드의 노드 선택 조건(<code>Node-Selectors: openstack-control-plane=enabled</code>)을 위해 마스터 노드들에 레이블을 추가한다. </p>
+<pre><code>citec@k1:~/osh$ kubectl label nodes k1 openstack-control-plane=enabled
+node/k1 labeled
+citec@k1:~/osh$ kubectl label nodes k2 openstack-control-plane=enabled
+node/k2 labeled
+citec@k1:~/osh$ kubectl label nodes k3 openstack-control-plane=enabled
+node/k3 labeled
+</code></pre>
+<h4 id="_4">설치</h4>
+<pre><code>citec@k1:~/osh$ helm upgrade --install mariadb openstack-helm/mariadb \
+  --namespace=openstack \
+  --set pod.replicas.server=1 \
+  --set volume.storage_class=rook-ceph-block \
+  --values openstack/mariadb-values.yaml \
+  --timeout=600s
+Release &quot;mariadb&quot; does not exist. Installing it now.
+NAME: mariadb
+LAST DEPLOYED: Thu May  8 15:28:29 2025
+NAMESPACE: openstack
+STATUS: deployed
+REVISION: 1
+</code></pre>
+<h4 id="_5">상태 확인</h4>
+<pre><code>citec@k1:~/osh$ kubectl -n openstack wait --for=condition=Ready pod -l application=mariadb --timeout=600s
+pod/mariadb-controller-68584bd996-zbdjn condition met
+pod/mariadb-server-0 condition met
+</code></pre>
+<h4 id="_6">파드 상태 및 노드 위치 확인</h4>
+<pre><code>citec@k1:~/osh$ kubectl -n openstack get pods -l application=mariadb -o wide
+NAME                                  READY   STATUS    RESTARTS   AGE     IP               NODE   NOMINATED NODE   READINESS GATES
+mariadb-controller-68584bd996-zbdjn   1/1     Running   0          2m16s   10.244.105.138   k1     &lt;none&gt;           &lt;none&gt;
+mariadb-server-0                      1/1     Running   0          2m15s   10.244.105.136   k1     &lt;none&gt;           &lt;none&gt;
+</code></pre>
+<h4 id="-f">로그 실시간 확인 (<code>-f</code> 옵션)</h4>
+<pre><code>citec@k1:~/osh$ kubectl -n openstack logs mariadb-server-0 -c mariadb -f
+2025-05-08 09:05:12,191 - OpenStack-Helm Mariadb - INFO - This instance hostname: mariadb-server-0
+2025-05-08 09:05:12,191 - OpenStack-Helm Mariadb - INFO - This instance IP address: 10.244.105.136
+2025-05-08 09:05:12,191 - OpenStack-Helm Mariadb - INFO - This instance number: 0
+2025-05-08 09:05:12,200 - OpenStack-Helm Mariadb - INFO - Kubernetes API Version: v1.33.0
+2025-05-08 09:05:12,200 - OpenStack-Helm Mariadb - INFO - Will use &quot;mariadb-mariadb-state&quot; configmap for cluster state info
+2025-05-08 09:05:12,201 - OpenStack-Helm Mariadb - INFO - Getting cluster state
+2025-05-08 09:05:12,210 - OpenStack-Helm Mariadb - INFO - The cluster is currently in &quot;live&quot; state.
+2025-05-08 09:05:12,210 - OpenStack-Helm Mariadb - INFO - Getting cluster state
+2025-05-08 09:05:12,213 - OpenStack-Helm Mariadb - INFO - The cluster is currently in &quot;live&quot; state.
+2025-05-08 09:05:12,213 - OpenStack-Helm Mariadb - INFO - Getting cluster state
+</code></pre>
+<h3 id="rabbitmq">RabbitMQ 설치</h3>
+<p>RabbitMQ는 서비스 간 메시지 브로커로 사용된다.</p>
+<h4 id="_7">설치 전 초기화 방법</h4>
+<p>이전에 설치했거나 설치에 실패한 경우, 이를 초기화하는 방법이다.</p>
+<pre><code>citec@k1:~/osh$ helm uninstall rabbitmq -n openstack
+release &quot;rabbitmq&quot; uninstalled
+citec@k1:~/osh$ kubectl -n openstack delete pvc rabbitmq-data-rabbitmq-rabbitmq-0
+persistentvolumeclaim &quot;rabbitmq-data-rabbitmq-rabbitmq-0&quot; deleted
+citec@k1:~/osh$ kubectl -n openstack delete pod -l application=rabbitmq --force --grace-period=0
+Warning: Immediate deletion does not wait for confirmation that the running resource has been terminated. The resource may continue to run on the cluster indefinitely.
+pod &quot;rabbitmq-cluster-wait-t62lq&quot; force deleted
+</code></pre>
+<h4 id="storageclass_2">StorageClass 지정</h4>
+<p><code>mariadb-values.yaml</code> 파일을 생성하고, StorageClass를 <code>rook-ceph-block</code>으로 설정한다.</p>
+<pre><code>citec@k1:~/osh$ helm show values openstack-helm/rabbitmq &gt; openstack/rabbitmq-values.yaml
+</code></pre>
+<p><code>rabbitmq-values.yaml</code> 파일에서 <code>volume:</code> 섹션의 <code>class_name: general</code> 부분을 수정한다. 추가로 서버 단에서 ipv6를 비활성화했으므로, ipv4 만 사용하도록 설정한다. </p>
+<pre><code>citec@k1:~/osh$ vi openstack/rabbitmq-values.yaml
+volume:
+  use_local_path:
+    enabled: false
+    host_path: /var/lib/rabbitmq
+  chown_on_start: true
+  enabled: true
+  class_name: rook-ceph-block
+  size: 768Mi
+conf:
+    bind_address: &quot;0.0.0.0&quot;
+    rabbit_additonal_conf:
+      management.listener.ip: &quot;0.0.0.0&quot;
+      management.listener.port: 15672
+</code></pre>
+<h4 id="helm-dependency-build_1">helm dependency build 수행</h4>
+<pre><code>citec@k1:~/osh$ cd openstack-helm
+citec@k1:~/osh/openstack-helm$ helm dependency build rabbitmq
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the &quot;ingress-nginx&quot; chart repository
+...Successfully got an update from the &quot;metallb&quot; chart repository
+...Successfully got an update from the &quot;rook-release&quot; chart repository
+Update Complete. ⎈Happy Helming!⎈
+Saving 1 charts
+Deleting outdated charts
+</code></pre>
+<h4 id="_8">설치</h4>
+<pre><code>citec@k1:~/osh$ helm upgrade --install rabbitmq openstack-helm/rabbitmq \
+  --namespace=openstack \
+  --set pod.replicas.server=1 \
+  --set volume.storage_class=rook-ceph-block \
+  --values openstack/rabbitmq-values.yaml \
+  --timeout=600s
+Release &quot;rabbitmq&quot; does not exist. Installing it now.
+NAME: rabbitmq
+LAST DEPLOYED: Fri May  9 09:03:39 2025
+NAMESPACE: openstack
+STATUS: deployed
+REVISION: 1
+</code></pre>
+<p>아래와 같이 설치 과정에서 PVC 바인딩 지연, 초기화 컨테이너와 이미지 풀링에 시간이 소요되어 타임아웃이 발생될 수 있으나 15분 정도 후 설치가 완료될 수 있으므로 모니터링 한다. (혹은 초기화 후 재설치한다.)</p>
+<pre><code>Error: failed post-install: 1 error occurred:
+        * timed out waiting for the condition
+</code></pre>
+<h4 id="_9">파드 상태 및 노드 위치 확인</h4>
+<pre><code>citec@k1:~/osh$ kubectl -n openstack get pods -l application=rabbitmq -o wide
+NAME                          READY   STATUS      RESTARTS   AGE   IP               NODE   NOMINATED NODE   READINESS GATES
+rabbitmq-cluster-wait-t62lq   0/1     Completed   0          30m   10.244.195.173   k3     &lt;none&gt;           &lt;none&gt;
+rabbitmq-rabbitmq-0           1/1     Running     0          30m   10.244.99.47     k2     &lt;none&gt;           &lt;none&gt;
+</code></pre>
+<h4 id="rabbitmq_1">RabbitMQ 상태 확인</h4>
+<pre><code>citec@k1:~/oshkubectl -n openstack exec -it rabbitmq-rabbitmq-0 -- rabbitmqctl status
+Defaulted container &quot;rabbitmq&quot; out of: rabbitmq, init (init), rabbitmq-password (init), rabbitmq-cookie (init), rabbitmq-perms (init)
+Status of node rabbit@rabbitmq-rabbitmq-0.rabbitmq.openstack.svc.cluster.local ...
+Runtime
+
+OS PID: 13
+OS: Linux
+Uptime (seconds): 785
+Is under maintenance?: false
+RabbitMQ version: 3.13.0
+RabbitMQ release series support status: supported
+Node name: rabbit@rabbitmq-rabbitmq-0.rabbitmq.openstack.svc.cluster.local
+Erlang configuration: Erlang/OTP 26 [erts-14.2.2] [source] [64-bit] [smp:1:1] [ds:1:1:10] [async-threads:1] [jit:ns]
+Crypto library: OpenSSL 3.1.5 30 Jan 2024
+Erlang processes: 375 used, 1048576 limit
+Scheduler run queue: 1
+Cluster heartbeat timeout (net_ticktime): 60
+</code></pre>
+<h4 id="_10">파드 이벤트 확인</h4>
+<p>설치 과정에서 문제가 발생할 경우 원인을 파악하기 위해 파드의 이벤트를 확인할 필요가 있다. 아래 명령 수행 후 <code>Events:</code> 섹션에 어떤 내용이 있는지 확인하여 원인을 파악할 수 있다.</p>
+<pre><code>citec@k1:~/osh$ kubectl -n openstack describe pod rabbitmq-rabbitmq-0
+...
+Events:
+  Type     Reason                  Age                From                     Message
+  ----     ------                  ----               ----                     -------
+  Warning  FailedScheduling        69s (x4 over 69s)  default-scheduler        0/4 nodes are available: pod has unbound immediate PersistentVolumeClaims. preemption: 0/4 nodes are available: 4 Preemption is not helpful for scheduling.
+  Normal   Scheduled               69s                default-scheduler        Successfully assigned openstack/rabbitmq-rabbitmq-0 to k2
+  Normal   SuccessfulAttachVolume  69s                attachdetach-controller  AttachVolume.Attach succeeded for volume &quot;pvc-ad0337fc-8c51-4c05-aaa7-aba599770f8f&quot;
+  Normal   Pulled                  62s                kubelet                  Container image &quot;quay.io/airshipit/kubernetes-entrypoint:latest-ubuntu_focal&quot; already present on machine
+  Normal   Created                 62s                kubelet                  Created container: init
+  Normal   Started                 61s                kubelet                  Started container init
+  Normal   Pulled                  61s                kubelet                  Container image &quot;docker.io/openstackhelm/heat:2023.2-ubuntu_jammy&quot; already present on machine
+  Normal   Created                 61s                kubelet                  Created container: rabbitmq-password
+  Normal   Started                 61s                kubelet                  Started container rabbitmq-password
+  Normal   Pulled                  60s                kubelet                  Container image &quot;docker.io/library/rabbitmq:3.13.0&quot; already present on machine
+  Normal   Created                 60s                kubelet                  Created container: rabbitmq-cookie
+  Normal   Started                 60s                kubelet                  Started container rabbitmq-cookie
+  Normal   Pulled                  59s                kubelet                  Container image &quot;docker.io/library/rabbitmq:3.13.0&quot; already present on machine
+  Normal   Created                 59s                kubelet                  Created container: rabbitmq-perms
+  Normal   Started                 59s                kubelet                  Started container rabbitmq-perms
+  Normal   Pulled                  58s                kubelet                  Container image &quot;docker.io/library/rabbitmq:3.13.0&quot; already present on machine
+  Normal   Created                 58s                kubelet                  Created container: rabbitmq
+  Normal   Started                 58s                kubelet                  Started container rabbitmq
+</code></pre>
+<h3 id="memcached">Memcached 설치</h3>
+<p>캐싱 서비스로, Keystone과 같은 서비스의 성능을 향상시킨다.</p>
+<h4 id="helm-dependency-build_2">helm dependency build 수행</h4>
+<pre><code>citec@k1:~/osh$ cd openstack-helm
+citec@k1:~/osh/openstack-helm$ helm dependency build memcached
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the &quot;metallb&quot; chart repository
+...Successfully got an update from the &quot;ingress-nginx&quot; chart repository
+...Successfully got an update from the &quot;rook-release&quot; chart repository
+Update Complete. ⎈Happy Helming!⎈
+Saving 1 charts
+Deleting outdated charts
+</code></pre>
+<h4 id="_11">설치 및 상태 확인</h4>
+<pre><code>citec@k1:~/osh/openstack-helm$ cd ~/osh
+citec@k1:~/osh$ helm upgrade --install memcached openstack-helm/memcached \
+  --namespace=openstack \
+  --timeout=600s
+Release &quot;memcached&quot; does not exist. Installing it now.
+NAME: memcached
+LAST DEPLOYED: Fri May  9 10:57:05 2025
+NAMESPACE: openstack
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+
+citec@k1:~/osh$ kubectl -n openstack wait --for=condition=Ready pod -l application=memcached --timeout=600s
+pod/memcached-memcached-0 condition met
+
+citec@k1:~/osh$ kubectl -n openstack get pods -l application=memcached
+NAME                    READY   STATUS    RESTARTS   AGE
+memcached-memcached-0   1/1     Running   0          75s
+</code></pre>
+<h3 id="keystone-identity-service">Keystone (Identity Service) 설치</h3>
+<p>OpenStack의 인증 및 서비스 카탈로그를 관리하는 핵심 서비스이다. 다른 모든 서비스가 Keystone에 등록되어야 하므로 이 단계에서 설치한다.</p>
+<h4 id="helm-dependency-build_3">helm dependency build 실행</h4>
+<pre><code>citec@k1:~/osh$ cd openstack-helm
+citec@k1:~/osh/openstack-helm$ helm dependency build keystone
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the &quot;metallb&quot; chart repository
+...Successfully got an update from the &quot;ingress-nginx&quot; chart repository
+...Successfully got an update from the &quot;rook-release&quot; chart repository
+Update Complete. ⎈Happy Helming!⎈
+Saving 1 charts
+Deleting outdated charts
+</code></pre>
+<h4 id="_12">설치</h4>
+<pre><code>citec@k1:~/osh/openstack-helm$ cd ~/osh
+citec@k1:~/osh$ helm upgrade --install keystone openstack-helm/keystone \
+  --namespace=openstack \
+  --timeout=600s
+Release &quot;keystone&quot; does not exist. Installing it now.
+NAME: keystone
+LAST DEPLOYED: Fri May  9 11:00:31 2025
+NAMESPACE: openstack
+STATUS: deployed
+REVISION: 1
+</code></pre>
+<h4 id="_13">파드 상태 확인</h4>
+<pre><code>citec@k1:~/osh$ kubectl -n openstack get pods -l application=keystone
+NAME                              READY   STATUS      RESTARTS   AGE
+keystone-api-58b788dfcc-7cndw     1/1     Running     0          3m21s
+keystone-bootstrap-8hbdl          0/1     Completed   0          41s
+keystone-credential-setup-kk7cb   0/1     Completed   0          3m21s
+keystone-db-init-d26zc            0/1     Completed   0          2m58s
+keystone-db-sync-ft6xg            0/1     Completed   0          2m32s
+keystone-domain-manage-m52fn      0/1     Completed   0          56s
+keystone-fernet-setup-5p7m5       0/1     Completed   0          2m45s
+keystone-rabbit-init-jcn4r        0/1     Completed   0          2m6s
+</code></pre>
+<h4 id="keystone">Keystone 접근</h4>
+<p><code>openstack</code> 명령어를 이용해 Keystone에 접근하기 위해서는 Keystone 서비스의 URL과 <code>admin</code> 사용자의 비밀번호가 필요하다. 이를 확인하고, 접근하는 방법에 대해 설명한다.</p>
+<p><code>keystone-values.yaml</code> 파일을 생성하고, <code>endpoints.identity.auth.admin.password</code> 값을 확인한다.</p>
+<pre><code>citec@k1helm show values openstack-helm/keystone &gt; openstack/keystone-values.yaml
+
+</code></pre>
+<p>endpoints:
+  identity:
+    namespace: null
+    name: keystone
+    auth:
+      admin:
+        region_name: RegionOne
+        username: admin
+        password: password
+        project_name: admin
+        user_domain_name: default
+        project_domain_name: default
+        default_domain_id: default</p>
+<pre><code>
+이 `admin` 사용자의 비밀번호는 아래와 같이 Secret을 통해서도 확인이 가능하다. `OS_PASSWORD`의 값이며, 이는 `base64 --decode` 명령으로 확인이 가능하다.
+</code></pre>
+<p>citec@k1:~/osh$ kubectl -n openstack get secret keystone-keystone-admin -o yaml
+apiVersion: v1
+data:
+  OS_AUTH_URL: aHR0cDovL2tleXN0b25lLWFwaS5vcGVuc3RhY2suc3ZjLmNsdXN0ZXIubG9jYWw6NTAwMC92Mw==
+  OS_DEFAULT_DOMAIN: ZGVmYXVsdA==
+  OS_INTERFACE: aW50ZXJuYWw=
+  OS_PASSWORD: cGFzc3dvcmQ=
+  OS_PROJECT_DOMAIN_NAME: ZGVmYXVsdA==
+  OS_PROJECT_NAME: YWRtaW4=
+  OS_REGION_NAME: UmVnaW9uT25l
+  OS_USER_DOMAIN_NAME: ZGVmYXVsdA==
+  OS_USERNAME: YWRtaW4=
+kind: Secret
+metadata:
+  annotations:
+    meta.helm.sh/release-name: keystone
+    meta.helm.sh/release-namespace: openstack
+  creationTimestamp: "2025-05-09T02:00:33Z"
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  name: keystone-keystone-admin
+  namespace: openstack
+  resourceVersion: "258693"
+  uid: 72eb9e41-eb7d-4319-a99d-cf557842ad50
+type: Opaque</p>
+<p>citec@k1:~/osh$ kubectl -n openstack get secret keystone-keystone-admin -o jsonpath='{.data.OS_PASSWORD}' | base64 --decode
+passwordcitec@k1:~/osh$</p>
+<pre><code>
+`keystone-api` 파드가 어떤 노드에 있더라도 영구적으로 k1 노드에서 접근할 수 있도록 설정하기 위해 Ingress를 사용한다. Ingress를 사용하면 `keystone-api`를 도메인 이름으로 외부에 노출할 수 있으므로, k1 노드에서 접근하려면 Ingress를 통해 안정적인 엔드포인트를 제공받을 수 있다.
+
+`keystone-api`를 도메인 이름으로 외부에 노출하기 위한 Ingress 리소스를 생성한다.
+</code></pre>
+<p>citec@k1:~/osh$ tee ingress-keystone.yaml &lt;&lt;EOF
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keystone-ingress
+  namespace: openstack
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: keystone.citec.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: keystone-api
+            port:
+              number: 5000
+EOF</p>
+<p>citec@k1:~/osh$ kubectl -n openstack apply -f ingress-keystone.yaml
+ingress.networking.k8s.io/keystone-ingress created</p>
+<pre><code>
+아래 명령으로 서비스 및 포트를 확인한다.
+</code></pre>
+<p>citec@k1:~/osh$ kubectl -n openstack get svc keystone-api
+NAME           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+keystone-api   ClusterIP   10.96.205.144   <none>        5000/TCP   4h19m</p>
+<pre><code>
+Ingress Controller Pod가 80번 포트를 수신 대기 중인지 확인한다.
+</code></pre>
+<p>citec@k1:~/osh$ kubectl -n openstack get pods -l app.kubernetes.io/name=ingress-nginx -o jsonpath='{.items[0].spec.containers[0].ports}'
+[{"containerPort":80,"name":"http","protocol":"TCP"},{"containerPort":443,"name":"https","protocol":"TCP"}]</p>
+<pre><code>
+아래와 같이 DaemonSet을 수정하여 Ingress Controller가 노드의 네트워크를 직접 사용하고, 80번 및 443번 포트를 노드에 매핑하도록 설정한다. 수정한 후 파드들이 정상적으로 재시작되었는지 확인하고, 노드에도 80 포트가 LISTEN 하는지 확인한다.
+</code></pre>
+<p>citec@k1:~/osh$ kubectl -n openstack edit daemonset ingress-nginx-openstack-controller
+spect:
+  template:
+    spec:
+      hostNetwork: true
+      containers:
+        ports:
+        - containerPort: 80
+          hostPort: 80
+          name: http
+          protocol: TCP
+        - containerPort: 443
+          hostPort: 443
+          name: https
+          protocol: TCP
+daemonset.apps/ingress-nginx-openstack-controller edited</p>
+<p>citec@k1:~/osh$ kubectl -n openstack get pods -l app.kubernetes.io/name=ingress-nginx
+NAME                                       READY   STATUS    RESTARTS   AGE
+ingress-nginx-openstack-controller-hdtwh   1/1     Running   0          101s
+ingress-nginx-openstack-controller-qldzg   1/1     Running   0          53s
+ingress-nginx-openstack-controller-rgfrp   1/1     Running   0          28s
+ingress-nginx-openstack-controller-w7bxj   1/1     Running   0          77s</p>
+<p>citec@k1:~/osh$ ssh k1 "sudo netstat -tunlp | grep :80"
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      2031149/nginx: mast</p>
+<pre><code>
+k1 노드에서 접근하려면 `/etc/hosts` 파일에 `keystone.citec.com`을 k1 노드의 IP를 지정한다.
+</code></pre>
+<p>citec@k1:~/osh$ cat /etc/hosts
+127.0.0.1 localhost
+172.16.2.149 k1
+172.16.2.52 k2
+172.16.2.223 k3
+172.16.2.161 k4
+172.16.2.149 keystone.citec.com</p>
+<pre><code>
+정상적으로 접근이 되는지 `curl` 명령으로 확인하자.
+</code></pre>
+<p>citec@k1:~/osh$ curl http://keystone.citec.com
+{"versions": {"values": [{"id": "v3.14", "status": "stable", "updated": "2020-04-07T00:00:00Z", "links": [{"rel": "self", "href": "http://keystone.citec.com/v3/"}], "media-types": [{"base": "application/json", "type": "application/vnd.openstack.identity-v3+json"}]}]}}</p>
+<pre><code>
+`openstack` 명령을 사용하기 위해서 아래 환경변수들을 설정한다.
+</code></pre>
+<p>citec@k1:~/osh$ tee -a ~/.profile &lt;&lt;EOF
+export OS_AUTH_URL=http://keystone.citec.com/v3
+export OS_USERNAME=admin
+export OS_PASSWORD=password
+export OS_PROJECT_NAME=admin
+export OS_USER_DOMAIN_NAME=default
+export OS_PROJECT_DOMAIN_NAME=default
+EOF</p>
+<p>citec@k1:~/osh$ . ~/.profile</p>
+<p>citec@k1:~/osh$ env | grep OS_
+OS_AUTH_URL=http://keystone.citec.com/v3
+OS_PROJECT_DOMAIN_NAME=default
+OS_USERNAME=admin
+OS_USER_DOMAIN_NAME=default
+OS_PROJECT_NAME=admin
+OS_PASSWORD=password</p>
+<pre><code>
+`openstack` 명령을 실행해보자. 아래와 같이 openstack 명령은 컨테이너 형태로 실행된다.
+</code></pre>
+<p>citec@k1:~/osh$ openstack
+Unable to find image 'quay.io/airshipit/openstack-client:2024.2' locally
+2024.2: Pulling from airshipit/openstack-client
+7478e0ac0f23: Pull complete
+15f0d6b9775f: Pull complete
+1de21cdae6fb: Pull complete
+Digest: sha256:e293799048ac51745aa752783c20740dd9b708805423ad8059dec2439b598949
+Status: Downloaded newer image for quay.io/airshipit/openstack-client:2024.2</p>
+<pre><code>
+앞에서 설정한 환경변수를 컨테이너로 전달하기 위해서는 아래와 같이 수행한다.
+</code></pre>
+<p>citec@k1:~/osh$ docker run --network host \
+           -e OS_AUTH_URL=$OS_AUTH_URL \
+           -e OS_USERNAME=$OS_USERNAME \
+           -e OS_PASSWORD=$OS_PASSWORD \
+           -e OS_PROJECT_NAME=$OS_PROJECT_NAME \
+           -e OS_PROJECT_DOMAIN_NAME=$OS_PROJECT_DOMAIN_NAME \
+           -e OS_USER_DOMAIN_NAME=$OS_USER_DOMAIN_NAME \
+           quay.io/airshipit/openstack-client:2024.2 \
+           openstack service list
++----------------------------------+----------+----------+
+| ID                               | Name     | Type     |
++----------------------------------+----------+----------+
+| e6f877a654ca4868b5543c2a5e4289f4 | keystone | identity |
++----------------------------------+----------+----------+</p>
+<pre><code>
+매번 이런 식으로 `openstack` 명령을 수행하기 불편하므로, alias로 설정하자.
+</code></pre>
+<p>citec@k1:~/osh$ tee -a ~/.bashrc &lt;&lt;EOF</p>
+<blockquote>
+<p>alias openstack='docker run --network host quay.io/airshipit/openstack-client:2024.2 openstack --os-auth-url $OS_AUTH_URL --os-project-domain-name $OS_PROJECT_DOMAIN_NAME --os-user-domain-name $OS_USER_DOMAIN_NAME --os-project-name $OS_PROJECT_NAME --os-username $OS_USERNAME --os-password $OS_PASSWORD'
+EOF
+alias openstack='docker run --network host quay.io/airshipit/openstack-client:2024.2 openstack --os-auth-url http://keystone.citec.com/v3 --os-project-domain-name default --os-user-domain-name default --os-project-name admin --os-username admin --os-password password'</p>
+</blockquote>
+<p>citec@k1:~/osh$ . ~/.bashrc
+citec@k1:~/osh$ openstack service list
++----------------------------------+----------+----------+
+| ID                               | Name     | Type     |
++----------------------------------+----------+----------+
+| e6f877a654ca4868b5543c2a5e4289f4 | keystone | identity |
++----------------------------------+----------+----------+</p>
+<pre><code>
+### Glance (Image Service)
+가상 머신 이미지를 관리하는 서비스로, Nova가 VM을 생성할 때 필요한 이미지를 제공한다.
+
+#### 초기화 방법
+Glance 설치와 관련한 모든 파드와 설정들을 삭제한다. 참고로, 재설치하는 경우에는 `images-rbd-keyring` Secret도 삭제되므로 새로 생성해야 할 수 있다.
+</code></pre>
+<p>citec@k1:~/osh$ helm uninstall glance -n openstack
+release "glance" uninstalled</p>
+<p>citec@k1:~/osh$ kubectl -n openstack delete pvc -l app.kubernetes.io/name=glance
+No resources found</p>
+<p>citec@k1:~/osh$ kubectl -n openstack delete pod -l app.kubernetes.io/name=glance --force --grace-period=0
+Warning: Immediate deletion does not wait for confirmation that the running resource has been terminated. The resource may continue to run on the cluster indefinitely.
+pod "glance-db-init-w4brb" force deleted
+pod "glance-db-sync-pz89f" force deleted
+pod "glance-ks-endpoints-bvqns" force deleted
+pod "glance-ks-service-fpjf6" force deleted
+pod "glance-ks-user-5dw7x" force deleted
+pod "glance-metadefs-load-c29pg" force deleted
+pod "glance-rabbit-init-9lznf" force deleted
+pod "glance-storage-init-r444n" force deleted</p>
+<p>citec@k1:~/osh$ kubectl -n openstack delete job -l app.kubernetes.io/name=glance
+job.batch "glance-db-init" deleted
+job.batch "glance-db-sync" deleted
+job.batch "glance-ks-endpoints" deleted
+job.batch "glance-ks-service" deleted
+job.batch "glance-ks-user" deleted
+job.batch "glance-metadefs-load" deleted
+job.batch "glance-rabbit-init" deleted
+job.batch "glance-storage-init" deleted</p>
+<pre><code>
+#### Ceph 상태 확인
+Glance는 Ceph 스토리지를 사용하므로, 설치 전에 상태를 확인한다.
+
+</code></pre>
+<p>citec@k1:~/osh$ kceph ceph -s
+  cluster:
+    id:     603c8790-369b-40e8-b42e-751a1e771267
+    health: HEALTH_OK</p>
+<p>services:
+    mon: 3 daemons, quorum a,b,c (age 19h)
+    mgr: a(active, since 19h)
+    osd: 8 osds: 8 up (since 19h), 8 in (since 19h)</p>
+<p>data:
+    pools:   2 pools, 33 pgs
+    objects: 49 objects, 63 MiB
+    usage:   1.0 GiB used, 143 GiB / 144 GiB avail
+    pgs:     33 active+clean</p>
+<pre><code>
+#### StorageClass 지정
+
+`glance-values.yaml` 파일을 생성하고, `storage:`를 `swift`에서 `rbd`로 수정하고, `volume:`의 `class_name:`은 `general`에서 `rook-ceph-block`로 수정한다. `endpoints:`의 `object_store:` 아래는 코멘트 처리하고, `pod:`의 `glance_storage_init:` 부분은 추가한다. 마지막에 `job:` 부분도 추가한다.
+
+</code></pre>
+<p>citec@k1:~/osh$ helm show values openstack-helm/glance &gt; openstack/glance-values.yaml
+storage: rbd
+ceph_client:
+  configmap: ceph-etc
+  user_secret_name: images-rbd-keyring
+conf:
+  glance:
+    glance_store:
+      rbd_store_pool: glance.images
+volume:
+  class_name: rook-ceph-block
+  size: 2Gi
+  accessModes:
+    - ReadWriteOnce
+secrets:
+  rbd: images-rbd-keyring
+endpoints:
+  object_store:
+  #  name: swift
+  #  namespace: ceph
+  glance:
+    username: glance
+    password: password
+    project_name: service
+    user_domain_name: default
+    project_domain_name: default
+pod:
+  mounts:
+    glance_storage_init:
+      glance_storage_init:
+        volumeMounts:
+          - name: ceph-admin-keyring
+            mountPath: /etc/ceph/ceph.client.admin.keyring
+            subPath: ceph.client.admin.keyring
+        volumes:
+          - name: ceph-admin-keyring
+            secret:
+              secretName: ceph-admin-keyring
+job:
+  storage_init:
+    backoffLimit: 10</p>
+<pre><code>
+#### Glance 이미지를 위한 풀 생성 및 초기화 
+
+`glance-values.yaml` 파일에서 Glance 이미지 저장을 위한 `glance:`의 `rbd_store_pool`이 `glance.images`로 설정되어 있는 것을 확인하고, 이 풀을 미리 생성하고 초기화한다.
+
+</code></pre>
+<p>citec@k1:~/osh$ kceph ceph osd pool create glance.images
+pool 'glance.images' created
+citec@k1:~/osh$ kceph rbd pool init glance.images
+citec@k1:~/osh$ kceph ceph osd pool ls
+.mgr
+replicapool
+glance.images</p>
+<pre><code>
+</code></pre>
+<h4 id="glanceimages-rbd"><code>glance.images</code> RBD 풀 통계 확인</h4>
+<p>아래 명령으로 <code>glance.images</code> 풀의 통계를 확인할 수 있다.</p>
+<pre><code>citec@k1:~/osh$ kceph rbd pool stats --pool glance.images
+Total Images: 0
+Total Snapshots: 0
+Provisioned Size: 0 B
+</code></pre>
+<h4 id="ceph">Ceph 사용자 생성 및 권한 부여</h4>
+<p>Glance가 <code>glance.images</code> 풀에 접근할 수 있도록 <code>client.glance</code> 사용자를 생성하고 권한을 설정한다.</p>
+<p><code>/tmp</code> 디렉토리에 <code>client.glance.keyring</code> 파일을 생성하고, 파드 내부의 <code>/tmp/client.glance.keyring</code> 파일을 로컬 환경으로 복사한다. 아래 명령은 <code>client.glance</code> 사용자에게 읽기(<code>r</code>) 및 쓰기(<code>rwx</code>) 권한을 부여한다.</p>
+<pre><code>citec@k1:~/osh$ kubectl -n rook-ceph exec -it rook-ceph-tools -- ceph auth get-or-create client.glance mon 'allow r' osd 'allow class-read object_prefix rbd_children, allow rwx pool=glance.images' -o /tmp/client.glance.keyring
+
+citec@k1:~/osh$ kubectl -n rook-ceph cp rook-ceph-tools:/tmp/client.glance.keyring ./client.glance.keyring
+tar: Removing leading `/' from member names
+citec@k1:~/osh$ ls -l client.glance.keyring
+-rw-rw-r-- 1 citec citec 64 May  9 13:11 client.glance.keyring
+</code></pre>
+<p>복사한 키링 파일을 사용해 Kubernetes Secret을 생성하고, 정상적으로 Secret이 생성되었는지 확인한다.</p>
+<pre><code>citec@k1:~/osh$ kubectl -n openstack create secret generic images-rbd-keyring --from-file=client.glance.keyring
+secret/images-rbd-keyring created
+
+citec@k1:~/osh$ kubectl -n openstack get secret images-rbd-keyring
+NAME                 TYPE     DATA   AGE
+images-rbd-keyring   Opaque   1      21s
+</code></pre>
+<p>사용자와 키링이 생성되었는지 확인한다.</p>
+<pre><code>citec@k1:~/osh$ kubectl -n rook-ceph exec -it rook-ceph-tools -- ceph auth get client.glance
+[client.glance]
+        key = AQATgB1oOU5fLBAAcgufVzK/P1GolPoBlZ/4ZA==
+        caps mon = &quot;allow r&quot;
+        caps osd = &quot;allow class-read object_prefix rbd_children, allow rwx pool=glance.images&quot;
+</code></pre>
+<p>Glance의 스토리지 초기화 스크립트는 관리자 권한(<code>client.admin</code>)을 필요로 하기에 Ceph 관리자 키링도 Ceph 클러스터에서 가져와 Kubernetes Secret으로 등록한다.</p>
+<pre><code>citec@k1:~/osh$ kubectl -n rook-ceph exec -it rook-ceph-tools -- ceph auth get client.admin -o /tmp/ceph.client.admin.keyring
+
+citec@k1:~/osh$ kubectl -n rook-ceph cp rook-ceph-tools:/tmp/ceph.client.admin.keyring ./ceph.client.admin.keyring
+tar: Removing leading `/' from member names
+
+citec@k1:~/osh$ ls -l ceph.client.admin.keyring
+-rw-rw-r-- 1 citec citec 151 May  9 17:36 ceph.client.admin.keyring
+
+citec@k1:~/osh$ kubectl -n openstack create secret generic ceph-admin-keyring --from-file=./ceph.client.admin.keyring
+secret/ceph-admin-keyring created
+</code></pre>
+<p>ConfigMap을 생성하기 위해 로컬에 <code>ceph.conf</code> 파일을 작성해야 한다. 먼저 Ceph 모니터의 엔드포인트 정보와 FSID 정보를 확인한다.</p>
+<pre><code>citec@k1:~/osh$ kubectl -n rook-ceph get configmap rook-ceph-mon-endpoints -o jsonpath='{.data.data}'
+a=10.96.11.1:6789,b=10.96.105.121:6789,c=10.96.99.237:6789
+
+citec@k1:~/osh$ kubectl -n rook-ceph get cephcluster rook-ceph -o jsonpath='{.status.ceph.fsid}'
+603c8790-369b-40e8-b42e-751a1e771267
+</code></pre>
+<p>이 정보를 바탕으로 <code>ceph.conf</code> 파일을 작성한다.</p>
+<pre><code>citec@k1:~/osh$ tee ceph.conf &lt;&lt;EOF
+&gt; [global]
+&gt; fsid = 603c8790-369b-40e8-b42e-751a1e771267
+&gt; mon_host = 10.96.11.1:6789,10.96.105.121:6789,10.96.99.237:6789
+&gt; EOF
+[global]
+fsid = 603c8790-369b-40e8-b42e-751a1e771267
+mon_host = 10.96.11.1:6789,10.96.105.121:6789,10.96.99.237:6789
+</code></pre>
+<p>작성한 <code>ceph.conf</code> 파일을 <code>ceph-etc</code> ConfigMap 생성하여 <code>openstack</code> 네임스페이스에 등록한다.</p>
+<pre><code>citec@k1:~/osh$ kubectl -n openstack create configmap ceph-etc --from-file=ceph.conf
+configmap/ceph-etc created
+</code></pre>
+<h4 id="keystone_1">Keystone 사용자 및 서비스 등록</h4>
+<p>Glance는 Keystone을 통해 인증되므로, Keystone에 Glance 사용자와 서비스를 등록해야 한다. </p>
+<p>Keystone 사용자를 생성하고 확인한다.</p>
+<pre><code>citec@k1:~/osh$ openstack user create --domain default --password password glance
++---------------------+----------------------------------+
+| Field               | Value                            |
++---------------------+----------------------------------+
+| default_project_id  | None                             |
+| domain_id           | default                          |
+| email               | None                             |
+| enabled             | True                             |
+| id                  | c808586c42c742d795310712f7cf8636 |
+| name                | glance                           |
+| description         | None                             |
+| password_expires_at | None                             |
++---------------------+----------------------------------+
+
+citec@k1:~/osh$ openstack user list
++----------------------------------+--------+
+| ID                               | Name   |
++----------------------------------+--------+
+| fce1b2e42e464ed6b15e2ae68f2e0534 | admin  |
+| c808586c42c742d795310712f7cf8636 | glance |
++----------------------------------+--------+
+</code></pre>
+<p>Glance 사용자에게 Keystone <code>admin</code> 역할을 부여한다.</p>
+<pre><code>citec@k1:~/osh$ openstack role add --project service --user glance admin
+No project with a name or ID of 'service' exists.
+</code></pre>
+<p>위와 같이 <code>service</code> 프로젝트가 없다는 에러가 발생하면, 서비스 사용자들이 속할 수 있는 <code>service</code> 프로젝트를 생성하고, <code>glance</code> 사용자에게 <code>admin</code> 역할을 부여한다.</p>
+<pre><code>citec@k1:~/osh$ openstack project create --domain default --description &quot;Service Project&quot; service
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description | Service Project                  |
+| domain_id   | default                          |
+| enabled     | True                             |
+| id          | 7719d5bfa52447ada439feafeb430e1f |
+| is_domain   | False                            |
+| name        | service                          |
+| options     | {}                               |
+| parent_id   | default                          |
+| tags        | []                               |
++-------------+----------------------------------+
+citec@k1:~/osh$ openstack project list
++----------------------------------+---------+
+| ID                               | Name    |
++----------------------------------+---------+
+| 7719d5bfa52447ada439feafeb430e1f | service |
+| d2235125de7d49a193b5951027f780f3 | admin   |
++----------------------------------+---------+
+citec@k1:~/osh$ openstack role add --project service --user glance admin
+citec@k1:~/osh$ openstack role assignment list --user glance
++----------------------------------+----------------------------------+-------+----------------------------------+--------+--------+-----------+
+| Role                             | User                             | Group | Project                          | Domain | System | Inherited |
++----------------------------------+----------------------------------+-------+----------------------------------+--------+--------+-----------+
+| c7f325344e944f29ab663392dcac2a59 | c808586c42c742d795310712f7cf8636 |       | 7719d5bfa52447ada439feafeb430e1f |        |        | False     |
++----------------------------------+----------------------------------+-------+----------------------------------+--------+--------+-----------+
+</code></pre>
+<p>Glance 서비스를 Keystone에 등록한다.</p>
+<pre><code>citec@k1:~/osh$ openstack service create --name glance --description &quot;OpenStack Image Service&quot; image
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| id          | 267d629600984bf9800993a444ea3a3d |
+| name        | glance                           |
+| type        | image                            |
+| enabled     | True                             |
+| description | OpenStack Image Service          |
++-------------+----------------------------------+
+citec@k1:~/osh$ openstack service list
++----------------------------------+----------+----------+
+| ID                               | Name     | Type     |
++----------------------------------+----------+----------+
+| 267d629600984bf9800993a444ea3a3d | glance   | image    |
+| e6f877a654ca4868b5543c2a5e4289f4 | keystone | identity |
++----------------------------------+----------+----------+
+</code></pre>
+<p>Glance의 <code>public</code>, <code>internal</code>, <code>admin</code> 엔드포인트를 등록한다.</p>
+<pre><code>citec@k1:~/osh$ openstack endpoint create --region RegionOne image public http://glance-api.openstack.svc.cluster.local:9292
++--------------+----------------------------------------------------+
+| Field        | Value                                              |
++--------------+----------------------------------------------------+
+| enabled      | True                                               |
+| id           | eb4495b5a7784065bf6792fff80db946                   |
+| interface    | public                                             |
+| region       | RegionOne                                          |
+| region_id    | RegionOne                                          |
+| service_id   | 267d629600984bf9800993a444ea3a3d                   |
+| service_name | glance                                             |
+| service_type | image                                              |
+| url          | http://glance-api.openstack.svc.cluster.local:9292 |
++--------------+----------------------------------------------------+
+citec@k1:~/osh$ openstack endpoint create --region RegionOne image internal http://glance-api.openstack.svc.cluster.local:9292
++--------------+----------------------------------------------------+
+| Field        | Value                                              |
++--------------+----------------------------------------------------+
+| enabled      | True                                               |
+| id           | e7127effe92445f3815d957cd69b933b                   |
+| interface    | internal                                           |
+| region       | RegionOne                                          |
+| region_id    | RegionOne                                          |
+| service_id   | 267d629600984bf9800993a444ea3a3d                   |
+| service_name | glance                                             |
+| service_type | image                                              |
+| url          | http://glance-api.openstack.svc.cluster.local:9292 |
++--------------+----------------------------------------------------+
+citec@k1:~/osh$ openstack endpoint create --region RegionOne image admin http://glance-api.openstack.svc.cluster.local:9292
++--------------+----------------------------------------------------+
+| Field        | Value                                              |
++--------------+----------------------------------------------------+
+| enabled      | True                                               |
+| id           | 0f8a63518f6341d485b697f2d064bd3c                   |
+| interface    | admin                                              |
+| region       | RegionOne                                          |
+| region_id    | RegionOne                                          |
+| service_id   | 267d629600984bf9800993a444ea3a3d                   |
+| service_name | glance                                             |
+| service_type | image                                              |
+| url          | http://glance-api.openstack.svc.cluster.local:9292 |
++--------------+----------------------------------------------------+
+citec@k1:~/osh$ openstack endpoint list
++----------------------------------+-----------+--------------+--------------+---------+-----------+---------------------------------------------------------+
+| ID                               | Region    | Service Name | Service Type | Enabled | Interface | URL                                                     |
++----------------------------------+-----------+--------------+--------------+---------+-----------+---------------------------------------------------------+
+| 0af30ecd7435438091b3fc40b20b26fc | RegionOne | keystone     | identity     | True    | internal  | http://keystone-api.openstack.svc.cluster.local:5000/v3 |
+| 0f8a63518f6341d485b697f2d064bd3c | RegionOne | glance       | image        | True    | admin     | http://glance-api.openstack.svc.cluster.local:9292      |
+| 2ae2b66334fd45779c5e341af26e756e | RegionOne | keystone     | identity     | True    | public    | http://keystone.openstack.svc.cluster.local/v3          |
+| 52970dfb557e48b085a171feace4fcb4 | RegionOne | keystone     | identity     | True    | admin     | http://keystone.openstack.svc.cluster.local/v3          |
+| e7127effe92445f3815d957cd69b933b | RegionOne | glance       | image        | True    | internal  | http://glance-api.openstack.svc.cluster.local:9292      |
+| eb4495b5a7784065bf6792fff80db946 | RegionOne | glance       | image        | True    | public    | http://glance-api.openstack.svc.cluster.local:9292      |
++----------------------------------+-----------+--------------+--------------+---------+-----------+---------------------------------------------------------+
+</code></pre>
+<h4 id="helm-dependency-build_4">helm dependency build 실행</h4>
+<pre><code>citec@k1:~/osh$ cd openstack-helm
+citec@k1:~/osh/openstack-helm$ helm dependency build glance
+Hang tight while we grab the latest from your chart repositories...
+...Successfully got an update from the &quot;metallb&quot; chart repository
+...Successfully got an update from the &quot;ingress-nginx&quot; chart repository
+...Successfully got an update from the &quot;rook-release&quot; chart repository
+Update Complete. ⎈Happy Helming!⎈
+Saving 1 charts
+Deleting outdated charts
+</code></pre>
+<h4 id="_14">설치</h4>
+<p>```
+helm upgrade --install glance openstack-helm/glance \
+  --namespace=openstack \
+  --values openstack/glance-values.yaml \
+  --set storage=rbd \
+  --set job.storage_init.backoffLimit=50 \
+  --timeout=600s</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../../../..", "features": ["navigation.sections", "navigation.indexes"], "search": "../../../../../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>
