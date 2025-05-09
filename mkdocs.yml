@@ -23,3 +23,4 @@ nav:
       - 최신글: blog/posts/index.md
       - 2025:
           - 04월: blog/posts/2025/04/index.md
+          - 05월: blog/posts/2025/05/index.md
