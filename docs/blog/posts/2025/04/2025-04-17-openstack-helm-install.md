@@ -858,11 +858,11 @@ Ceph 명령어 수행의 편의를 위해 alias 등록
 
 ```
 citec@k1:~$ tee -a ~/.bashrc <<EOF
-> alias kceph='kubectl -n rook-ceph exec -it rook-ceph-tools -- ceph'
+> alias kceph='kubectl -n rook-ceph exec -it rook-ceph-tools --'
 > EOF
-alias kceph='kubectl -n rook-ceph exec -it rook-ceph-tools -- ceph'
+alias kceph='kubectl -n rook-ceph exec -it rook-ceph-tools --'
 citec@k1:~$ . ~/.bashrc
-citec@k1:~/osh$ kceph -s
+citec@k1:~/osh$ kceph ceph -s
   cluster:
     id:     603c8790-369b-40e8-b42e-751a1e771267
     health: HEALTH_OK
@@ -878,7 +878,7 @@ citec@k1:~/osh$ kceph -s
     usage:   839 MiB used, 143 GiB / 144 GiB avail
     pgs:     33 active+clean
 
-citec@k1:~/osh$ kceph osd tree
+citec@k1:~/osh$ kceph ceph osd tree
 ID  CLASS  WEIGHT   TYPE NAME      STATUS  REWEIGHT  PRI-AFF
 -1         0.14032  root default
 -9         0.03508      host k1
