@@ -7,3 +7,4 @@ template: blog.html
 
 - [2025-05-17 | ""OpenStack Helm 설치 - 2부""](/citec/blog/posts/2025/05/2025-05-09-openstack-helm-install2/)
 - [2025-05-13 | ""SCP 중장기 로드맵""](/citec/blog/posts/2025/05/2025-05-13-scp-plan/)
+- [2025-05-14 | ""CSP 향후 3년 예상 계획""](/citec/blog/posts/2025/05/2025-05-14-csp-plan/)
