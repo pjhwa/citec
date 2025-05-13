@@ -102,28 +102,6 @@ Saving 1 charts
 Deleting outdated charts
 ```
 
-#### StorageClass 지정 
-`mariadb-values.yaml` 파일을 생성하고, StorageClass를 `rook-ceph-block`으로 설정한다.
-
-```
-citec@k1:~/osh/openstack-helm$ cd ~/osh
-citec@k1:~/osh$ helm show values openstack-helm/mariadb > openstack/mariadb-values.yaml
-```
-
-`mariadb-values.yaml` 파일에서 `volume:` 섹션의 `class_name: general` 부분을 수정한다.
-
-```
-citec@k1:~/osh$ vi openstack/mariadb-values.yaml
-volume:
-  enabled: true
-  class_name: rook-ceph-block
-  size: 5Gi
-  backup:
-    enabled: true
-    class_name: rook-ceph-block
-    size: 5Gi
-```
-
 #### Node Selector 조건에 따라 레이블 설정 
 mariadb 파드의 노드 선택 조건(`Node-Selectors: openstack-control-plane=enabled`)을 위해 마스터 노드들에 레이블을 추가한다. 
 
@@ -142,7 +120,6 @@ citec@k1:~/osh$ helm upgrade --install mariadb openstack-helm/mariadb \
   --namespace=openstack \
   --set pod.replicas.server=1 \
   --set volume.storage_class=rook-ceph-block \
-  --values openstack/mariadb-values.yaml \
   --timeout=600s
 Release "mariadb" does not exist. Installing it now.
 NAME: mariadb
@@ -198,32 +175,6 @@ Warning: Immediate deletion does not wait for confirmation that the running reso
 pod "rabbitmq-cluster-wait-t62lq" force deleted
 ```
 
-#### StorageClass 지정 
-`mariadb-values.yaml` 파일을 생성하고, StorageClass를 `rook-ceph-block`으로 설정한다.
-
-```
-citec@k1:~/osh$ helm show values openstack-helm/rabbitmq > openstack/rabbitmq-values.yaml
-```
-
-`rabbitmq-values.yaml` 파일에서 `volume:` 섹션의 `class_name: general` 부분을 수정한다. 추가로 서버 단에서 ipv6를 비활성화했으므로, ipv4 만 사용하도록 설정한다. 
-
-```
-citec@k1:~/osh$ vi openstack/rabbitmq-values.yaml
-volume:
-  use_local_path:
-    enabled: false
-    host_path: /var/lib/rabbitmq
-  chown_on_start: true
-  enabled: true
-  class_name: rook-ceph-block
-  size: 768Mi
-conf:
-    bind_address: "0.0.0.0"
-    rabbit_additonal_conf:
-      management.listener.ip: "0.0.0.0"
-      management.listener.port: 15672
-```
-
 #### helm dependency build 수행
 ```
 citec@k1:~/osh$ cd openstack-helm
@@ -243,7 +194,6 @@ citec@k1:~/osh$ helm upgrade --install rabbitmq openstack-helm/rabbitmq \
   --namespace=openstack \
   --set pod.replicas.server=1 \
   --set volume.storage_class=rook-ceph-block \
-  --values openstack/rabbitmq-values.yaml \
   --timeout=600s
 Release "rabbitmq" does not exist. Installing it now.
 NAME: rabbitmq
@@ -673,54 +623,6 @@ citec@k1:~/osh$ kceph ceph -s
 
 ```
 
-#### StorageClass 지정
-
-`glance-values.yaml` 파일을 생성하고, `storage:`를 `swift`에서 `rbd`로 수정하고, `volume:`의 `class_name:`은 `general`에서 `rook-ceph-block`로 수정한다. `endpoints:`의 `object_store:` 아래는 코멘트 처리하고, `pod:`의 `glance_storage_init:` 부분은 추가한다. 마지막에 `job:` 부분도 추가한다.
-
-```
-citec@k1:~/osh$ helm show values openstack-helm/glance > openstack/glance-values.yaml
-storage: rbd
-ceph_client:
-  configmap: ceph-etc
-  user_secret_name: images-rbd-keyring
-conf:
-  glance:
-    glance_store:
-      rbd_store_pool: glance.images
-volume:
-  class_name: rook-ceph-block
-  size: 2Gi
-  accessModes:
-    - ReadWriteOnce
-secrets:
-  rbd: images-rbd-keyring
-endpoints:
-  object_store:
-  #  name: swift
-  #  namespace: ceph
-  glance:
-    username: glance
-    password: password
-    project_name: service
-    user_domain_name: default
-    project_domain_name: default
-pod:
-  mounts:
-    glance_storage_init:
-      glance_storage_init:
-        volumeMounts:
-          - name: ceph-admin-keyring
-            mountPath: /etc/ceph/ceph.client.admin.keyring
-            subPath: ceph.client.admin.keyring
-        volumes:
-          - name: ceph-admin-keyring
-            secret:
-              secretName: ceph-admin-keyring
-job:
-  storage_init:
-    backoffLimit: 10
-```
-
 #### Glance 이미지를 위한 풀 생성 및 초기화 
 
 `glance-values.yaml` 파일에서 Glance 이미지 저장을 위한 `glance:`의 `rbd_store_pool`이 `glance.images`로 설정되어 있는 것을 확인하고, 이 풀을 미리 생성하고 초기화한다.
@@ -778,6 +680,19 @@ citec@k1:~/osh$ kubectl -n rook-ceph exec -it rook-ceph-tools -- ceph auth get c
         key = AQATgB1oOU5fLBAAcgufVzK/P1GolPoBlZ/4ZA==
         caps mon = "allow r"
         caps osd = "allow class-read object_prefix rbd_children, allow rwx pool=glance.images"
+```
+
+Glance가 Ceph에 연결할 수 있도록 `images-rbd-keyring` Secret에 올바른 키가 설치되어있는지 확인하고 제대로 안되어있다면 설정한다.
+```
+citec@k1:~/osh$ kubectl -n openstack get secret images-rbd-keyring -o jsonpath='{.data.key}' | base64 -d
+citec@k1:~/osh$
+
+citec@k1:~/osh$ echo -n "AQATgB1oOU5fLBAAcgufVzK/P1GolPoBlZ/4ZA==" | base64
+QVFBVGdCMW9PVTVmTEJBQWNndWZWeksvUDFHb2xQb0JsWi80WkE9PQ==
+citec@k1:~/osh$ kubectl -n openstack patch secret images-rbd-keyring --type='json' -p='[{"op": "replace", "path": "/data/key", "value": "QVFBVGdCMW9PVTVmTEJBQWNndWZWeksvUDFHb2xQb0JsWi80WkE9PQ=="}]'
+secret/images-rbd-keyring patched
+citec@k1:~/osh$ kubectl -n openstack get secret images-rbd-keyring -o jsonpath='{.data.key}' | base64 -d
+AQATgB1oOU5fLBAAcgufVzK/P1GolPoBlZ/4ZA==
 ```
 
 Glance의 스토리지 초기화 스크립트는 관리자 권한(`client.admin`)을 필요로 하기에 Ceph 관리자 키링도 Ceph 클러스터에서 가져와 Kubernetes Secret으로 등록한다.
@@ -981,9 +896,47 @@ Deleting outdated charts
 
 #### 설치
 ```
-helm upgrade --install glance openstack-helm/glance \
+citec@k1:~/osh$ helm upgrade --install glance openstack-helm/glance \
   --namespace=openstack \
-  --values openstack/glance-values.yaml \
   --set storage=rbd \
   --set job.storage_init.backoffLimit=50 \
   --timeout=600s
+Release "glance" does not exist. Installing it now.
+NAME: glance
+LAST DEPLOYED: Tue May 13 11:10:51 2025
+NAMESPACE: openstack
+STATUS: deployed
+REVISION: 1
+```
+
+#### 상태 확인 
+```
+citec@k1:~$ kubectl -n openstack get pods -l application=glance
+NAME                          READY   STATUS      RESTARTS   AGE
+glance-api-6db69c6b47-hzgdh   1/1     Running     0          2m58s
+glance-bootstrap-8xptd        0/1     Completed   0          62s
+glance-db-init-htbnx          0/1     Completed   0          2m53s
+glance-db-sync-d724f          0/1     Completed   0          2m43s
+glance-ks-endpoints-qss44     0/3     Completed   0          2m13s
+glance-ks-service-2n46c       0/1     Completed   0          2m25s
+glance-ks-user-w6m54          0/1     Completed   0          111s
+glance-metadefs-load-vhkft    0/1     Completed   0          87s
+glance-rabbit-init-q442f      0/1     Completed   0          2m32s
+glance-storage-init-frt67     0/1     Completed   0          76s
+```
+`glance`에 등록된 이미지를 확인해 서비스가 제대로 작동하는지 점검한다.
+```
+citec@k1:~/osh$ openstack image list
++--------------------------------------+---------------------+--------+
+| ID                                   | Name                | Status |
++--------------------------------------+---------------------+--------+
+| 31e410c9-7e2b-4627-8280-b30817f8576c | Cirros 0.6.2 64-bit | active |
++--------------------------------------+---------------------+--------+
+```
+
+### Placement 
+
+리소스 추적 및 할당을 관리하며, Nova가 인스턴스를 배치할 때 사용된다.
+
+
+
