@@ -11,3 +11,4 @@ template: blog.html
 - [2025-05-14 | ""CSP 컴퓨트 서비스 비교""](/citec/blog/posts/2025/05/2025-05-14-csp-compute/)
 - [2025-05-14 | ""CSP 스토리지 서비스 비교""](/citec/blog/posts/2025/05/2025-05-14-csp-storage/)
 - [2025-05-14 | ""CSP 데이터베이스 서비스 비교""](/citec/blog/posts/2025/05/2025-05-14-csp-database/)
+- [2025-05-14 | ""CSP"](/citec/blog/posts/2025/05/2025-05-14-csp-network/)
