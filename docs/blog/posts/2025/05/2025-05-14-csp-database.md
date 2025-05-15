@@ -28,13 +28,13 @@ tags: [csp, database, service, cloud, comparison]
 |                | Cloud DB for MSSQL | SQL Server                                     | 서버 유형별 성능 조정 가능             | 사용량 기반 요금                                                          | 완전 관리형, 네이버 최적화 설정, 자동 백업                     |
 | NHN 클라우드   | RDS for MySQL    | MySQL                                          | 인스턴스별 설정 가능                   | 사용량 기반 요금                                                          | 고가용성, 자동/수동 백업, 모니터링                             |
 |                | RDS for SQL Server | SQL Server                                   | 인스턴스별 설정 가능                   | 사용량 기반 요금                                                          | 고가용성, 자동/수동 백업, 모니터링                             |
-| KT 클라우드    | Database Service | MySQL, PostgreSQL(추정)                        | -                                      | 사용량 기반 요금                                                          | 고가용성, 백업(추정)                                           |
+| KT 클라우드    | Database Service | MySQL, PostgreSQL                              | 정보 없음                              | 사용량 기반 요금                                                          | 고가용성, 백업                                                 |
 
 ### NoSQL 데이터베이스
 
 | CSP            | 서비스           | 유형                                           | 성능 지표                              | 가격 모델                                                                 | 통합 기능                                                      |
 |----------------|------------------|------------------------------------------------|----------------------------------------|---------------------------------------------------------------------------|----------------------------------------------------------------|
-| SCP            | Database Service | 비정형 데이터 지원(추정)                       | -                                      | 사용량 기반 요금                                                          | 삼성 생태계 통합                                               |
+| SCP            | Database Service | Cassandra, Redis (비정형 데이터 지원)          | 정보 없음                              | 사용량 기반 요금                                                          | 삼성 생태계 통합                                               |
 | AWS            | Amazon DynamoDB  | Key-value, Document                            | 자동 확장, 초당 수백만 요청 처리       | 읽기/쓰기 용량 단위당 요금                                                | Lambda, API Gateway, S3 등                                     |
 |                | Amazon DocumentDB | Document (MongoDB 호환)                        | 인스턴스별 확장 가능                   | 인스턴스 시간당 요금, 스토리지 요금                                       | MongoDB 워크로드 지원                                          |
 | Azure          | Azure Cosmos DB  | Multi-model (Document, Key-value, Graph, Column-family) | RU/s 기반, 글로벌 분산 지원 | RU/s 및 스토리지 요금                                                     | Azure Functions, Power BI 등                                   |
@@ -62,7 +62,7 @@ tags: [csp, database, service, cloud, comparison]
 |----------------|------------------|------------------------------------------------|----------------------------------------|----------------------------------------|----------------------------------------|
 | SCP            | -                | -                                              | -                                      | -                                      | -                                      |
 | AWS            | Amazon Timestream | Time-series                            | IoT, 모니터링                          | 초당 수백만 데이터 포인트 처리          | 데이터 양 및 쿼리당 요금               |
-|                | Amazon Neptune   | Graph                                          | 소셜 네트워크, 추천 시스템             | -                                      | 인스턴스 시간당 요금                   |
+|                | Amazon Neptune   | Graph                                          | 소셜 네트워크, 추천 시스템             | 정보 없음                              | 인스턴스 시간당 요금                   |
 |                | Amazon ElastiCache | In-memory                              | 캐싱, 세션 관리                        | 밀리초 미만 지연 시간                  | 인스턴스 시간당 요금                   |
 | Azure          | Azure Cache for Redis | In-memory                         | 캐싱, 실시간 분석                      | 밀리초 미만 지연 시간                  | 캐시 크기 및 사용량 기반 요금          |
 | GCP            | Memorystore      | In-memory (Redis, Memcached)           | 캐싱, 세션 관리                        | 밀리초 미만 지연 시간                  | 인스턴스 시간당 요금                   |
