@@ -24,7 +24,7 @@ SCP의 네트워크 서비스는 [Samsung SDS Network Services](https://www.sams
 | GCP            | 글로벌 VPC, 서브넷, 방화벽 규칙, VPC 피어링                                | 최대 100 Gbps, 다중 지역 99.99% SLA    | VPC 무료, 송신 트래픽 요금                                               | Compute Engine, GKE, BigQuery                                       |
 | 네이버 클라우드 | 서브넷, ACG, Network ACL, NAT 게이트웨이, Virtual Private Gateway          | 지역 최적화, 명시되지 않음             | 송신 트래픽 요금                                                        | 서버, Object Storage, CLOVA                                         |
 | NHN 클라우드   | OpenStack 기반 서브넷, 라우팅, 보안 그룹                                   | 지역 최적화, 명시되지 않음             | 사용량 기반 요금                                                        | 서버, 스토리지, 게임 API                                            |
-| KT 클라우드    | 통신 인프라 기반 서브넷, 라우팅, 보안 그룹                                 | 통신 기반 안정성, 명시되지 않음        | 사용량 기반 요금                                                        | 서버, 스토리지, 네트워크 서비스                                     |
+| KT Cloud       | 통신 인프라 기반 서브넷, 라우팅, 보안 그룹                                 | 통신 인프라 기반 안정성, 명시되지 않음 | 사용량 기반 요금                                                        | 서버, 스토리지, 네트워크 서비스                                     |
 
 ### 로드 밸런싱
 
