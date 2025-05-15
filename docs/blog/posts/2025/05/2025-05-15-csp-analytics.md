@@ -18,85 +18,85 @@ SCP의 데이터 분석 서비스는 [Samsung SDS Analytics Services](https://ww
 
 | CSP            | 서비스           | 설명                                                                 | 주요 기능                                      | 성능 지표                              | 가격 모델                                                                 | 통합 기능                                                           | 한국 시장 특화 기능 |
 |----------------|------------------|----------------------------------------------------------------------|------------------------------------------------|----------------------------------------|---------------------------------------------------------------------------|----------------------------------------------------------------------|----------------------|
-| SCP            | (미상)           | SCP는 데이터 웨어하우스 서비스를 제공하는 것으로 추정되나, 구체적인 정보는 공개되지 않음 | - | - | - | - | - |
-| AWS            | Amazon Redshift  | 클라우드 데이터 웨어하우스 서비스                                    | 자동 확장, 쿼리 최적화, AQUA (Advanced Query Accelerator) | 3x better price-performance than other cloud data warehouses | 시간당 요금, 예약 인스턴스 | EC2, S3, Glue, SageMaker 등 | 한국어 지원, 서울 리전 |
-| Azure          | Azure Synapse Analytics | 통합 분석 서비스, 데이터 웨어하우징 및 빅데이터 분석 지원 | 무제한 확장, 실시간 분석, ML 통합 | SKU별 성능 | 사용량 기반 요금 | Azure ML, Power BI, Data Factory 등 | 한국어 지원, 한국 리전 |
-| GCP            | BigQuery         | 서버리스, 고성능 데이터 웨어하우스                                   | 자동 확장, ML 내장, GIS 지원 | 빠른 쿼리 응답 시간 | 쿼리당 요금, 슬롯 예약 | Google Analytics, TensorFlow 등 | 한국어 지원, 서울 리전 |
-| 네이버 클라우드 | (미상)           | 구체적인 데이터 웨어하우스 서비스 정보 없음, Cloud Hadoop 등을 활용할 수 있음 | - | - | - | - | - |
-| NHN 클라우드   | (미상)           | 구체적인 데이터 웨어하우스 서비스 정보 없음 | - | - | - | - | - |
-| KT 클라우드    | (미상)           | 구체적인 데이터 웨어하우스 서비스 정보 없음 | - | - | - | - | - |
+| SCP            | 정보 없음        | 데이터 웨어하우스 서비스에 대한 구체적인 정보 확인 불가 ([Samsung Cloud Platform](https://cloud.samsungsds.com/serviceportal/index.html)) | 정보 없음 | 정보 없음 | 정보 없음 | 정보 없음 | 정보 없음 |
+| AWS            | Amazon Redshift  | 클라우드 데이터 웨어하우스 서비스 ([Amazon Redshift](https://aws.amazon.com/redshift/)) | 자동 확장, 쿼리 최적화, AQUA (Advanced Query Accelerator) | 3배 더 나은 가격 대비 성능 | 시간당 요금, 예약 인스턴스 | EC2, S3, Glue, SageMaker 등 | 한국어 지원, 서울 리전 |
+| Azure          | Azure Synapse Analytics | 통합 분석 서비스, 데이터 웨어하우징 및 빅데이터 분석 지원 ([Azure Synapse](https://azure.microsoft.com/services/synapse-analytics/)) | 무제한 확장, 실시간 분석, ML 통합 | SKU별 성능 | 사용량 기반 요금 | Azure ML, Power BI, Data Factory 등 | 한국어 지원, 한국 리전 |
+| GCP            | BigQuery         | 서버리스, 고성능 데이터 웨어하우스 ([BigQuery](https://cloud.google.com/bigquery)) | 자동 확장, ML 내장, GIS 지원 | 빠른 쿼리 응답 시간 | 쿼리당 요금, 슬롯 예약 | Google Analytics, TensorFlow 등 | 한국어 지원, 서울 리전 |
+| 네이버 클라우드 | 정보 없음        | 데이터 웨어하우스 서비스에 대한 구체적인 정보 확인 불가, Cloud Hadoop 활용 가능 ([Naver Cloud](https://www.ncloud.com/)) | 정보 없음 | 정보 없음 | 정보 없음 | 정보 없음 | 정보 없음 |
+| NHN 클라우드   | 정보 없음        | 데이터 웨어하우스 서비스에 대한 구체적인 정보 확인 불가 ([NHN Cloud](https://www.nhncloud.com/)) | 정보 없음 | 정보 없음 | 정보 없음 | 정보 없음 | 정보 없음 |
+| KT 클라우드    | 정보 없음        | 데이터 웨어하우스 서비스에 대한 구체적인 정보 확인 불가 ([KT Cloud](https://cloud.kt.com/en/)) | 정보 없음 | 정보 없음 | 정보 없음 | 정보 없음 | 정보 없음 |
 
 ### 빅데이터 처리
 
 | CSP            | 서비스           | 설명                                                                 | 지원 프레임워크                          | 성능 지표                              | 가격 모델                                                                 | 사용 편의성 및 관리 도구 | 한국 시장 특화 기능 |
 |----------------|------------------|----------------------------------------------------------------------|-------------------------------------------|----------------------------------------|---------------------------------------------------------------------------|---------------------------|----------------------|
-| SCP            | Open source-based big data analytics | 오픈소스 기반 빅데이터 분석 서비스 | - | - | - | - | - |
-| AWS            | Amazon EMR       | 관리형 Hadoop 프레임워크                                             | Hadoop, Spark, HBase, Presto 등 | Up to 3.9x better performance than open source Apache Spark | 시간당 요금, 예약 인스턴스 | EMR Studio, AWS CLI | 한국어 지원 |
-| Azure          | Azure HDInsight, Azure Databricks | 관리형 Hadoop 및 Spark 서비스 | Hadoop, Spark, Kafka 등 | SKU별 성능 | 사용량 기반 요금 | Azure Portal, Databricks Workspace | 한국어 지원 |
-| GCP            | Dataproc         | 관리형 Spark 및 Hadoop 서비스                                        | Spark, Hadoop, Flink 등 | 빠른 클러스터 생성 및 확장 | 사용량 기반 요금 | Google Cloud Console | 한국어 지원 |
-| 네이버 클라우드 | Cloud Hadoop, Data Forest | Hadoop, Spark 등을 지원하는 빅데이터 분석 플랫폼 | Hadoop, Spark 등 | - | - | 웹 기반 콘솔 | 한국어 지원, 네이버 데이터 통합 |
-| NHN 클라우드   | Data & Analytics services | 빅데이터 처리 서비스 | - | - | - | - | - |
-| KT 클라우드    | (미상)           | 구체적인 정보 없음 | - | - | - | - | - |
+| SCP            | 정보 없음        | 빅데이터 처리 서비스에 대한 구체적인 정보 확인 불가 ([Samsung Cloud Platform](https://cloud.samsungsds.com/serviceportal/index.html)) | 정보 없음 | 정보 없음 | 정보 없음 | 정보 없음 | 정보 없음 |
+| AWS            | Amazon EMR       | 관리형 Hadoop 프레임워크 ([Amazon EMR](https://aws.amazon.com/emr/)) | Hadoop, Spark, HBase, Presto 등 | 오픈소스 Apache Spark 대비 최대 3.9배 성능 | 시간당 요금, 예약 인스턴스 | EMR Studio, AWS CLI | 한국어 지원 |
+| Azure          | Azure HDInsight, Azure Databricks | 관리형 Hadoop 및 Spark 서비스 ([Azure HDInsight](https://azure.microsoft.com/services/hdinsight/), [Azure Databricks](https://azure.microsoft.com/services/databricks/)) | Hadoop, Spark, Kafka 등 | SKU별 성능 | 사용량 기반 요금 | Azure Portal, Databricks Workspace | 한국어 지원 |
+| GCP            | Dataproc         | 관리형 Spark 및 Hadoop 서비스 ([Dataproc](https://cloud.google.com/dataproc)) | Spark, Hadoop, Flink 등 | 빠른 클러스터 생성 및 확장 | 사용량 기반 요금 | Google Cloud Console | 한국어 지원 |
+| 네이버 클라우드 | Cloud Hadoop, Data Forest | Hadoop, Spark 등을 지원하는 빅데이터 분석 플랫폼 ([Naver Cloud Hadoop](https://www.ncloud.com/product/bigData/hadoop)) | Hadoop, Spark 등 | 정보 없음 | 사용량 기반 요금 | 웹 기반 콘솔 | 한국어 지원, 네이버 데이터 통합 |
+| NHN 클라우드   | Cloud Hadoop     | Hadoop 기반 빅데이터 처리 서비스 ([NHN Cloud](https://www.nhncloud.com/)) | Hadoop, Spark 등 | 정보 없음 | 사용량 기반 요금 | 웹 기반 콘솔 | 한국어 지원 |
+| KT 클라우드    | 정보 없음        | 빅데이터 처리 서비스에 대한 구체적인 정보 확인 불가 ([KT Cloud](https://cloud.kt.com/en/)) | 정보 없음 | 정보 없음 | 정보 없음 | 정보 없음 | 정보 없음 |
 
 ### 머신러닝 및 AI
 
 | CSP            | 플랫폼 및 도구   | 지원 프레임워크 및 언어 | 사전 구축 모델 및 API | 성능 및 확장성 지표 | 가격 모델 | 한국 시장 관련 모델 |
 |----------------|------------------|-------------------------|-----------------------|---------------------|-----------|----------------------|
-| SCP            | GPU Service      | -                       | -                     | -                   | -         | -                    |
-| AWS            | Amazon SageMaker | TensorFlow, PyTorch, MXNet 등 | 다양한 사전 구축 모델 | -                   | 사용량 기반 | 한국어 언어 모델 지원 |
-| Azure          | Azure Machine Learning | TensorFlow, PyTorch 등 | Azure Cognitive Services | -                   | 사용량 기반 | 한국어 지원 |
-| GCP            | Vertex AI        | TensorFlow, PyTorch 등 | AI Platform, AutoML   | -                   | 사용량 기반 | 한국어 지원 |
-| 네이버 클라우드 | CLOVA AI         | -                       | CLOVA API (음성, 이미지, 번역 등) | -                   | API 호출당 요금 | 한국어 최적화 모델 |
-| NHN 클라우드   | AI Service       | -                       | -                     | -                   | -         | -                    |
-| KT 클라우드    | (미상)           | -                       | -                     | -                   | -         | -                    |
+| SCP            | GPU Service      | 정보 없음               | 정보 없음             | 정보 없음           | 정보 없음 | 정보 없음            |
+| AWS            | Amazon SageMaker | TensorFlow, PyTorch, MXNet 등 | 다양한 사전 구축 모델 | 정보 없음           | 사용량 기반 | 한국어 언어 모델 지원 |
+| Azure          | Azure Machine Learning | TensorFlow, PyTorch 등 | Azure Cognitive Services | 정보 없음           | 사용량 기반 | 한국어 지원 |
+| GCP            | Vertex AI        | TensorFlow, PyTorch 등 | AI Platform, AutoML   | 정보 없음           | 사용량 기반 | 한국어 지원 |
+| 네이버 클라우드 | CLOVA AI         | 정보 없음               | CLOVA API (음성, 이미지, 번역 등) | 정보 없음           | API 호출당 요금 | 한국어 최적화 모델 |
+| NHN 클라우드   | AI Easy Maker    | 정보 없음               | 정보 없음             | 정보 없음           | 사용량 기반 | 한국어 지원 |
+| KT 클라우드    | 정보 없음        | 정보 없음               | 정보 없음             | 정보 없음           | 정보 없음 | 정보 없음            |
 
 ### 비즈니스 인텔리전스(BI)
 
 | CSP            | 도구             | 데이터 소스와의 통합 | 사용자 인터페이스 및 커스터마이징 | 가격 모델 | 한국어 지원 |
 |----------------|------------------|----------------------|------------------------------------|-----------|--------------|
-| SCP            | (미상)           | -                    | -                                  | -         | -            |
+| SCP            | 정보 없음        | 정보 없음            | 정보 없음                          | 정보 없음 | 정보 없음    |
 | AWS            | Amazon QuickSight | AWS 서비스, 외부 데이터 소스 | 대시보드, 보고서, ML Insights | 사용자당 요금 | 한국어 지원 |
 | Azure          | Power BI         | Azure 서비스, 외부 데이터 소스 | 대시보드, 보고서, AI 통합 | 사용자당 요금 | 한국어 지원 |
 | GCP            | Looker           | BigQuery, 외부 데이터 소스 | 데이터 모델링, 대시보드 | 사용자당 요금 | 한국어 지원 |
-| 네이버 클라우드 | Data Analytics Service | 네이버 데이터, 사이트 로그 | 대시보드, 분석 도구 | -         | 한국어 지원 |
-| NHN 클라우드   | (미상)           | -                    | -                                  | -         | -            |
-| KT 클라우드    | (미상)           | -                    | -                                  | -         | -            |
+| 네이버 클라우드 | Data Analytics Service | 네이버 데이터, 사이트 로그 | 대시보드, 분석 도구 | 정보 없음 | 한국어 지원 |
+| NHN 클라우드   | 정보 없음        | 정보 없음            | 정보 없음                          | 정보 없음 | 정보 없음    |
+| KT 클라우드    | 정보 없음        | 정보 없음            | 정보 없음                          | 정보 없음 | 정보 없음    |
 
 ### 데이터 통합 및 ETL
 
 | CSP            | 도구             | 지원 데이터 소스 | 성능 및 신뢰성 지표 | 가격 모델 |
 |----------------|------------------|-------------------|---------------------|-----------|
-| SCP            | (미상)           | -                 | -                   | -         |
+| SCP            | 정보 없음        | 정보 없음         | 정보 없음           | 정보 없음 |
 | AWS            | AWS Glue         | AWS 서비스, 외부 소스 | 자동 스키마 탐지, ETL 코드 생성 | 사용량 기반 |
 | Azure          | Azure Data Factory | Azure 서비스, 외부 소스 | 파이프라인, 트리거 | 사용량 기반 |
 | GCP            | Data Fusion, Dataflow | Google Cloud 서비스, 외부 소스 | 시각적 인터페이스, Apache Beam | 사용량 기반 |
-| 네이버 클라우드 | (미상)           | -                 | -                   | -         |
-| NHN 클라우드   | (미상)           | -                 | -                   | -         |
-| KT 클라우드    | (미상)           | -                 | -                   | -         |
+| 네이버 클라우드 | 정보 없음        | 정보 없음         | 정보 없음           | 정보 없음 |
+| NHN 클라우드   | 정보 없음        | 정보 없음         | 정보 없음           | 정보 없음 |
+| KT 클라우드    | 정보 없음        | 정보 없음         | 정보 없음           | 정보 없음 |
 
 ### 실시간 분석
 
 | CSP            | 서비스           | 지연 시간 및 처리량 지표 | 사용 사례 | 가격 모델 |
 |----------------|------------------|--------------------------|-----------|-----------|
-| SCP            | (미상)           | -                        | -         | -         |
+| SCP            | 정보 없음        | 정보 없음                | 정보 없음 | 정보 없음 |
 | AWS            | Amazon Kinesis   | 밀리초 단위 지연         | 실시간 스트리밍, 로그 분석 | 사용량 기반 |
 | Azure          | Azure Stream Analytics | 밀리초 단위 지연         | IoT, 실시간 대시보드 | 사용량 기반 |
 | GCP            | Pub/Sub, Dataflow | 밀리초 단위 지연         | 실시간 이벤트 처리 | 사용량 기반 |
-| 네이버 클라우드 | Cloud Log Analytics | -                        | 로그 분석 | -         |
-| NHN 클라우드   | (미상)           | -                        | -         | -         |
-| KT 클라우드    | (미상)           | -                        | -         | -         |
+| 네이버 클라우드 | Cloud Log Analytics | 정보 없음                | 로그 분석 | 정보 없음 |
+| NHN 클라우드   | 정보 없음        | 정보 없음                | 정보 없음 | 정보 없음 |
+| KT 클라우드    | 정보 없음        | 정보 없음                | 정보 없음 | 정보 없음 |
 
 ### 데이터 레이크
 
 | CSP            | 서비스           | 보안 및 접근 제어 기능 | 분석 도구와의 통합 | 가격 모델 | 한국 내 데이터 거주지 옵션 |
 |----------------|------------------|-------------------------|--------------------|-----------|----------------------------|
-| SCP            | Storage services | -                       | -                  | -         | -                          |
+| SCP            | 정보 없음        | 정보 없음               | 정보 없음          | 정보 없음 | 정보 없음                  |
 | AWS            | Amazon S3 with Lake Formation | IAM, KMS, ACLs          | Redshift, Glue, SageMaker | GB당 요금 | 서울 리전                  |
 | Azure          | Azure Data Lake Storage | RBAC, ACLs              | Synapse, Databricks | GB당 요금 | 한국 리전                  |
 | GCP            | Cloud Storage    | IAM, ACLs               | BigQuery, Dataproc | GB당 요금 | 서울 리전                  |
-| 네이버 클라우드 | Object Storage   | -                       | Data Forest 등     | GB당 요금 | 한국 내 데이터센터        |
-| NHN 클라우드   | Storage          | -                       | -                  | GB당 요금 | 한국 내 데이터센터        |
-| KT 클라우드    | Storage          | -                       | -                  | GB당 요금 | 한국 내 데이터센터        |
+| 네이버 클라우드 | Object Storage   | 정보 없음               | Data Forest 등     | GB당 요금 | 한국 내 데이터센터        |
+| NHN 클라우드   | Storage          | 정보 없음               | 정보 없음          | GB당 요금 | 한국 내 데이터센터        |
+| KT 클라우드    | Storage          | 정보 없음               | 정보 없음          | GB당 요금 | 한국 내 데이터센터        |
 
 ## CSP 간 비교 분석
 
