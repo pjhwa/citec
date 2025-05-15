@@ -22,9 +22,9 @@ SCP의 스토리지 서비스는 [Samsung Cloud Platform Service Portal](https:/
 | AWS            | S3                | 99.999999999% 내구성, 버전 관리, 라이프사이클 정책, S3 Select            | 높은 처리량, 낮은 지연 시간            | GB당 월별 요금, 요청 및 데이터 전송 요금                                  |
 | Azure          | Blob Storage      | Hot/Cool/Archive 계층, 불변 스토리지, 데이터 레이크 통합                  | 계층별 성능 차이                       | GB당 월별 요금, 작업 및 데이터 전송 요금                                  |
 | GCP            | Cloud Storage     | Standard/Nearline/Coldline/Archive 클래스, 라이프사이클 관리              | 높은 가용성, 분석 최적화               | GB당 월별 요금, 작업 및 검색 요금                                         |
-| 네이버 클라우드 | Object Storage    | S3 호환 API, 한국 데이터 주권 준수, 데이터 공유 및 배포                   | 지역 데이터센터로 낮은 지연 시간        | GB당 월별 요금, 지역 최적화                                               |
+| 네이버 클라우드 | Object Storage    | S3 호환 API, 한국 데이터 주권 준수, 데이터 공유 및 배포                   | 지역 데이터센터로 낮은 지연 시간        | GB당 월별 요금                                                           |
 | NHN 클라우드   | Object Storage    | OpenStack 기반, 데이터 저장 및 공유, 게임/전자상거래 특화                 | 지역 최적화                            | GB당 월별 요금                                                           |
-| KT Cloud       | Object Storage    | 통신 인프라 기반, 데이터 저장 및 배포, 한국 규제 준수                     | 통신 인프라 기반 안정성                | GB당 월별 요금                                                           |
+| KT 클라우드    | Object Storage    | KT 통신 인프라 기반, 데이터 저장 및 배포, 한국 규제 준수                   | KT 통신 인프라 기반 최적화             | GB당 월별 요금                                                           |
 
 ### 블록 스토리지
 
@@ -36,7 +36,7 @@ SCP의 스토리지 서비스는 [Samsung Cloud Platform Service Portal](https:/
 | GCP            | Persistent Disk   | Standard, SSD, Balanced, Extreme  | 최대 120,000 IOPS, 2,400 MB/s          | GB당 월별 요금, 디스크 유형별 요금                                        |
 | 네이버 클라우드 | Block Storage     | SSD, HDD                          | 지역 최적화, 높은 가용성               | GB당 월별 요금                                                           |
 | NHN 클라우드   | Block Storage     | SSD, HDD                          | 지역 최적화                            | GB당 월별 요금                                                           |
-| KT 클라우드    | Block Storage     | SSD, HDD                          | 통신 인프라로 안정적 성능              | GB당 월별 요금                                                           |
+| KT 클라우드    | Block Storage     | SSD, HDD                          | KT 통신 인프라 기반 안정적 성능        | GB당 월별 요금                                                           |
 
 ### 파일 스토리지
 
@@ -48,7 +48,7 @@ SCP의 스토리지 서비스는 [Samsung Cloud Platform Service Portal](https:/
 | GCP            | Filestore         | NFSv3                             | 최대 100,000 IOPS                      | GB당 월별 요금                                                           |
 | 네이버 클라우드 | NAS               | NFS, SMB                          | 지역 최적화, 다중 서버 연결            | GB당 월별 요금                                                           |
 | NHN 클라우드   | File Storage      | NFS, SMB                          | 게임/전자상거래 특화                   | GB당 월별 요금                                                           |
-| KT 클라우드    | File Storage      | NFS, SMB                          | 통신 기반 안정성                       | GB당 월별 요금                                                           |
+| KT 클라우드    | File Storage      | NFS, SMB                          | KT 통신 인프라 기반 안정성             | GB당 월별 요금                                                           |
 
 ### 아카이브 스토리지
 
@@ -60,7 +60,7 @@ SCP의 스토리지 서비스는 [Samsung Cloud Platform Service Portal](https:/
 | GCP            | Cloud Storage Archive | 장기 보관                         | 긴 검색 시간, 높은 내구성              | 낮은 저장 비용, 검색 요금                                                |
 | 네이버 클라우드 | Archive Storage   | 장기 백업                         | 지역 최적화, 높은 내구성               | 사용량 기반 요금                                                         |
 | NHN 클라우드   | Archive Storage   | 장기 보관                         | 지역 최적화                            | 사용량 기반 요금                                                         |
-| KT 클라우드    | Archive Storage   | 장기 보관                         | 통신 최적화                            | 사용량 기반 요금                                                         |
+| KT 클라우드    | Archive Storage   | 장기 보관                         | KT 통신 인프라 기반 최적화             | 사용량 기반 요금                                                         |
 
 ### 백업 및 복구
 
@@ -72,7 +72,7 @@ SCP의 스토리지 서비스는 [Samsung Cloud Platform Service Portal](https:/
 | GCP            | Backup and DR     | 증분, 전체 백업                   | 관리형 서비스, 빠른 복구               | 백업 용량 기반 요금                                                      |
 | 네이버 클라우드 | Backup            | 정책 기반 백업                    | 지역 최적화, 빠른 복구                 | 백업 용량 기반 요금                                                      |
 | NHN 클라우드   | Backup            | 정책 기반 백업                    | 지역 최적화                            | 백업 용량 기반 요금                                                      |
-| KT 클라우드    | Backup            | 정책 기반 백업                    | 통신 기반 안정성                       | 백업 용량 기반 요금                                                      |
+| KT 클라우드    | Backup            | 정책 기반 백업                    | KT 통신 인프라 기반 안정성             | 백업 용량 기반 요금                                                      |
 
 ## CSP 간 비교 분석
 
