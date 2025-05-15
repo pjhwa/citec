@@ -24,7 +24,7 @@ SCP의 스토리지 서비스는 [Samsung Cloud Platform Service Portal](https:/
 | GCP            | Cloud Storage     | Standard/Nearline/Coldline/Archive 클래스, 라이프사이클 관리              | 높은 가용성, 분석 최적화               | GB당 월별 요금, 작업 및 검색 요금                                         |
 | 네이버 클라우드 | Object Storage    | S3 호환 API, 한국 데이터 주권 준수, 데이터 공유 및 배포                   | 지역 데이터센터로 낮은 지연 시간        | GB당 월별 요금, 지역 최적화                                               |
 | NHN 클라우드   | Object Storage    | OpenStack 기반, 데이터 저장 및 공유, 게임/전자상거래 특화                 | 지역 최적화                            | GB당 월별 요금                                                           |
-| KT 클라우드    | Object Storage    | 통신 인프라 기반, 데이터 저장 및 배포, 한국 규제 준수                     | 통신 최적화                            | GB당 월별 요금                                                           |
+| KT Cloud       | Object Storage    | 통신 인프라 기반, 데이터 저장 및 배포, 한국 규제 준수                     | 통신 인프라 기반 안정성                | GB당 월별 요금                                                           |
 
 ### 블록 스토리지
 
