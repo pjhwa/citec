@@ -15,3 +15,4 @@ template: blog.html
 - [2025-05-14 | ""CSP AI/ML 서비스 비교""](/citec/blog/posts/2025/05/2025-05-14-csp-aiml/)
 - [2025-05-14 | ""CSP IoT 서비스 비교""](/citec/blog/posts/2025/05/2025-05-14-csp-iot/)
 - [2025-05-14 | ""CSP 보안 서비스 비교""](/citec/blog/posts/2025/05/2025-05-14-csp-security/)
+- [2025-05-15 | ""CSP 데이터 분석 서비스 비교""](/citec/blog/posts/2025/05/2025-05-15-csp-analytics/)
