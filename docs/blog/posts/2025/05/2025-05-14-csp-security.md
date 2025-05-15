@@ -18,85 +18,85 @@ SCP의 보안 서비스는 [Samsung Cloud Platform Security](https://cloud.samsu
 
 | CSP            | 인증 방법                     | 권한 부여 및 접근 제어                     | 외부 통합                              | 성능 지표                              |
 |----------------|-------------------------------|--------------------------------------------|-----------------------------------------|----------------------------------------|
+| SCP            | MFA, SSO (SingleID)           | RBAC, 정책 관리                           | 삼성 생태계, Active Directory         | 삼성 고객 기반, 효율적 인증 처리       |
 | AWS            | MFA, SSO (IAM Identity Center) | RBAC, 정책 기반, ABAC 지원                 | Active Directory, OAuth, SAML          | 수백만 사용자 지원, 빠른 인증 처리      |
 | Azure          | MFA, SSO (Azure AD)           | RBAC, Azure RBAC, 역할 정의                | Active Directory, OAuth, SAML          | 엔터프라이즈급, 대규모 사용자 지원      |
 | GCP            | MFA, SSO (Cloud IAM)          | RBAC, IAM 조건, 조직 정책                 | G Suite, OAuth, SAML                  | Google 서비스와 통합, 높은 확장성      |
 | 네이버 클라우드 | MFA, SSO                      | RBAC, 정책 관리                           | Active Directory, SAML                | 지역 최적화, 빠른 인증 처리            |
 | NHN 클라우드   | MFA, SSO                      | RBAC                                      | Active Directory                      | 지역 최적화, 표준 성능                 |
-| KT 클라우드    | MFA, SSO                      | RBAC, 정책 관리                           | Active Directory, SAML                | 통신 기반 안정성, 빠른 인증 처리       |
-| SCP            | MFA, SSO (SingleID)           | RBAC, 정책 관리                           | 삼성 생태계, Active Directory         | 삼성 고객 기반, 효율적 인증 처리       |
+| KT 클라우드    | MFA, SSO                      | RBAC, 정책 관리                           | Active Directory, SAML                | KT 통신 인프라 기반 안정성, 빠른 인증 처리 |
 
 ### 데이터 암호화
 
 | CSP            | 암호화 방법                   | 키 관리 서비스                     | 고객 관리 키 지원                   | 성능 지표                              |
 |----------------|-------------------------------|------------------------------------|--------------------------------------|----------------------------------------|
+| SCP            | AES-256, TLS                  | Key Management Service            | 지원                                 | 삼성 생태계 통합, 효율적 처리         |
 | AWS            | AES-256, TLS                  | AWS KMS                           | 지원, BYOK                           | 최소 성능 영향, 고속 암호화/복호화    |
 | Azure          | AES-256, TLS                  | Azure Key Vault                   | 지원, BYOK                           | Azure 서비스와 최적화, 빠른 처리       |
 | GCP            | AES-256, TLS                  | Google Cloud KMS                  | 지원, CMEK                           | Google 서비스 통합, 효율적 처리       |
 | 네이버 클라우드 | AES-256, TLS                  | Key Management Service            | 지원                                 | 지역 최적화, 빠른 처리                 |
 | NHN 클라우드   | AES-256, TLS                  | 키 관리 서비스                    | 지원                                 | 지역 최적화, 표준 성능                 |
-| KT 클라우드    | AES-256, TLS                  | 키 관리 서비스                    | 지원                                 | 통신 기반 안정성, 빠른 처리            |
-| SCP            | AES-256, TLS                  | Key Management Service            | 지원                                 | 삼성 생태계 통합, 효율적 처리         |
+| KT 클라우드    | AES-256, TLS                  | 키 관리 서비스                    | 지원                                 | KT 통신 인프라 기반 안정성, 빠른 처리 |
 
 ### 네트워크 보안
 
 | CSP            | 방화벽 서비스                 | DDoS 보호 메커니즘                 | VPN 및 전용 연결                     | 성능 지표                              |
-|----------------|-------------------------------|--------------------------------  |------------------------------------|---------------------------------------|----------------------------------------|
+|----------------|-------------------------------|------------------------------------|---------------------------------------|----------------------------------------|
+| SCP            | Secured Firewall, WAF         | DDoS Protection                    | VPN, Direct Connect                   | 삼성 생태계 통합, 효율적 방어          |
 | AWS            | AWS WAF, Network Firewall     | AWS Shield (Standard, Advanced)    | AWS VPN, Direct Connect               | 고속 처리량, 높은 DDoS 방어 성공률     |
-| Azure          | Azure Firewall, WAF           | Azure DDoS Protection              | Azure VPN Gateway, ExpressRoute       | 엔터프라이즈급, 안정적 성능            |
+| Azure          WAF           | Azure DDoS Protection              | Azure VPN Gateway, ExpressRoute       | 엔터프라이즈급, 안정적 성능            |
 | GCP            | Cloud Armor, VPC Firewall     | Cloud Armor DDoS Protection        | Cloud VPN, Cloud Interconnect         | 글로벌 분산, 효율적 방어                |
 | 네이버 클라우드 | Firewall, WAF                 | DDoS Protection                    | VPN, Cloud Connect                    | 지역 최적화, 높은 방어 성공률          |
 | NHN 클라우드   | WebGuard, AppGuard            | DDoS Protection                    | VPN                                   | 게임/전자상거래 특화, 안정적 성능      |
-| KT 클라우드    | Firewall, WAF                 | DDoS Protection                    | VPN, Direct Connect                   | 통신 기반 안정성, 높은 처리량          |
-| SCP            | Secured Firewall, WAF         | DDoS Protection                    | VPN, Direct Connect                   | 삼성 생태계 통합, 효율적 방어          |
+| KT 클라우드    | Firewall, WAF                 | DDoS Protection                    | VPN, Direct Connect                   | KT 통신 인프라 기반 안정성, 높은 처리량 |
 
 ### 규제 준수 및 인증
 
 | CSP            | 지원 인증                     | 산업별 규제 지원                   | 한국 규제 준수 (PIPA 등)             | 인증 갱신 주기                        |
 |----------------|-------------------------------|------------------------------------|---------------------------------------|----------------------------------------|
+| SCP            | ISO 27001, ISMS-P             | 제조, 전자                         | 지원 (PIPA)                          | 매년 갱신                              |
 | AWS            | ISO 27001, SOC 2, HIPAA, PCI DSS | 금융, 의료, 공공                   | 지원                                  | 매년 갱신                              |
 | Azure          | ISO 27001, SOC 2, HIPAA, PCI DSS | 금융, 의료, 공공                   | 지원                                  | 매년 갱신                              |
 | GCP            | ISO 27001, SOC 2, HIPAA, PCI DSS | 금융, 의료, 공공                   | 지원                                  | 매년 갱신                              |
 | 네이버 클라우드 | ISO 27001, CSA STAR, MTCS Tier-3 | 금융, 공공                         | 완전 지원 (PIPA, 전자금융감독규정)    | 매년 갱신                              |
 | NHN 클라우드   | ISO 27001, ISMS-P             | 게임, 전자상거래                   | 지원 (PIPA)                          | 매년 갱신                              |
 | KT 클라우드    | ISO 27001, ISMS-P             | 금융, 공공                         | 지원 (PIPA)                          | 매년 갱신                              |
-| SCP            | ISO 27001, ISMS-P             | 제조, 전자                         | 지원 (PIPA)                          | 매년 갱신                              |
 
 ### 위협 탐지 및 대응
 
 | CSP            | 모니터링 및 로깅 도구         | 사고 대응 기능                     | SIEM 통합                            | 성능 지표                              |
 |----------------|-------------------------------|------------------------------------|---------------------------------------|----------------------------------------|
+| SCP            | Config Inspection, Log Transmission | 자동화된 대응                      | 정보 없음                            | 삼성 생태계 통합, 효율적 탐지         |
 | AWS            | GuardDuty, CloudTrail         | 자동화된 대응, Security Hub        | 지원 (Security Hub, Splunk)          | 빠른 탐지, 낮은 오탐지율               |
 | Azure          | Security Center, Sentinel     | 자동화된 대응, 위협 인텔리전스     | 지원 (Sentinel, Splunk)              | 엔터프라이즈급, 높은 탐지 정확도       |
 | GCP            | Security Command Center       | 자동화된 대응, Threat Intelligence | 지원 (Chronicle, Splunk)             | AI 기반, 효율적 탐지                   |
-| 네이버 클라우드 | Security Monitoring           | 자동화된 대응                      | 지원 (추정)                          | 지역 최적화, 빠른 탐지                 |
-| NHN 클라우드   | Security Monitoring           | 자동화된 대응                      | 지원 (추정)                          | 게임/전자상거래 특화, 안정적 탐지      |
-| KT 클라우드    | Security Monitoring           | 자동화된 대응                      | 지원 (추정)                          | 통신 기반 안정성, 빠른 탐지            |
-| SCP            | Config Inspection, Log Transmission | 자동화된 대응                      | 지원 (추정)                          | 삼성 생태계 통합, 효율적 탐지         |
+| 네이버 클라우드 | Security Monitoring           | 자동화된 대응                      | 정보 없음                            | 지역 최적화, 빠른 탐지                 |
+| NHN 클라우드   | Security Monitoring           | 자동화된 대응                      | 정보 없음                            | 게임/전자상거래 특화, 안정적 탐지      |
+| KT 클라우드    | Security Monitoring           | 자동화된 대응                      | 정보 없음                            | KT 통신 인프라 기반 안정성, 빠른 탐지 |
 
 ### 보안 자동화 및 오케스트레이션
 
 | CSP            | 자동화 도구                   | DevSecOps 통합                     | 자동화 워크플로우                     | 성능 지표                              |
 |----------------|-------------------------------|------------------------------------|---------------------------------------|----------------------------------------|
+| SCP            | Config Inspection             | 삼성 DevOps 통합                   | 지원                                  | 삼성 생태계 통합, 효율적 처리         |
 | AWS            | Config, CloudFormation        | CodePipeline, DevOps 통합          | 지원                                  | 빠른 정책 적용, 효율적 처리            |
 | Azure          | Policy, Blueprints            | Azure DevOps, GitHub Actions       | 지원                                  | 엔터프라이즈급, 높은 자동화 효율       |
 | GCP            | Deployment Manager            | Cloud Build, CI/CD 통합            | 지원                                  | Google 서비스와 통합, 효율적 처리      |
 | 네이버 클라우드 | 자동화 도구                   | DevOps 통합                        | 지원                                  | 지역 최적화, 표준 성능                 |
 | NHN 클라우드   | 자동화 도구                   | DevOps 통합                        | 지원                                  | 게임/전자상거래 특화, 안정적 처리      |
-| KT 클라우드    | 자동화 도구                   | DevOps 통합                        | 지원                                  | 통신 기반 안정성, 표준 성능            |
-| SCP            | Config Inspection             | 삼성 DevOps 통합                   | 지원                                  | 삼성 생태계 통합, 효율적 처리         |
+| KT 클라우드    | 자동화 도구                   | DevOps 통합                        | 지원                                  | KT 통신 인프라 기반 안정성, 표준 성능 |
 
 ### 지역 규제 준수 및 지원
 
 | CSP            | 한국 데이터센터               | 한국 규제 준수                     | 한국어 지원                           | 지역별 보안 요구사항                   |
 |----------------|-------------------------------|------------------------------------|---------------------------------------|----------------------------------------|
+| SCP            | 한국 내 데이터센터            | PIPA 준수                          | 네이티브 지원                         | 삼성 생태계 통합, 데이터 주권 준수    |
 | AWS            | 서울 지역                     | PIPA 준수                          | 지원                                  | 데이터 주권 옵션 제공                  |
 | Azure          | 한국 중앙, 한국 남부          | PIPA 준수                          | 지원                                  | 데이터 주권 옵션 제공                  |
 | GCP            | 서울 지역                     | PIPA 준수                          | 지원                                  | 데이터 주권 옵션 제공                  |
 | 네이버 클라우드 | 한국 내 다수 데이터센터       | PIPA, 전자금융감독규정 준수         | 네이티브 지원                         | 완전 데이터 주권 준수                  |
 | NHN 클라우드   | 한국 내 데이터센터            | PIPA 준수                          | 네이티브 지원                         | 지역 최적화                           |
-| KT 클라우드    | 한국 내 데이터센터            | PIPA 준수                          | 네이티브 지원                         | 통신 기반 데이터 주권                  |
-| SCP            | 한국 내 데이터센터            | PIPA 준수                          | 네이티브 지원                         | 삼성 생태계 통합, 데이터 주권 준수    |
+| KT 클라우드    | 한국 내 데이터센터            | PIPA 준수                          | 네이티브 지원                         | KT 통신 인프라 기반 데이터 주권       |
 
 ## CSP 간 비교 분석
 
