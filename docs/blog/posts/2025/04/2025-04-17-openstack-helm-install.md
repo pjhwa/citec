@@ -194,7 +194,7 @@ citec@k1:~$ sudo systemctl status ufw
 
 ```
 citec@k1:~$ sudo apt update & sudo apt upgrade -y
-citec@k1:~$ sudo apt install -y python3-pip git ansible 
+citec@k1:~$ sudo apt install -y python3-pip git ansible openvswitch
 ```
 
 ## Ansible 플레이북 설치 환경 구성
