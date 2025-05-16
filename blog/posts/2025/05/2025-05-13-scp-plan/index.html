@@ -1,0 +1,1203 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Grok에 물어보고 얻은 답을 정리한 블로그">
+      
+      
+      
+        <link rel="canonical" href="https://pjhwa.github.io/citec/blog/posts/2025/05/2025-05-13-scp-plan/">
+      
+      
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+    
+    
+      
+        <title>SCP 중장기 로드맵 - Grok Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.342714a4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#samsung-cloud-platform-scp" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="../../../../.." title="Grok Docs" class="md-header__button md-logo" aria-label="Grok Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Grok Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              SCP 중장기 로드맵
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="검색">
+        
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            검색 초기화
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../.." title="Grok Docs" class="md-nav__button md-logo" aria-label="Grok Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Grok Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    홈
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    블로그
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            블로그
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../04/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    2025
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            2025
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    05월
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    아카이브
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 프로젝트 개요
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 조사 대상 및 방법
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. 조사 대상 및 방법">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      조사 대상
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      조사 방법
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 클라우드 서비스 카테고리 및 비교
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. 클라우드 서비스 카테고리 및 비교">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scp" class="md-nav__link">
+    <span class="md-ellipsis">
+      SCP 서비스 라인업
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      경쟁사 서비스 라인업 비교
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="경쟁사 서비스 라인업 비교">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      글로벌 제공업체
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      한국 제공업체
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-scp" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. SCP의 차별화 포인트
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. 중장기 기술로드맵 제안
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. 중장기 기술로드맵 제안">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.1 전략적 방향
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.2 기술 개발 우선순위
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.3 예상 결과
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. 중간보고 계획 (1주 후)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. 결론
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. 결론">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scpsamsung-cloud-platform-35" class="md-nav__link">
+    <span class="md-ellipsis">
+      SCP(Samsung Cloud Platform) 3~5년 중장기 기술 로드맵
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SCP(Samsung Cloud Platform) 3~5년 중장기 기술 로드맵">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 현재 상태 분석
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 경쟁사 분석
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 시장 트렌드 및 미래 기술
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 고객 요구 및 피드백
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. 전략적 목표
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. 로드맵 개발
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. 로드맵 개발">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      1단계 (1~2년): 기반 강화
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      2단계 (2~4년): 서비스 확장
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-45" class="md-nav__link">
+    <span class="md-ellipsis">
+      3단계 (4~5년): 미래 기술 도입
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-uvp" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. 고유 가치 제안 (UVP)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. 위험 평가 및 완화 전략
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9" class="md-nav__link">
+    <span class="md-ellipsis">
+      9. 실행 가능성
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      결론
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="samsung-cloud-platform-scp">Samsung Cloud Platform (SCP) 중장기 기술로드맵 초안</h1>
+<h2 id="1">1. 프로젝트 개요</h2>
+<p>Samsung Cloud Platform (SCP)의 3~5년 중장기 기술로드맵을 작성하기 위해, 주요 경쟁사(AWS, Azure, GCP, 네이버 클라우드, NHN, KT)와의 서비스 라인업 비교를 통해 SCP의 차별화 포인트를 도출합니다. 본 로드맵은 기술적 깊이를 강조하며, 영업적/숫자적 관점보다 기술적 경쟁력을 중심으로 구성됩니다. 프로젝트는 2주 소규모 프로젝트로, 1주 후 중간보고가 예정되어 있습니다.</p>
+<h2 id="2">2. 조사 대상 및 방법</h2>
+<h3 id="_1">조사 대상</h3>
+<ul>
+<li><strong>글로벌 클라우드 제공업체</strong>: AWS, Azure, Google Cloud Platform (GCP)</li>
+<li><strong>한국 클라우드 제공업체</strong>: 네이버 클라우드, NHN 클라우드, KT 클라우드</li>
+<li><strong>SCP</strong>: 삼성SDS의 클라우드 플랫폼 (<a href="https://www.samsungsds.com/en/cloud-product-list/cloud-product-list.html">서비스 목록</a>)</li>
+</ul>
+<h3 id="_2">조사 방법</h3>
+<ul>
+<li>각 제공업체의 서비스 카테고리와 주요 서비스 수를 비교.</li>
+<li>기능별 세부 비교는 제외하고, 서비스 라인업의 폭과 깊이를 중심으로 분석.</li>
+<li>SCP의 차별화 포인트를 도출하기 위해 산업별 사례, 기술적 강점, 지역적 이점을 조사.</li>
+</ul>
+<h2 id="3">3. 클라우드 서비스 카테고리 및 비교</h2>
+<p>클라우드 서비스는 일반적으로 다음과 같은 주요 카테고리로 분류됩니다:
+- Compute, Storage, Database, Container, Networking, Security, Application Service, DevOps Tools, Data Analytics, AI/ML, Management, Hybrid Cloud</p>
+<h3 id="scp">SCP 서비스 라인업</h3>
+<p>SCP는 12개 주요 카테고리에서 다양한 서비스를 제공합니다. 아래는 주요 카테고리와 서비스 수를 정리한 표입니다:</p>
+<table>
+<thead>
+<tr>
+<th><strong>카테고리</strong></th>
+<th><strong>서비스 수</strong></th>
+<th><strong>주요 서비스</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Compute</td>
+<td>8</td>
+<td>Bare Metal Server, GPU Server, HPC Cluster, Virtual Server</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td>6</td>
+<td>Archive Storage, Block Storage, Object Storage, Parallel File Storage</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>9</td>
+<td>CUBRID, EPAS(DBaaS), MySQL(DBaaS), PostgreSQL(DBaaS)</td>
+</tr>
+<tr>
+<td>Container</td>
+<td>3</td>
+<td>Container Registry, Kubernetes Apps, Kubernetes Engine</td>
+</tr>
+<tr>
+<td>Networking</td>
+<td>15</td>
+<td>Cloud LAN, DNS, Firewall, Load Balancer, VPC</td>
+</tr>
+<tr>
+<td>Security</td>
+<td>11</td>
+<td>Certificate Manager, DDoS Protection, Key Management Service, WAF</td>
+</tr>
+<tr>
+<td>Application Service</td>
+<td>3</td>
+<td>API Gateway, GraviX, Mail/SMS/Push</td>
+</tr>
+<tr>
+<td>DevOps Tools</td>
+<td>3</td>
+<td>DevOps Code, DevOps Service, GitHub Enterprise</td>
+</tr>
+<tr>
+<td>Data Analytics</td>
+<td>11</td>
+<td>Cloud Hadoop, Data Catalog, Quick Query, VMware Greenplum</td>
+</tr>
+<tr>
+<td>AI/ML</td>
+<td>8</td>
+<td>AI&amp;MLOps Platform, CloudML Notebook, Text API, Vision API</td>
+</tr>
+<tr>
+<td>Management</td>
+<td>7</td>
+<td>Cloud Control, Cloud Monitoring, IAM, VM Migration</td>
+</tr>
+<tr>
+<td>Hybrid Cloud</td>
+<td>2</td>
+<td>Edge Server, Oracle Services</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_3">경쟁사 서비스 라인업 비교</h3>
+<h4 id="_4">글로벌 제공업체</h4>
+<ul>
+<li><strong>AWS</strong>: 20개 이상의 카테고리에서 200개 이상의 서비스 제공. 예: Storage(S3, EBS, EFS 등 10개 이상), AI/ML(SageMaker, Rekognition 등).</li>
+<li><strong>Azure</strong>: 약 20개 카테고리, 특히 AI + Machine Learning(27개 서비스), Compute(20개 이상)에서 강세 (<a href="https://azure.microsoft.com/en-us/products/">Azure 서비스</a>).</li>
+<li><strong>GCP</strong>: 100개 이상의 서비스, Big Data(BigQuery, Dataflow)와 AI(Cloud Vision API, AutoML)에서 경쟁력 (<a href="https://cloud.google.com/docs/get-started/aws-azure-gcp-service-comparison">GCP 서비스</a>).</li>
+</ul>
+<h4 id="_5">한국 제공업체</h4>
+<ul>
+<li><strong>네이버 클라우드</strong>: 약 19개 카테고리(Compute, Storage, AI Services, Blockchain 등). AI 서비스(CLOVA, Papago)와 웹 서비스에서 강점 (<a href="https://www.ncloud.com/?language=en-US">네이버 클라우드</a>).</li>
+<li><strong>NHN 클라우드</strong>: Cloud, Hosting, AI, Data Center 등 4~6개 카테고리 추정. 게임 산업(Hangame)과 AI(GPU 기반)에서 전문성 (<a href="https://company.nhncloud.com/service">NHN 클라우드</a>).</li>
+<li><strong>KT 클라우드</strong>: 8개 카테고리(SERVER, DATABASE, STORAGE/CDN 등). 네트워킹과 IoT에서 강점 (<a href="https://cloud.kt.com/en/">KT 클라우드</a>).</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>제공업체</strong></th>
+<th><strong>카테고리 수</strong></th>
+<th><strong>주요 강점</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCP</td>
+<td>12</td>
+<td>지역 데이터센터, 보안, AI/ML, 산업 특화</td>
+</tr>
+<tr>
+<td>AWS</td>
+<td>20+</td>
+<td>서비스 다양성, 글로벌 확장성</td>
+</tr>
+<tr>
+<td>Azure</td>
+<td>20</td>
+<td>AI/ML, 하이브리드 클라우드</td>
+</tr>
+<tr>
+<td>GCP</td>
+<td>15+</td>
+<td>빅데이터, AI, 오픈소스 친화</td>
+</tr>
+<tr>
+<td>네이버 클라우드</td>
+<td>19</td>
+<td>AI 서비스, 웹 서비스, 한국 시장 최적화</td>
+</tr>
+<tr>
+<td>NHN 클라우드</td>
+<td>4~6</td>
+<td>게임, AI, 오픈스택 기반</td>
+</tr>
+<tr>
+<td>KT 클라우드</td>
+<td>8</td>
+<td>네트워킹, IoT, 공공 인증</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-scp">4. SCP의 차별화 포인트</h2>
+<p>SCP는 경쟁사 대비 다음과 같은 독특한 강점을 보유하고 있습니다:</p>
+<ol>
+<li><strong>아시아 지역 데이터센터</strong>: 한국 내 데이터센터를 통해 낮은 지연 시간과 일본, 싱가포르 등 아시아 시장 접근성을 제공. 지역 데이터 주권 및 규제 준수에 유리 (<a href="https://scalardynamic.com/resources/articles/10-samsung-sds-cloud-platform-enterprise-potential">Samsung SDS Cloud Potential</a>).</li>
+<li><strong>강력한 보안 기능</strong>: 고급 암호화, 다중 인증, 지속적 모니터링 등 삼성의 하드웨어/소프트웨어 보안 기술 활용. 한국 내 최장수 클라우드 보안 제공업체로 인정 (<a href="https://www.samsungsds.com/en/enterprise-cloud/enterprise-cloud.html">Samsung Cloud Platform</a>).</li>
+<li><strong>AI 및 ML 서비스</strong>: Brightics AI, AI&amp;MLOps Platform 등 고급 분석 및 머신러닝 서비스 제공, 특히 제조 및 반도체 산업에 최적화.</li>
+<li><strong>삼성 생태계 통합</strong>: 삼성 디바이스 및 서비스와의 원활한 통합, 삼성 제품 사용 기업에 매력적.</li>
+<li><strong>산업별 전문성</strong>: 제조, 금융, 유통/서비스, 공공 부문 사례를 통해 입증된 전문성. 예: SCM SaaS로 운영 효율성 증대.</li>
+<li><strong>경쟁력 있는 가격 정책</strong>: 사용 약정 할인, 전체 볼륨 할인 등 유연한 가격 옵션 제공.</li>
+<li><strong>자동화 기능</strong>: 클라우드 리소스 관리 간소화 및 운영 효율성을 높이는 강력한 자동화 도구.</li>
+</ol>
+<h2 id="5">5. 중장기 기술로드맵 제안</h2>
+<h3 id="51">5.1 전략적 방향</h3>
+<ul>
+<li><strong>AI/ML 강화</strong>: Brightics AI 및 CloudML 서비스 확장, 특히 제조 및 금융 산업용 맞춤형 AI 솔루션 개발.</li>
+<li><strong>보안 고도화</strong>: 한국 및 아시아 지역 규제 준수를 위한 보안 인증 추가 취득, AI 기반 보안 위협 탐지 도입.</li>
+<li><strong>하이브리드 클라우드 확대</strong>: Edge Server 및 Oracle Services를 활용한 하이브리드 클라우드 솔루션 강화.</li>
+<li><strong>산업별 맞춤화</strong>: 제조, 금융, 공공 부문에 특화된 클라우드 패키지 개발.</li>
+<li><strong>가격 경쟁력 유지</strong>: 지역 시장에 맞춘 유연한 가격 정책 지속, 특히 중소기업 타겟 프로모션 확대.</li>
+</ul>
+<h3 id="52">5.2 기술 개발 우선순위</h3>
+<table>
+<thead>
+<tr>
+<th><strong>우선순위</strong></th>
+<th><strong>기술 영역</strong></th>
+<th><strong>세부 계획</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>AI/ML</td>
+<td>- AI&amp;MLOps Platform 고도화<br>- 반도체 설계용 AI 솔루션 개발</td>
+</tr>
+<tr>
+<td>2</td>
+<td>보안</td>
+<td>- AI 기반 실시간 위협 탐지 시스템 도입<br>- 추가 보안 인증 취득</td>
+</tr>
+<tr>
+<td>3</td>
+<td>하이브리드 클라우드</td>
+<td>- Edge Server 확장<br>- 멀티 클라우드 관리 도구 개발</td>
+</tr>
+<tr>
+<td>4</td>
+<td>산업별 솔루션</td>
+<td>- 제조업용 IoT 통합 클라우드 패키지<br>- 금융 규제 준수 솔루션 강화</td>
+</tr>
+<tr>
+<td>5</td>
+<td>자동화 및 관리</td>
+<td>- Cloud Control 및 Monitoring 기능 개선<br>- VM Migration 자동화 도구 개발</td>
+</tr>
+</tbody>
+</table>
+<h3 id="53">5.3 예상 결과</h3>
+<ul>
+<li><strong>경쟁력 강화</strong>: AI/ML 및 보안에서 글로벌 및 지역 경쟁사 대비 우위 확보.</li>
+<li><strong>시장 확대</strong>: 아시아 지역 및 삼성 생태계 내 기업을 타겟으로 시장 점유율 증가.</li>
+<li><strong>고객 만족도 향상</strong>: 산업별 맞춤 솔루션과 자동화로 운영 효율성 및 비용 절감.</li>
+</ul>
+<h2 id="6-1">6. 중간보고 계획 (1주 후)</h2>
+<ul>
+<li><strong>완료 예정</strong>: 경쟁사 서비스 라인업 비교 완료, SCP 차별화 포인트 초안 작성.</li>
+<li><strong>보고 내용</strong>:</li>
+<li>주요 카테고리별 서비스 수 비교 표.</li>
+<li>SCP의 잠재적 강점 및 약점 분석.</li>
+<li>초기 로드맵 방향 제안.</li>
+<li><strong>추가 조사 필요</strong>:</li>
+<li>NHN 및 KT 클라우드의 세부 서비스 목록.</li>
+<li>SCP의 최신 가격 정책 및 고객 피드백.</li>
+</ul>
+<h2 id="7">7. 결론</h2>
+<p>SCP는 아시아 지역 데이터센터, 강력한 보안, AI/ML, 삼성 생태계 통합, 산업별 전문성을 바탕으로 경쟁사와 차별화됩니다. 향후 3~5년 동안 AI/ML, 보안, 하이브리드 클라우드, 산업별 솔루션에 집중 투자하여 한국 및 아시아 시장에서 경쟁력을 강화해야 합니다. 본 로드맵은 기술적 깊이를 강조하며, SCP의 지속 가능한 성장을 위한 전략적 방향을 제시합니다.</p>
+<hr />
+<h3 id="scpsamsung-cloud-platform-35">SCP(Samsung Cloud Platform) 3~5년 중장기 기술 로드맵</h3>
+<p>삼성 클라우드 플랫폼(SCP)의 중장기 기술 로드맵은 클라우드 서비스 시장의 치열한 경쟁 속에서 SCP를 기술적으로 차별화하고, 혁신을 통해 고객 가치를 극대화하며, 한국 시장을 넘어 글로벌 리더로 도약하기 위한 전략을 제시합니다. 이 로드맵은 SCP의 현재 상태, 경쟁사 분석, 시장 트렌드, 고객 요구를 기반으로 하며, 기술적 깊이와 실행 가능성에 중점을 둡니다.</p>
+<hr />
+<h4 id="1_1">1. 현재 상태 분석</h4>
+<p>SCP는 현재 기업용 클라우드 서비스로 높은 가용성과 신뢰성을 제공하며, 주요 서비스는 다음과 같습니다(<a href="https://cloud.samsungsds.com/serviceportal/intro/services.html">SCP 서비스 카탈로그</a>):
+- <strong>컴퓨팅 및 스토리지</strong>: 가상 머신, 블록/오브젝트 스토리지.
+- <strong>컨테이너 및 DevOps</strong>: Kubernetes 기반 컨테이너 오케스트레이션, CI/CD 도구.
+- <strong>보안</strong>: 삼성 Knox 기술 기반의 강력한 보안 솔루션.
+- <strong>하이브리드 클라우드</strong>: SDDC(소프트웨어 정의 데이터 센터) 및 멀티 클라우드 관리.
+- <strong>ESG 관리</strong>: 지속 가능성을 고려한 인프라 지원.</p>
+<p><strong>기술적 강점</strong>:
+- 삼성의 하드웨어(스마트폰, IoT 디바이스) 및 소프트웨어(Knox, SmartThings)와의 통합 가능성.
+- 한국 시장에서의 데이터 주권 및 규제 준수에 유리한 지역 데이터 센터.
+- ESG(환경, 사회, 지배구조) 중심의 지속 가능성 초점.</p>
+<p><strong>기술적 약점</strong>:
+- 경쟁사(AWS, Azure, GCP 등)에 비해 서비스 카테고리와 기술적 깊이가 제한적.
+- 글로벌 시장에서의 인지도 및 생태계 확장 부족.
+- 고객 피드백에 따르면, AI/ML 및 데이터 분석 서비스의 성숙도가 상대적으로 낮음.</p>
+<p>SCP는 삼성의 생태계를 활용한 차별화 가능성을 보유하고 있으나, 기술적 포트폴리오를 확장하고 혁신적인 서비스를 도입해야 경쟁력을 강화할 수 있습니다.</p>
+<hr />
+<h4 id="2_1">2. 경쟁사 분석</h4>
+<p>SCP의 경쟁사는 글로벌 리더(AWS, Azure, GCP)와 한국 시장 강자(네이버 클라우드, NHN, KT)로 나뉩니다. 아래는 주요 경쟁사의 기술적 제공 범위와 깊이를 요약한 내용입니다.</p>
+<table>
+<thead>
+<tr>
+<th><strong>제공자</strong></th>
+<th><strong>주요 서비스 카테고리</strong></th>
+<th><strong>기술적 강점</strong></th>
+<th><strong>SCP와의 차별화 기회</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AWS</strong></td>
+<td>200+ 서비스(컴퓨팅, 스토리지, AI/ML 등)</td>
+<td>광범위한 서비스, 높은 확장성</td>
+<td>삼성 하드웨어 통합, 한국 특화 솔루션</td>
+</tr>
+<tr>
+<td><strong>Azure</strong></td>
+<td>하이브리드 클라우드, AI/ML, PaaS</td>
+<td>MS 생태계 통합, 기업 솔루션 강점</td>
+<td>IoT 및 엣지 컴퓨팅에서의 삼성 강점 활용</td>
+</tr>
+<tr>
+<td><strong>GCP</strong></td>
+<td>AI/ML, 빅데이터, 네트워킹</td>
+<td>데이터 분석 및 AI 특화</td>
+<td>산업별 맞춤 솔루션으로 차별화</td>
+</tr>
+<tr>
+<td><strong>네이버 클라우드</strong></td>
+<td>컴퓨팅, AI 서비스, 빅데이터</td>
+<td>한국 시장 최적화, AI API(CLOVA)</td>
+<td>삼성의 글로벌 네트워크 및 보안 기술 활용</td>
+</tr>
+<tr>
+<td><strong>NHN</strong></td>
+<td>컴퓨팅, 스토리지, 보안</td>
+<td>한국 규제 준수, 지역 데이터 센터</td>
+<td>ESG 및 AI/ML 플랫폼 강화</td>
+</tr>
+<tr>
+<td><strong>KT</strong></td>
+<td>하이브리드 클라우드, 네트워킹</td>
+<td>공공 부문 강점, 지역 데이터 센터</td>
+<td>스마트 팩토리 및 헬스케어 특화 솔루션</td>
+</tr>
+</tbody>
+</table>
+<p><strong>SCP의 차별화 가능 영역</strong>:
+- <strong>삼성 생태계 통합</strong>: 하드웨어와 소프트웨어의 시너지로 독특한 엣지 및 IoT 솔루션 제공.
+- <strong>산업별 전문성</strong>: 제조, 금융, 헬스케어 등 삼성의 산업 네트워크를 활용한 맞춤형 서비스.
+- <strong>보안 및 지속 가능성</strong>: Knox 기반 보안과 ESG 중심 인프라로 신뢰도 강화.</p>
+<hr />
+<h4 id="3_1">3. 시장 트렌드 및 미래 기술</h4>
+<p>향후 3~5년간 클라우드 시장을 주도할 기술 트렌드는 다음과 같습니다:
+- <strong>AI 및 머신 러닝</strong>: 비즈니스 운영 최적화와 자동화를 위한 핵심 기술.
+- <strong>엣지 컴퓨팅</strong>: IoT와 실시간 데이터 처리 수요 증가로 저지연 솔루션 중요성 확대.
+- <strong>서버리스 컴퓨팅</strong>: 개발자 생산성과 비용 효율성 향상.
+- <strong>지속 가능성</strong>: 탄소 배출 감소와 녹색 컴퓨팅에 대한 관심 증가.
+- <strong>보안</strong>: 제로 트러스트 아키텍처와 AI 기반 위협 탐지 수요.
+- <strong>양자 컴퓨팅</strong>: 장기적 혁신을 위한 초기 연구 필요.
+- <strong>산업별 솔루션</strong>: 특정 산업의 디지털 전환 지원 요구 증가.</p>
+<p>SCP는 AI, 엣지 컴퓨팅, 지속 가능성을 중점적으로 혁신하며, 양자 컴퓨팅과 같은 미래 기술에 대비해야 합니다.</p>
+<hr />
+<h4 id="4">4. 고객 요구 및 피드백</h4>
+<p>고객 피드백과 시장 조사를 통해 도출된 주요 요구사항은 다음과 같습니다:
+- <strong>안정성 및 보안</strong>: 데이터 유출 방지와 서비스 가용성 보장.
+- <strong>확장성</strong>: 비즈니스 성장에 따른 유연한 인프라 지원.
+- <strong>비용 효율성</strong>: 경쟁력 있는 가격과 투명한 요금 구조.
+- <strong>한국 시장 특화</strong>: 데이터 주권, 규제 준수, 한국어 지원.
+- <strong>산업별 솔루션</strong>: 제조업의 스마트 팩토리, 헬스케어의 데이터 관리 등 맞춤형 요구.</p>
+<p>SCP는 이러한 요구를 충족하기 위해 지역 데이터 센터를 강화하고, 산업별 솔루션을 개발해야 합니다.</p>
+<hr />
+<h4 id="5_1">5. 전략적 목표</h4>
+<p>SCP의 중장기 기술 목표는 다음과 같습니다:
+- <strong>기술 리더십</strong>: AI, 엣지 컴퓨팅, 지속 가능성 분야에서 한국 시장 선도.
+- <strong>고객 중심 혁신</strong>: 산업별 디지털 전환을 지원하는 맞춤형 클라우드 서비스 제공.
+- <strong>글로벌 확장 준비</strong>: 아시아 태평양 지역 진출을 위한 기술 기반 구축.
+- <strong>측정 가능 지표</strong>: 한국 AI 클라우드 점유율 10%, 고객 만족도 90% 이상, 탄소 배출 50% 감소.</p>
+<hr />
+<h4 id="6">6. 로드맵 개발</h4>
+<p>SCP의 기술 로드맵은 3~5년간의 단계별 계획으로 구성됩니다.</p>
+<h5 id="1-12">1단계 (1~2년): 기반 강화</h5>
+<ul>
+<li><strong>AI/ML 플랫폼</strong>: 모델 개발 및 배포 도구 출시, 삼성 Exynos와 통합.</li>
+<li><strong>엣지 컴퓨팅</strong>: SmartThings와 연계된 초기 엣지 솔루션 개발.</li>
+<li><strong>보안</strong>: 제로 트러스트 아키텍처 도입, Knox 기반 클라우드 보안 강화.</li>
+<li><strong>조직 변화</strong>: AI 및 클라우드 전문 인력 500명 채용, R&amp;D 투자 20% 확대.</li>
+</ul>
+<h5 id="2-24">2단계 (2~4년): 서비스 확장</h5>
+<ul>
+<li><strong>지속 가능한 인프라</strong>: 재생 에너지 기반 데이터 센터 구축, 탄소 배출 모니터링 도구 개발.</li>
+<li><strong>산업별 솔루션</strong>: 제조(스마트 팩토리), 헬스케어(의료 데이터 분석) 서비스 출시.</li>
+<li><strong>서버리스 컴퓨팅</strong>: 개발자 친화적 서버리스 환경 제공.</li>
+<li><strong>타임라인</strong>: 3년차에 AI 클라우드 점유율 10% 달성.</li>
+</ul>
+<h5 id="3-45">3단계 (4~5년): 미래 기술 도입</h5>
+<ul>
+<li><strong>양자 컴퓨팅</strong>: 연구 파트너십 체결, PoC 완료.</li>
+<li><strong>데이터 분석</strong>: 실시간 분석 및 데이터 레이크 서비스 출시.</li>
+<li><strong>글로벌 진출</strong>: 아시아 태평양 지역 데이터 센터 설립.</li>
+<li><strong>KPI</strong>: 탄소 배출 50% 감소, 고객 만족도 90% 이상.</li>
+</ul>
+<hr />
+<h4 id="7-uvp">7. 고유 가치 제안 (UVP)</h4>
+<p>SCP는 다음 요소로 경쟁사와 차별화됩니다:
+- <strong>삼성 생태계 통합</strong>: 스마트폰, IoT 디바이스, Knox와의 원활한 연계.
+- <strong>산업 특화 솔루션</strong>: 삼성의 제조 및 헬스케어 네트워크 활용.
+- <strong>지속 가능성</strong>: ESG 중심의 녹색 클라우드 리더십.
+- <strong>보안 우수성</strong>: Knox 기반의 신뢰할 수 있는 보안 솔루션.</p>
+<hr />
+<h4 id="8">8. 위험 평가 및 완화 전략</h4>
+<table>
+<thead>
+<tr>
+<th><strong>위험</strong></th>
+<th><strong>설명</strong></th>
+<th><strong>완화 전략</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>기술 도입 지연</strong></td>
+<td>AI/엣지 기술 개발 지연 가능성</td>
+<td>기술 파트너십 확대, R&amp;D 투자 강화</td>
+</tr>
+<tr>
+<td><strong>통합 장애</strong></td>
+<td>하드웨어-소프트웨어 통합 문제</td>
+<td>단계적 테스트 및 피드백 반영</td>
+</tr>
+<tr>
+<td><strong>경쟁사 진보</strong></td>
+<td>AWS/Azure의 신기술 출시 가속화</td>
+<td>시장 트렌드 모니터링, 민첩한 대응</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4 id="9">9. 실행 가능성</h4>
+<ul>
+<li><strong>타임라인</strong>: 1년차 AI/ML 기반 구축, 3년차 산업별 솔루션 출시, 5년차 양자 컴퓨팅 PoC.</li>
+<li><strong>마일스톤</strong>: 매년 기술 혁신 점검, 2년차 엣지 컴퓨팅 상용화.</li>
+<li><strong>KPI</strong>: AI 서비스 사용률, 고객 유지율, 탄소 배출 감축률.</li>
+<li><strong>검토 계획</strong>: 분기별 기술 리뷰, 고객 피드백 반영.</li>
+</ul>
+<hr />
+<h3 id="_6">결론</h3>
+<p>SCP는 AI, 엣지 컴퓨팅, 지속 가능성을 중심으로 기술 혁신을 추진하며, 삼성의 생태계와 산업 전문성을 활용해 차별화된 가치를 제공할 수 있습니다. 이 로드맵을 통해 SCP는 한국 시장에서 기술 리더로 자리 잡고, 글로벌 경쟁력을 확보할 가능성을 높일 것입니다.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../../../..", "features": ["navigation.sections", "navigation.indexes"], "search": "../../../../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>
