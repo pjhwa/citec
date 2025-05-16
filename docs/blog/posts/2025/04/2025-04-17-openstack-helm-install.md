@@ -190,14 +190,14 @@ citec@k1:~$ sudo systemctl status ufw
 
 ## 패키지 설치 
 
-### 시스템 업데이트 및 필수 패키지 설치 
+### 시스템 업데이트 및 필수 패키지 설치 (모든 노드에서 수행)
 
 ```
 citec@k1:~$ sudo apt update & sudo apt upgrade -y
 citec@k1:~$ sudo apt install -y python3-pip git ansible openvswitch
 ```
 
-## Ansible 플레이북 설치 환경 구성
+## Ansible 플레이북 설치 환경 구성 (마스터 노드, k1에서만 실행)
 
 ### 필요 저장소 복제 및 Ansible 환경 설정
 
