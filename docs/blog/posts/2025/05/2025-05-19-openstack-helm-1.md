@@ -662,6 +662,284 @@ citec@k1:~/osh$ kceph ceph -s
 
 ---
 
+## 상태 확인 
+
+Kubernetes와 Rook-Ceph 설치가 완료되었습니다. 주요 기능들이 제대로 동작하는지 확인하겠습니다.
+
+### 서비스 상태 확인
+
+서비스는 파드에 대한 네트워크 접근을 제공합니다.
+
+```
+citec@k1:~/osh$ kubectl get services -A
+NAMESPACE        NAME                      TYPE           CLUSTER-IP      EXTERNAL-IP      PORT(S)                                  AGE
+default          kubernetes                ClusterIP      10.96.0.1       <none>           443/TCP                                  12d
+kube-system      kube-dns                  ClusterIP      10.96.0.10      <none>           53/UDP,53/TCP,9153/TCP                   12d
+metallb-system   metallb-webhook-service   ClusterIP      10.96.48.22     <none>           443/TCP                                  12d
+rook-ceph        rook-ceph-exporter        ClusterIP      10.96.162.174   <none>           9926/TCP                                 12d
+rook-ceph        rook-ceph-mgr             ClusterIP      10.96.150.232   <none>           9283/TCP                                 12d
+rook-ceph        rook-ceph-mgr-dashboard   ClusterIP      10.96.116.126   <none>           7000/TCP                                 12d
+rook-ceph        rook-ceph-mon-b           ClusterIP      10.96.105.121   <none>           6789/TCP,3300/TCP                        12d
+rook-ceph        rook-ceph-mon-c           ClusterIP      10.96.99.237    <none>           6789/TCP,3300/TCP                        12d
+rook-ceph        rook-ceph-mon-d           ClusterIP      10.96.116.1     <none>           6789/TCP,3300/TCP                        6d8h
+```
+
+### 컨트롤러 상태 확인
+
+Deployment, StatefulSet, DaemonSet 등의 컨트롤러는 파드의 배포와 관리를 담당합니다.
+
+```
+citec@k1:~/osh$ kubectl get deployments -A
+NAMESPACE        NAME                           READY   UP-TO-DATE   AVAILABLE   AGE
+kube-system      calico-kube-controllers        1/1     1            1           12d
+kube-system      coredns                        2/2     2            2           12d
+metallb-system   metallb-controller             1/1     1            1           12d
+rook-ceph        csi-cephfsplugin-provisioner   2/2     2            2           12d
+rook-ceph        csi-rbdplugin-provisioner      2/2     2            2           12d
+rook-ceph        rook-ceph-crashcollector-k1    1/1     1            1           12d
+rook-ceph        rook-ceph-crashcollector-k2    1/1     1            1           12d
+rook-ceph        rook-ceph-crashcollector-k3    1/1     1            1           12d
+rook-ceph        rook-ceph-crashcollector-k4    1/1     1            1           12d
+rook-ceph        rook-ceph-exporter-k1          1/1     1            1           12d
+rook-ceph        rook-ceph-exporter-k2          1/1     1            1           12d
+rook-ceph        rook-ceph-exporter-k3          1/1     1            1           12d
+rook-ceph        rook-ceph-exporter-k4          1/1     1            1           12d
+rook-ceph        rook-ceph-mgr-a                1/1     1            1           12d
+rook-ceph        rook-ceph-mon-b                1/1     1            1           12d
+rook-ceph        rook-ceph-mon-c                1/1     1            1           12d
+rook-ceph        rook-ceph-mon-d                1/1     1            1           6d8h
+rook-ceph        rook-ceph-operator             1/1     1            1           12d
+rook-ceph        rook-ceph-osd-0                1/1     1            1           12d
+rook-ceph        rook-ceph-osd-1                1/1     1            1           12d
+rook-ceph        rook-ceph-osd-2                1/1     1            1           12d
+rook-ceph        rook-ceph-osd-3                1/1     1            1           12d
+rook-ceph        rook-ceph-osd-4                1/1     1            1           12d
+rook-ceph        rook-ceph-osd-5                1/1     1            1           12d
+rook-ceph        rook-ceph-osd-6                1/1     1            1           12d
+rook-ceph        rook-ceph-osd-7                1/1     1            1           12d
+
+citec@k1:~/osh$ kubectl get statefulsets -A
+NAMESPACE   NAME                  READY   AGE
+
+citec@k1:~/osh$ kubectl get daemonsets -A
+NAMESPACE        NAME                                 DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                     AGE
+ceph             ingress-nginx-ceph-controller        4         4         4       4            4           kubernetes.io/os=linux            12d
+kube-system      calico-node                          4         4         4       4            4           kubernetes.io/os=linux            12d
+kube-system      kube-proxy                           4         4         4       4            4           kubernetes.io/os=linux            12d
+metallb-system   metallb-speaker                      4         4         4       4            4           kubernetes.io/os=linux            12d
+rook-ceph        csi-cephfsplugin                     4         4         4       4            4           <none>                            12d
+rook-ceph        csi-rbdplugin                        4         4         4       4            4           <none>                            12d
+```
+
+확인 사항:
+`READY` 열이 원하는 수량과 일치하는지 확인합니다 (예: `1/1`, `3/3`).
+`UP-TO-DATE`와 `AVAILABLE` 필드도 정상인지 확인합니다.
+
+#### 이벤트 확인
+
+클러스터에서 발생한 이벤트를 확인하여 오류나 경고를 감지합니다. (참고로, 아래 예는 OpenStack 서비스 설치 시 발생한 이벤트이다.)
+
+```
+citec@k1:~/osh$ kubectl get events -A --sort-by='.metadata.creationTimestamp'
+NAMESPACE   LAST SEEN   TYPE      REASON              OBJECT                                         MESSAGE
+openstack   3s          Normal    SuccessfulCreate    job/nova-service-cleaner-29128740              Created pod: nova-service-cleaner-29128740-9h4r4
+openstack   3s          Normal    Scheduled           pod/nova-service-cleaner-29128740-9h4r4        Successfully assigned openstack/nova-service-cleaner-29128740-9h4r4 to k1
+openstack   3s          Normal    SuccessfulCreate    cronjob/nova-cell-setup                        Created job nova-cell-setup-29128740
+openstack   3s          Normal    SuccessfulCreate    cronjob/nova-service-cleaner                   Created job nova-service-cleaner-29128740
+openstack   3s          Normal    Scheduled           pod/nova-cell-setup-29128740-5tgmv             Successfully assigned openstack/nova-cell-setup-29128740-5tgmv to k2
+openstack   3s          Normal    SuccessfulCreate    job/nova-cell-setup-29128740                   Created pod: nova-cell-setup-29128740-5tgmv
+openstack   2s          Normal    Pulled              pod/nova-service-cleaner-29128740-9h4r4        Container image "quay.io/airshipit/kubernetes-entrypoint:latest-ubuntu_focal" already present on machine
+openstack   2s          Normal    Created             pod/nova-service-cleaner-29128740-9h4r4        Created container: init
+openstack   2s          Normal    Started             pod/nova-service-cleaner-29128740-9h4r4        Started container init
+openstack   2s          Normal    Pulled              pod/nova-cell-setup-29128740-5tgmv             Container image "quay.io/airshipit/kubernetes-entrypoint:latest-ubuntu_focal" already present on machine
+openstack   2s          Normal    Created             pod/nova-cell-setup-29128740-5tgmv             Created container: init
+openstack   2s          Normal    Started             pod/nova-cell-setup-29128740-5tgmv             Started container init
+```
+
+#### 리소스 사용량 확인
+
+노드와 파드의 CPU 및 메모리 사용량을 점검합니다. 이를 위해서 Metrics Server를 설치합니다.
+
+```
+citec@k1:~/osh$ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+serviceaccount/metrics-server created
+clusterrole.rbac.authorization.k8s.io/system:aggregated-metrics-reader created
+clusterrole.rbac.authorization.k8s.io/system:metrics-server created
+rolebinding.rbac.authorization.k8s.io/metrics-server-auth-reader created
+clusterrolebinding.rbac.authorization.k8s.io/metrics-server:system:auth-delegator created
+clusterrolebinding.rbac.authorization.k8s.io/system:metrics-server created
+service/metrics-server created
+deployment.apps/metrics-server created
+apiservice.apiregistration.k8s.io/v1beta1.metrics.k8s.io created
+
+citec@k1:~/osh$ kubectl get pods -n kube-system | grep metrics-server
+metrics-server-6f7dd4c4c4-fbtmb            0/1     Running   0                13s
+```
+
+Metrics Server에 `--kubelet-insecure-tls` 플래그를 추가해 인증서 검증을 건너뛰도록 설정합니다.
+
+```
+citec@k1:~/osh$ kubectl edit deployment -n kube-system metrics-server
+spec:
+  template:
+    spec:
+      containers:
+      - args:
+        - --cert-dir=/tmp
+        - --secure-port=10250
+        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+        - --kubelet-use-node-status-port
+        - --metric-resolution=15s
+        - --kubelet-insecure-tls  # 추가
+...
+deployment.apps/metrics-server edited
+```
+
+노드의 자원 사용률과 각 파드의 자원 사용률을 확인할 수 있습니다.
+
+```
+citec@k1:~/osh$ kubectl top nodes
+NAME   CPU(cores)   CPU(%)   MEMORY(bytes)   MEMORY(%)
+k1     562m         14%      11763Mi         36%
+k2     1009m        25%      9848Mi          30%
+k3     439m         10%      8377Mi          26%
+k4     208m         5%       4724Mi          14%
+
+citec@k1:~/osh$ kubectl top pods -A
+NAMESPACE        NAME                                           CPU(cores)   MEMORY(bytes)
+ceph             ingress-nginx-ceph-controller-8wlgb            2m           91Mi
+ceph             ingress-nginx-ceph-controller-cdpnl            1m           86Mi
+ceph             ingress-nginx-ceph-controller-kchpf            1m           86Mi
+ceph             ingress-nginx-ceph-controller-swxdn            2m           87Mi
+kube-system      calico-kube-controllers-847c966dfc-7k28r       3m           28Mi
+kube-system      calico-node-gj295                              29m          136Mi
+kube-system      calico-node-hnm6r                              33m          134Mi
+kube-system      calico-node-hzl55                              23m          134Mi
+kube-system      calico-node-z5fvz                              40m          133Mi
+kube-system      coredns-8d98f4ccd-4pj4v                        2m           15Mi
+kube-system      coredns-8d98f4ccd-pz2xf                        2m           16Mi
+kube-system      etcd-k1                                        47m          532Mi
+kube-system      etcd-k2                                        58m          529Mi
+kube-system      etcd-k3                                        40m          530Mi
+kube-system      kube-apiserver-k1                              45m          363Mi
+kube-system      kube-apiserver-k2                              46m          364Mi
+kube-system      kube-apiserver-k3                              51m          473Mi
+kube-system      kube-controller-manager-k1                     2m           28Mi
+kube-system      kube-controller-manager-k2                     3m           18Mi
+kube-system      kube-controller-manager-k3                     15m          79Mi
+kube-system      kube-proxy-6wlxh                               1m           17Mi
+kube-system      kube-proxy-fsf8h                               1m           26Mi
+kube-system      kube-proxy-lmkdp                               1m           16Mi
+kube-system      kube-proxy-vxw9t                               1m           17Mi
+kube-system      kube-scheduler-k1                              10m          44Mi
+kube-system      kube-scheduler-k2                              9m           33Mi
+kube-system      kube-scheduler-k3                              8m           36Mi
+kube-system      metrics-server-8467fcc7b7-kkn8m                3m           21Mi
+metallb-system   metallb-controller-77fb8947dc-kktzd            2m           20Mi
+metallb-system   metallb-speaker-84wpw                          18m          71Mi
+metallb-system   metallb-speaker-9br2c                          14m          66Mi
+metallb-system   metallb-speaker-dk2lr                          11m          67Mi
+metallb-system   metallb-speaker-dkdgc                          11m          68Mi
+rook-ceph        csi-cephfsplugin-5w7x4                         0m           20Mi
+rook-ceph        csi-cephfsplugin-gx89z                         1m           20Mi
+rook-ceph        csi-cephfsplugin-kn7wz                         1m           20Mi
+rook-ceph        csi-cephfsplugin-provisioner-9dfb4f865-d4f4w   2m           52Mi
+rook-ceph        csi-cephfsplugin-provisioner-9dfb4f865-hh8wp   3m           53Mi
+rook-ceph        csi-cephfsplugin-ww58g                         1m           20Mi
+rook-ceph        csi-rbdplugin-54h25                            1m           27Mi
+rook-ceph        csi-rbdplugin-b7w5l                            1m           31Mi
+rook-ceph        csi-rbdplugin-l297q                            0m           20Mi
+rook-ceph        csi-rbdplugin-provisioner-84864fbf9b-7nwv7     3m           62Mi
+rook-ceph        csi-rbdplugin-provisioner-84864fbf9b-krq8v     2m           52Mi
+rook-ceph        csi-rbdplugin-tmr2b                            1m           30Mi
+rook-ceph        rook-ceph-crashcollector-k1-554f49567c-9sdsx   0m           6Mi
+rook-ceph        rook-ceph-crashcollector-k2-7cd5c69c64-2n7l7   0m           6Mi
+rook-ceph        rook-ceph-crashcollector-k3-59fd6c96b7-4tpm7   0m           6Mi
+rook-ceph        rook-ceph-crashcollector-k4-58fd7f8f4-kmltz    0m           6Mi
+rook-ceph        rook-ceph-exporter-k1-5b8b446944-j7qq8         6m           17Mi
+rook-ceph        rook-ceph-exporter-k2-544cdf9bf-bgw8t          5m           18Mi
+rook-ceph        rook-ceph-exporter-k3-d7df9fb58-xsghl          5m           18Mi
+rook-ceph        rook-ceph-exporter-k4-557cfccc7f-nx9lz         3m           18Mi
+rook-ceph        rook-ceph-mgr-a-7579b8bf97-nk6zb               20m          593Mi
+rook-ceph        rook-ceph-mon-b-79d8d4df4c-fn4jk               49m          437Mi
+rook-ceph        rook-ceph-mon-c-5cb5674b66-srj74               23m          427Mi
+rook-ceph        rook-ceph-mon-d-c8f9fb97b-xck2c                19m          411Mi
+rook-ceph        rook-ceph-operator-67cff58f8-qhgwd             4m           39Mi
+rook-ceph        rook-ceph-osd-0-7578c848f4-mdxwm               20m          323Mi
+rook-ceph        rook-ceph-osd-1-fcdf76b96-l7v2q                40m          400Mi
+rook-ceph        rook-ceph-osd-2-6f468dd66b-znczr               30m          685Mi
+rook-ceph        rook-ceph-osd-3-784f68847f-29f4z               27m          721Mi
+rook-ceph        rook-ceph-osd-4-7969ddb47f-4cwl9               24m          671Mi
+rook-ceph        rook-ceph-osd-5-6f48d55cb7-wq6gn               26m          773Mi
+rook-ceph        rook-ceph-osd-6-bdfcd474d-7dgrq                31m          839Mi
+rook-ceph        rook-ceph-osd-7-b8b9b7bc4-wl9sg                24m          699Mi
+rook-ceph        rook-ceph-tools                                0m           8Mi
+```
+
+#### API 서버 상태 확인
+
+Kubernetes API 서버가 정상적으로 응답하는지 확인합니다.
+
+```
+citec@k1:~/osh$ kubectl cluster-info
+Kubernetes control plane is running at https://172.16.2.148:16443
+CoreDNS is running at https://172.16.2.148:16443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+```
+
+#### DNS 서비스 확인
+
+클러스터 내부 DNS가 정상적으로 작동하는지 확인합니다.
+
+```
+citec@k1:~/osh$ kubectl get pods -n kube-system -l k8s-app=kube-dns
+NAME                      READY   STATUS    RESTARTS   AGE
+coredns-8d98f4ccd-4pj4v   1/1     Running   0          30h
+coredns-8d98f4ccd-pz2xf   1/1     Running   0          30h
+```
+
+DNS 파드가 `Running` 상태인지 확인합니다.
+
+DNS 쿼리 테스트 방법: kubectl exec -it <pod-name> -n <namespace> -- nslookup kubernetes.default.svc.cluster.local
+
+```
+citec@k1:~/osh$ kubectl get pods -A
+NAMESPACE        NAME                                           READY   STATUS                  RESTARTS         AGE
+ceph             ingress-nginx-ceph-controller-8wlgb            1/1     Running                 4 (3d10h ago)    12d
+ceph             ingress-nginx-ceph-controller-cdpnl            1/1     Running                 7                12d
+ceph             ingress-nginx-ceph-controller-kchpf            1/1     Running                 4 (8d ago)       12d
+ceph             ingress-nginx-ceph-controller-swxdn            1/1     Running                 0                12d
+kube-system      calico-kube-controllers-847c966dfc-7k28r       1/1     Running                 69 (33h ago)     12d
+kube-system      calico-node-gj295                              1/1     Running                 0                12d
+...
+
+citec@k1:~/osh$ kubectl exec -it ingress-nginx-ceph-controller-8wlgb -n ceph -- /bin/sh
+/etc/nginx $ nslookup kubernetes.default.svc.cluster.local
+Server:         10.96.0.10
+Address:        10.96.0.10:53
+
+Name:   kubernetes.default.svc.cluster.local
+Address: 10.96.0.1
+```
+
+#### PersistentVolume 및 PersistentVolumeClaim 확인
+
+스토리지가 정상적으로 할당되고 사용 중인지 확인합니다. 아래 예시는 OpenStack 서비스를 설치한 후에 생성된 PV, PVC를 확인하는 것입니다. PVC가 PV에 바인딩되어 있는지 (`STATUS`가 `Bound`) 확인합니다.
+
+```
+citec@k1:~/osh$ kubectl get pv -A
+NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                         STORAGECLASS      VOLUMEATTRIBUTESCLASS   REASON   AGE
+pvc-24a399d2-2906-4a04-9ebf-bf9475d77b89   5Gi        RWO            Delete           Bound    openstack/mysql-data-mariadb-server-0         rook-ceph-block   <unset>                          11d
+pvc-ad0337fc-8c51-4c05-aaa7-aba599770f8f   768Mi      RWO            Delete           Bound    openstack/rabbitmq-data-rabbitmq-rabbitmq-0   rook-ceph-block   <unset>                          11d
+
+citec@k1:~/osh$ kubectl get pvc -A
+NAMESPACE   NAME                                STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS      VOLUMEATTRIBUTESCLASS   AGE
+openstack   mysql-data-mariadb-server-0         Bound    pvc-24a399d2-2906-4a04-9ebf-bf9475d77b89   5Gi        RWO            rook-ceph-block   <unset>                 11d
+openstack   rabbitmq-data-rabbitmq-rabbitmq-0   Bound    pvc-ad0337fc-8c51-4c05-aaa7-aba599770f8f   768Mi      RWO            rook-ceph-block   <unset>                 11d
+```
+
+---
 ## 결론
 
 이 가이드를 통해 HA 마스터 클러스터 기반의 Kubernetes와 Rook-Ceph 설치를 완료했습니다. 다음 2부에서는 이 환경에 OpenStack을 배포하는 방법을 다룰 예정입니다.
