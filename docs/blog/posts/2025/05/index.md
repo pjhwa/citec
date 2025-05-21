@@ -18,3 +18,4 @@ template: blog.html
 - [2025-05-15 | ""CSP 데이터 분석 서비스 비교""](/citec/blog/posts/2025/05/2025-05-15-csp-analytics/)
 - [2025-05-19 | ""OpenStack Helm을 활용한 Kubernetes와 Rook-Ceph 설치 가이드 - 1부""](/citec/blog/posts/2025/05/2025-05-19-openstack-helm-1/)
 - [2025-05-20 | ""Apache Syncope Query로 인한 Temp Disk Full""](/citec/blog/posts/2025/05/2025-05-20-apache_syncope-query/)
+- [2025-05-22 | ""CSP 네트워크 서비스 비용 및 처리량 비교""](/citec/blog/posts/2025/05/2025-05-22-scp-network-throughput/)
