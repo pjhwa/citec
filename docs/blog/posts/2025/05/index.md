@@ -20,3 +20,4 @@ template: blog.html
 - [2025-05-20 | ""Apache Syncope Query로 인한 Temp Disk Full""](/citec/blog/posts/2025/05/2025-05-20-apache_syncope-query/)
 - [2025-05-22 | ""CSP 네트워크 서비스 비용 및 처리량 비교""](/citec/blog/posts/2025/05/2025-05-22-scp-network-throughput/)
 - [2025-05-21 | ""SCP의 하이브리드 클라우드 및 근거리 Multi-AZ 강점 분석""](/citec/blog/posts/2025/05/2025-05-21-scp-strength/)
+- [2025-05-22 | ""SCP의 다각적 경쟁 우위 분석""](/citec/blog/posts/2025/05/2025-05-22-scp-etc-strength/)
