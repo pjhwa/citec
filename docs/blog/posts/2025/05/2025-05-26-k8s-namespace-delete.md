@@ -10,6 +10,38 @@ tags: [kubernetes, ceph, force, delete]
 
 ---
 
+## **로그**
+
+```
+citec@k1:~/osh$ kubectl get namespaces
+NAME              STATUS        AGE
+ceph              Active        17d
+default           Active        17d
+kube-node-lease   Active        17d
+kube-public       Active        17d
+kube-system       Active        17d
+metallb-system    Active        17d
+openstack         Active        17d
+rook-ceph         Terminating   2d22h
+citec@k1:~/osh$ kubectl describe namespace rook-ceph
+Name:         rook-ceph
+Labels:       kubernetes.io/metadata.name=rook-ceph
+Annotations:  <none>
+Status:       Terminating
+Conditions:
+  Type                                         Status  LastTransitionTime               Reason                Message
+  ----                                         ------  ------------------               ------                -------
+  NamespaceDeletionDiscoveryFailure            False   Mon, 26 May 2025 09:10:05 +0900  ResourcesDiscovered   All resources successfully discovered
+  NamespaceDeletionGroupVersionParsingFailure  False   Mon, 26 May 2025 09:10:05 +0900  ParsedGroupVersions   All legacy kube types successfully parsed
+  NamespaceDeletionContentFailure              False   Mon, 26 May 2025 09:10:05 +0900  ContentDeleted        All content successfully deleted, may be waiting on finalization
+  NamespaceContentRemaining                    True    Mon, 26 May 2025 09:10:44 +0900  SomeResourcesRemain   Some resources are remaining: secrets. has 1 resource instances
+  NamespaceFinalizersRemaining                 True    Mon, 26 May 2025 09:10:44 +0900  SomeFinalizersRemain  Some content in the namespace has finalizers remaining: ceph.rook.io/disaster-protection in 1 resource instances
+
+No resource quota.
+
+No LimitRange resource.
+```
+
 ## **문제 상황**
 `kubectl describe namespace rook-ceph` 명령어의 출력에서 확인된 주요 정보는 다음과 같습니다:
 - **상태**: `Terminating`
