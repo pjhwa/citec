@@ -21,3 +21,4 @@ template: blog.html
 - [2025-05-22 | ""CSP 네트워크 서비스 비용 및 처리량 비교""](/citec/blog/posts/2025/05/2025-05-22-scp-network-throughput/)
 - [2025-05-21 | ""SCP의 하이브리드 클라우드 및 근거리 Multi-AZ 강점 분석""](/citec/blog/posts/2025/05/2025-05-21-scp-strength/)
 - [2025-05-22 | ""SCP의 다각적 경쟁 우위 분석""](/citec/blog/posts/2025/05/2025-05-22-scp-etc-strength/)
+- [2025-05-26 | ""Kubernetes 네임스페이스 강제 삭제 방법""](/citec/blog/posts/2025/05/2025-05-26-k8s-namespace-delete/)
