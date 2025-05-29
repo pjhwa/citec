@@ -18,6 +18,7 @@ rhel-7-server-rpms - RHEL7 OS (필수)
 CI-TEC분들의 의견을 여쭤보게 되었습니다. 
 확인 중 문의사항 있으시면 편하게 연락 부탁드립니다. 
 
+- 주요 패키지 (쿼럼서버 제외하고 전부 동일)
 ---- DB : postgresql ----
 [root@devops-stg-console-db01 ~]# ps -ef | grep postgresql
 root     10704  9668  0 10:12 pts/0    00:00:00 grep --color=auto postgresql
