@@ -1,3 +1,17 @@
+SCP 공공 풀 CSAP 인증을 위해 RHEL 7 버전의 업그레이드 항목이 문제점으로 검출되었으나, 
+ELS 계약으로 인한 PASS처리를 하는 과정에서 모든 OS의 버전을 RHEL7.9로 올려야 하는 것이 확인되었습니다. 
+ELS 지원을 받기위해서는 RHEL 7.9로 설치가 되어있어야 하기때문에 마이너 버전의 업데이트 작업을 계획중 입니다. 
+
+특정 3rd-party application 을 사용하는 OS는 크게 문제가 없으나,  DB/HA를 사용하는 OS에 대한 확인 요청이 있었습니다. 
+
+■ RHEL 7.9 Update 필수 패키지 
+RHEL7 레포지토리 :
+rhel-7-server-rpms - RHEL7 OS (필수)
+
+이에따라 몇몇 DB 서버에서 위의 필수 repository를 구성하고 설치 패키지 Dependancy를 점검 해 보았습니다. 
+
+#yum --assumeno update
+
 ---- DB : postgresql ----
 [root@devops-stg-console-db01 ~]# ps -ef | grep postgresql
 root     10704  9668  0 10:12 pts/0    00:00:00 grep --color=auto postgresql
