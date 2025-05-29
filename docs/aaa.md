@@ -58,3 +58,51 @@ Updating:
  dmidecode                                                  x86_64                     1:3.2-5.el7_9.1                                           LocalRepo_BaseOS                      82 k
  dracut                                                     x86_64                     033-572.el7                                               LocalRepo_BaseOS                     329 k
  dracut-config-rescue                                       x86_64                     033-572.el7                                               LocalRepo_BaseOS                      61 k
+dracut-network                                             x86_64                     033-572.el7                                               LocalRepo_BaseOS                     103 k
+ e2fsprogs                                                  x86_64                     1.42.9-19.el7                                             LocalRepo_BaseOS                     701 k
+ e2fsprogs-libs                                             x86_64                     1.42.9-19.el7                                             LocalRepo_BaseOS                     168 k
+ ebtables                                                   x86_64                     2.0.10-16.el7                                             LocalRepo_BaseOS                     123 k
+ elfutils-default-yama-scope                                noarch                     0.176-5.el7                                               LocalRepo_BaseOS                      33 k
+ elfutils-libelf                                            x86_64                     0.176-5.el7                                               LocalRepo_BaseOS                     195 k
+ elfutils-libs                                              x86_64                     0.176-5.el7                                               LocalRepo_BaseOS                     291 k
+ emacs-filesystem                                           noarch                     1:24.3-23.el7_9.1                                         LocalRepo_BaseOS                      58 k
+ ethtool                                                    x86_64                     2:4.8-10.el7                                              LocalRepo_BaseOS                     127 k
+ expat                                                      x86_64                     2.1.0-15.el7_9                                            LocalRepo_BaseOS                      83 k
+ file                                                       x86_64                     5.11-37.el7                                               LocalRepo_BaseOS                      57 k
+ file-libs                                                  x86_64                     5.11-37.el7                                               LocalRepo_BaseOS                     340 k
+ filesystem                                                 x86_64                     3.2-25.el7                                                LocalRepo_BaseOS                     1.0 M
+ findutils                                                  x86_64                     1:4.5.11-6.el7                                            LocalRepo_BaseOS                     559 k
+ firewalld                                                  noarch                     0.6.3-13.el7_9                                            LocalRepo_BaseOS                     449 k
+ firewalld-filesystem                                       noarch                     0.6.3-13.el7_9                                            LocalRepo_BaseOS                      51 k
+ freetype                                                   x86_64                     2.8-14.el7_9.1                                            LocalRepo_BaseOS                     380 k
+ fuse                                                       x86_64                     2.9.2-11.el7                                              LocalRepo_BaseOS                      86 k
+ fuse-libs                                                  x86_64                     2.9.2-11.el7                                              LocalRepo_BaseOS                      93 k
+ gettext                                                    x86_64                     0.19.8.1-3.el7_9                                          LocalRepo_BaseOS                     1.0 M
+ gettext-libs                                               x86_64                     0.19.8.1-3.el7_9                                          LocalRepo_BaseOS                     502 k
+ glib2                                                      x86_64                     2.56.1-9.el7_9                                            LocalRepo_BaseOS                     2.5 M
+ gnupg2                                                     x86_64                     2.0.22-5.el7_5                                            LocalRepo_BaseOS                     1.5 M
+ gnutls                                                     x86_64                     3.3.29-9.el7_6                                            LocalRepo_BaseOS                     681 k
+ gobject-introspection                                      x86_64                     1.56.1-1.el7                                              LocalRepo_BaseOS                     241 k
+ grub2-common                                               noarch                     1:2.02-0.87.el7_9.14                                      LocalRepo_BaseOS                     733 k
+ grub2-pc                                                   x86_64                     1:2.02-0.87.el7_9.14                                      LocalRepo_BaseOS                      35 k
+ grub2-pc-modules                                           noarch                     1:2.02-0.87.el7_9.14                                      LocalRepo_BaseOS                     861 k
+ grubby                                                     x86_64                     8.28-26.el7                                               LocalRepo_BaseOS                      71 k
+ gssproxy                                                   x86_64                     0.7.0-30.el7_9                                            LocalRepo_BaseOS                     111 k
+ gzip                                                       x86_64                     1.5-11.el7_9                                              LocalRepo_BaseOS                     130 k
+ hostname                                                   x86_64                     3.13-3.el7_7.1                                            LocalRepo_BaseOS                      17 k
+ hwdata                                                     x86_64                     0.252-9.7.el7                                             LocalRepo_BaseOS                     2.5 M
+ info                                                       x86_64                     5.1-5.el7                                                 LocalRepo_BaseOS                     233 k
+ initscripts                                                x86_64                     9.49.53-1.el7_9.1                                         LocalRepo_BaseOS                     440 k
+ iproute                                                    x86_64                     4.11.0-30.el7                                             LocalRepo_BaseOS                     805 k
+ iprutils                                                   x86_64                     2.4.17.1-3.el7_7                                          LocalRepo_BaseOS                     243 k
+ ipset                                                      x86_64                     7.1-1.el7                                                 LocalRepo_BaseOS                      39 k
+ ipset-libs                                                 x86_64                     7.1-1.el7                                                 LocalRepo_BaseOS                      64 k
+ iptables                                                   x86_64                     1.4.21-35.el7                                             LocalRepo_BaseOS                     432 k
+ irqbalance                                                 x86_64                     3:1.0.7-12.el7                                            LocalRepo_BaseOS                      45 k
+ iwl100-firmware                                            noarch                     39.31.5.1-83.el7_9                                        LocalRepo_BaseOS                     156 k
+ iwl1000-firmware                                           noarch                     1:39.31.5.1-83.el7_9                                      LocalRepo_BaseOS                     215 k
+ iwl105-firmware                                            noarch                     18.168.6.1-83.el7_9                                       LocalRepo_BaseOS                     235 k
+ iwl135-firmware                                            noarch                     18.168.6.1-83.el7_9                                       LocalRepo_BaseOS                     243 k
+ iwl2000-firmware                                           noarch                     18.168.6.1-83.el7_9                                       LocalRepo_BaseOS                     237 k
+ iwl2030-firmware                                           noarch                     18.168.6.1-83.el7_9                                       LocalRepo_BaseOS                     246 k
+ iwl3160-firmware                                           noarch                     25.30.13.0-83.el7_9                                       LocalRepo_BaseOS                     1.5 M
