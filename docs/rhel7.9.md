@@ -78,3 +78,40 @@ pacemaker-cli-1.1.18-11.el7_5.2.x86_64
 pacemaker-1.1.18-11.el7_5.2.x86_64
 pacemaker-libs-1.1.18-11.el7_5.2.x86_64
 
+-------------------------
+상세 설치 될 패키지 list:
+
+[root@devops-stg-dbqr yum.repos.d]# cat /etc/*-release
+NAME="Red Hat Enterprise Linux Server"
+VERSION="7.4 (Maipo)"
+ID="rhel"
+ID_LIKE="fedora"
+VARIANT="Server"
+VARIANT_ID="server"
+VERSION_ID="7.4"
+PRETTY_NAME="Red Hat Enterprise Linux Server 7.4 (Maipo)"
+ANSI_COLOR="0;31"
+CPE_NAME="cpe:/o:redhat:enterprise_linux:7.4:GA:server"
+HOME_URL="https://www.redhat.com/"
+BUG_REPORT_URL="https://bugzilla.redhat.com/"
+
+REDHAT_BUGZILLA_PRODUCT="Red Hat Enterprise Linux 7"
+REDHAT_BUGZILLA_PRODUCT_VERSION=7.4
+REDHAT_SUPPORT_PRODUCT="Red Hat Enterprise Linux"
+REDHAT_SUPPORT_PRODUCT_VERSION="7.4"
+Red Hat Enterprise Linux Server release 7.4 (Maipo)
+Red Hat Enterprise Linux Server release 7.4 (Maipo)
+[root@devops-stg-dbqr yum.repos.d]# cat /etc/yum.repos.d/branch.repo
+[LocalRepo_BaseOS]
+baseurl = http://182.197.136.246/7/base/
+enabled = 1
+gpgcheck = 0
+metadata_expire = -1
+name = LocalRepo_BaseOS
+
+[root@devops-stg-dbqr yum.repos.d]#
+[root@devops-stg-dbqr yum.repos.d]#
+[root@devops-stg-dbqr yum.repos.d]# yum --assumeno update
+
+-------------------------------------
+Dependencies Resolved
