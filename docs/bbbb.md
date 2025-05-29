@@ -50,3 +50,43 @@ linux-firmware                                             noarch               
  python-firewall                                            noarch                     0.6.3-13.el7_9                                            LocalRepo_BaseOS                     355 k
  python-gobject-base                                        x86_64                     3.22.0-1.el7_4.1                                          LocalRepo_BaseOS                     294 k
  python-libs                                                x86_64                     2.7.5-94.el7_9                                            LocalRepo_BaseOS                     5.6 M
+python-linux-procfs                                        noarch                     0.4.11-4.el7                                              LocalRepo_BaseOS                      33 k
+ python-magic                                               noarch                     5.11-37.el7                                               LocalRepo_BaseOS                      34 k
+ python-perf                                                x86_64                     3.10.0-1160.119.1.el7                                     LocalRepo_BaseOS                     8.2 M
+ python-slip                                                noarch                     0.4.0-4.el7                                               LocalRepo_BaseOS                      31 k
+ python-slip-dbus                                           noarch                     0.4.0-4.el7                                               LocalRepo_BaseOS                      32 k
+ python-urlgrabber                                          noarch                     3.10-10.el7                                               LocalRepo_BaseOS                     109 k
+ quota                                                      x86_64                     1:4.01-19.el7                                             LocalRepo_BaseOS                     179 k
+ quota-nls                                                  noarch                     1:4.01-19.el7                                             LocalRepo_BaseOS                      90 k
+ rdma-core                                                  x86_64                     22.4-6.el7_9                                              LocalRepo_BaseOS                      52 k
+ readline                                                   x86_64                     6.2-11.el7                                                LocalRepo_BaseOS                     193 k
+ redhat-logos                                               noarch                     70.7.0-1.el7                                              LocalRepo_BaseOS                      13 M
+ redhat-release-server                                      x86_64                     7.9-12.el7_9                                              LocalRepo_BaseOS                      32 k
+ redhat-support-lib-python                                  noarch                     0.14.0-1.el7_9                                            LocalRepo_BaseOS                     277 k
+ redhat-support-tool                                        noarch                     0.14.0-1.el7_9                                            LocalRepo_BaseOS                     254 k
+ rhn-check                                                  x86_64                     2.0.2-24.el7                                              LocalRepo_BaseOS                      56 k
+ rhn-client-tools                                           x86_64                     2.0.2-24.el7                                              LocalRepo_BaseOS                     411 k
+ rhn-setup                                                  x86_64                     2.0.2-24.el7                                              LocalRepo_BaseOS                      90 k
+ rhnlib                                                     noarch                     2.5.65-8.el7                                              LocalRepo_BaseOS                      66 k
+ rhnsd                                                      x86_64                     5.0.13-10.el7                                             LocalRepo_BaseOS                      49 k
+ rpcbind                                                    x86_64                     0.2.0-49.el7                                              LocalRepo_BaseOS                      60 k
+ rpm                                                        x86_64                     4.11.3-48.el7_9                                           LocalRepo_BaseOS                     1.2 M
+ rpm-build-libs                                             x86_64                     4.11.3-48.el7_9                                           LocalRepo_BaseOS                     108 k
+ rpm-libs                                                   x86_64                     4.11.3-48.el7_9                                           LocalRepo_BaseOS                     279 k
+ rpm-python                                                 x86_64                     4.11.3-48.el7_9                                           LocalRepo_BaseOS                      84 k
+ rsyslog                                                    x86_64                     8.24.0-57.el7_9.3                                         LocalRepo_BaseOS                     622 k
+ ruby                                                       x86_64                     2.0.0.648-39.el7_9                                        LocalRepo_BaseOS                      73 k
+ ruby-irb                                                   noarch                     2.0.0.648-39.el7_9                                        LocalRepo_BaseOS                      94 k
+ ruby-libs                                                  x86_64                     2.0.0.648-39.el7_9                                        LocalRepo_BaseOS                     2.8 M
+ rubygem-bigdecimal                                         x86_64                     1.2.0-39.el7_9                                            LocalRepo_BaseOS                      85 k
+ rubygem-io-console                                         x86_64                     0.4.2-39.el7_9                                            LocalRepo_BaseOS                      56 k
+ rubygem-json                                               x86_64                     1.7.7-39.el7_9                                            LocalRepo_BaseOS                      82 k
+ rubygem-psych                                              x86_64                     2.0.0-39.el7_9                                            LocalRepo_BaseOS                      85 k
+ rubygem-rdoc                                               noarch                     4.0.0-39.el7_9                                            LocalRepo_BaseOS                     324 k
+ rubygems                                                   noarch                     2.0.14.1-39.el7_9                                         LocalRepo_BaseOS                     216 k
+ samba-client-libs                                          x86_64                     4.10.16-25.el7_9                                          LocalRepo_BaseOS                     5.0 M
+ samba-common                                               noarch                     4.10.16-25.el7_9                                          LocalRepo_BaseOS                     219 k
+ samba-common-libs                                          x86_64                     4.10.16-25.el7_9                                          LocalRepo_BaseOS                     183 k
+ sed                                                        x86_64                     4.2.2-7.el7                                               LocalRepo_BaseOS                     231 k
+ selinux-policy                                             noarch                     3.13.1-268.el7_9.2                                        LocalRepo_BaseOS                     498 k
+ selinux-policy-targeted                                    noarch                     3.13.1-268.el7_9.2                                        LocalRepo_BaseOS                     7.0 M
