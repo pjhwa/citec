@@ -12,6 +12,12 @@ rhel-7-server-rpms - RHEL7 OS (필수)
 
 #yum --assumeno update
 
+상세 설치 될 패키지 list는 OS 별로 첨부 하였으며, 
+아래와 같이 DB가 설치되어있는 환경에서 위 패키지 업데이트로 DB서비스에 영향이 있을 지 검토 요청 드립니다. 
+테스트를 해 보면 문제는 없을 듯 한데, 라이센스라던가 부서 내 담당자의 구분이 세분화 되어있어 한번에 확인이 어렵기도하여 
+CI-TEC분들의 의견을 여쭤보게 되었습니다. 
+확인 중 문의사항 있으시면 편하게 연락 부탁드립니다. 
+
 ---- DB : postgresql ----
 [root@devops-stg-console-db01 ~]# ps -ef | grep postgresql
 root     10704  9668  0 10:12 pts/0    00:00:00 grep --color=auto postgresql
