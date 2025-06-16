@@ -21,17 +21,17 @@ for server in "${servers[@]}"; do
         continue
     fi
 
-    # broadcast pkts rx ok 추출
-    broadcast_rx_ok_0755=$(grep "broadcast pkts rx ok" "$file_0755" | awk '{print $NF}' | head -n 1)
-    broadcast_rx_ok_0955=$(grep "broadcast pkts rx ok" "$file_0955" | awk '{print $NF}' | head -n 1)
+    # broadcast pkts rx ok 추출 (숫자만 추출)
+    broadcast_rx_ok_0755=$(grep "broadcast pkts rx ok:" "$file_0755" | sed 's/.*broadcast pkts rx ok://' | tr -d ' ' | head -n 1)
+    broadcast_rx_ok_0955=$(grep "broadcast pkts rx ok:" "$file_0955" | sed 's/.*broadcast pkts rx ok://' | tr -d ' ' | head -n 1)
 
     # droppedRx 추출
-    dropped_rx_0755=$(grep "droppedRx" "$file_0755" | awk '{print $NF}' | head -n 1)
-    dropped_rx_0955=$(grep "droppedRx" "$file_0955" | awk '{print $NF}' | head -n 1)
+    dropped_rx_0755=$(grep "droppedRx:" "$file_0755" | sed 's/.*droppedRx://' | tr -d ' ' | head -n 1)
+    dropped_rx_0955=$(grep "droppedRx:" "$file_0955" | sed 's/.*droppedRx://' | tr -d ' ' | head -n 1)
 
     # pktsRxBroadcast 추출
-    pkts_rx_broadcast_0755=$(grep "pktsRxBroadcast" "$file_0755" | awk '{print $NF}' | head -n 1)
-    pkts_rx_broadcast_0955=$(grep "pktsRxBroadcast" "$file_0955" | awk '{print $NF}' | head -n 1)
+    pkts_rx_broadcast_0755=$(grep "pktsRxBroadcast:" "$file_0755" | sed 's/.*pktsRxBroadcast://' | tr -d ' ' | head -n 1)
+    pkts_rx_broadcast_0955=$(grep "pktsRxBroadcast:" "$file_0955" | sed 's/.*pktsRxBroadcast://' | tr -d ' ' | head -n 1)
 
     # 델타 계산
     if [ -n "$broadcast_rx_ok_0755" ] && [ -n "$broadcast_rx_ok_0955" ]; then
