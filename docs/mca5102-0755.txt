@@ -1,0 +1,775 @@
+Mon Jun 16 07:55:01 KST 2025
+
+mca5102_netstat
+
+Ip:
+
+    Forwarding: 2
+
+    4962759674 total packets received
+
+    0 forwarded
+
+    0 incoming packets discarded
+
+    4962759674 incoming packets delivered
+
+    223106174 requests sent out
+
+    2 dropped because of missing route
+
+Icmp:
+
+    504 ICMP messages received
+
+    252 input ICMP message failed
+
+    ICMP input histogram:
+
+        destination unreachable: 504
+
+    12755 ICMP messages sent
+
+    0 ICMP messages failed
+
+    ICMP output histogram:
+
+        destination unreachable: 12755
+
+IcmpMsg:
+
+        InType3: 504
+
+        OutType3: 12755
+
+Tcp:
+
+    3128199 active connection openings
+
+    2133808 passive connection openings
+
+    965267 failed connection attempts
+
+    2369 connection resets received
+
+    307 connections established
+
+    206956536 segments received
+
+    222298596 segments sent out
+
+    7980 segments retransmitted
+
+    1 bad segments received
+
+    433810 resets sent
+
+Udp:
+
+    4754874123 packets received
+
+    12251 packets to unknown port received
+
+    875563 packet receive errors
+
+    1274745 packets sent
+
+    875563 receive buffer errors
+
+    0 send buffer errors
+
+    IgnoredMulti: 40697
+
+UdpLite:
+
+TcpExt:
+
+    55 SYN cookies sent
+
+    55 SYN cookies received
+
+    422 resets received for embryonic SYN_RECV sockets
+
+    254058 TCP sockets finished time wait in fast timer
+
+    2743152 delayed acks sent
+
+    309 delayed acks further delayed because of locked socket
+
+    Quick ack mode was activated 82 times
+
+    151071052 packet headers predicted
+
+    6587650 acknowledgments not containing data payload received
+
+    31272275 predicted acknowledgments
+
+    TCPSackRecovery: 13
+
+    Detected reordering 39428 times using SACK
+
+    Detected reordering 1 times using time stamp
+
+    2 congestion windows fully recovered without slow start
+
+    1 congestion windows partially recovered using Hoe heuristic
+
+    TCPDSACKUndo: 8
+
+    640 congestion windows recovered without slow start after partial ack
+
+    TCPLostRetransmit: 965
+
+    248 fast retransmits
+
+    6 retransmits in slow start
+
+    TCPTimeouts: 1716
+
+    TCPLossProbes: 5061
+
+    TCPLossProbeRecovery: 316
+
+    TCPBacklogCoalesce: 61959
+
+    TCPDSACKOldSent: 64
+
+    TCPDSACKRecv: 301
+
+    200715 connections reset due to unexpected data
+
+    15230 connections reset due to early user close
+
+    55 connections aborted due to timeout
+
+    TCPDSACKIgnoredOld: 1
+
+    TCPDSACKIgnoredNoUndo: 165
+
+    TCPSackShifted: 37
+
+    TCPSackMerged: 45
+
+    TCPSackShiftFallback: 48379
+
+    TCPReqQFullDoCookies: 55
+
+    TCPRcvCoalesce: 450453
+
+    TCPOFOQueue: 4968
+
+    TCPOFOMerge: 2
+
+    TCPChallengeACK: 1
+
+    TCPSYNChallenge: 1
+
+    TCPSpuriousRtxHostQueues: 254
+
+    TCPAutoCorking: 166045
+
+    TCPWantZeroWindowAdv: 9
+
+    TCPSynRetrans: 1813
+
+    TCPOrigDataSent: 41543012
+
+    TCPHystartTrainDetect: 14
+
+    TCPHystartTrainCwnd: 578
+
+    TCPKeepAlive: 101410
+
+    TCPDelivered: 43026887
+
+    TCPAckCompressed: 4506
+
+    TcpTimeoutRehash: 2711
+
+IpExt:
+
+    InBcastPkts: 4755479591
+
+    InOctets: 1465205227896
+
+    OutOctets: 16171271450
+
+    InBcastOctets: 1389809600258
+
+    InNoECTPkts: 4962876846
+
+    InECT1Pkts: 10748
+
+    InECT0Pkts: 5
+
+MPTcpExt:
+
+
+
+
+
+mca5102_ethtool
+
+NIC statistics:
+
+     Tx Queue#: 0
+
+       TSO pkts tx: 16670
+
+       TSO bytes tx: 102767126
+
+       ucast pkts tx: 25869600
+
+       ucast bytes tx: 2017230896
+
+       mcast pkts tx: 0
+
+       mcast bytes tx: 0
+
+       bcast pkts tx: 1515
+
+       bcast bytes tx: 63630
+
+       pkts tx err: 0
+
+       pkts tx discard: 0
+
+       drv dropped tx total: 0
+
+          too many frags: 0
+
+          giant hdr: 0
+
+          hdr err: 0
+
+          tso: 0
+
+       ring full: 0
+
+       pkts linearized: 0
+
+       hdr cloned: 0
+
+       giant hdr: 0
+
+     Tx Queue#: 1
+
+       TSO pkts tx: 16298
+
+       TSO bytes tx: 103412790
+
+       ucast pkts tx: 31611412
+
+       ucast bytes tx: 2401018728
+
+       mcast pkts tx: 442
+
+       mcast bytes tx: 30980
+
+       bcast pkts tx: 0
+
+       bcast bytes tx: 0
+
+       pkts tx err: 0
+
+       pkts tx discard: 0
+
+       drv dropped tx total: 0
+
+          too many frags: 0
+
+          giant hdr: 0
+
+          hdr err: 0
+
+          tso: 0
+
+       ring full: 0
+
+       pkts linearized: 0
+
+       hdr cloned: 0
+
+       giant hdr: 0
+
+     Tx Queue#: 2
+
+       TSO pkts tx: 15224
+
+       TSO bytes tx: 101814452
+
+       ucast pkts tx: 30010471
+
+       ucast bytes tx: 3001737495
+
+       mcast pkts tx: 0
+
+       mcast bytes tx: 0
+
+       bcast pkts tx: 0
+
+       bcast bytes tx: 0
+
+       pkts tx err: 0
+
+       pkts tx discard: 0
+
+       drv dropped tx total: 0
+
+          too many frags: 0
+
+          giant hdr: 0
+
+          hdr err: 0
+
+          tso: 0
+
+       ring full: 0
+
+       pkts linearized: 0
+
+       hdr cloned: 0
+
+       giant hdr: 0
+
+     Tx Queue#: 3
+
+       TSO pkts tx: 31072
+
+       TSO bytes tx: 177735480
+
+       ucast pkts tx: 26117865
+
+       ucast bytes tx: 2012896120
+
+       mcast pkts tx: 2
+
+       mcast bytes tx: 180
+
+       bcast pkts tx: 0
+
+       bcast bytes tx: 0
+
+       pkts tx err: 0
+
+       pkts tx discard: 0
+
+       drv dropped tx total: 0
+
+          too many frags: 0
+
+          giant hdr: 0
+
+          hdr err: 0
+
+          tso: 0
+
+       ring full: 0
+
+       pkts linearized: 0
+
+       hdr cloned: 0
+
+       giant hdr: 0
+
+     Tx Queue#: 4
+
+       TSO pkts tx: 14230
+
+       TSO bytes tx: 43931043
+
+       ucast pkts tx: 26821418
+
+       ucast bytes tx: 1858927938
+
+       mcast pkts tx: 0
+
+       mcast bytes tx: 0
+
+       bcast pkts tx: 0
+
+       bcast bytes tx: 0
+
+       pkts tx err: 0
+
+       pkts tx discard: 0
+
+       drv dropped tx total: 0
+
+          too many frags: 0
+
+          giant hdr: 0
+
+          hdr err: 0
+
+          tso: 0
+
+       ring full: 0
+
+       pkts linearized: 0
+
+       hdr cloned: 0
+
+       giant hdr: 0
+
+     Tx Queue#: 5
+
+       TSO pkts tx: 74356
+
+       TSO bytes tx: 204843831
+
+       ucast pkts tx: 30487794
+
+       ucast bytes tx: 3567208173
+
+       mcast pkts tx: 0
+
+       mcast bytes tx: 0
+
+       bcast pkts tx: 0
+
+       bcast bytes tx: 0
+
+       pkts tx err: 0
+
+       pkts tx discard: 0
+
+       drv dropped tx total: 0
+
+          too many frags: 0
+
+          giant hdr: 0
+
+          hdr err: 0
+
+          tso: 0
+
+       ring full: 0
+
+       pkts linearized: 0
+
+       hdr cloned: 0
+
+       giant hdr: 0
+
+     Tx Queue#: 6
+
+       TSO pkts tx: 46938
+
+       TSO bytes tx: 165642078
+
+       ucast pkts tx: 26514459
+
+       ucast bytes tx: 2427945910
+
+       mcast pkts tx: 0
+
+       mcast bytes tx: 0
+
+       bcast pkts tx: 0
+
+       bcast bytes tx: 0
+
+       pkts tx err: 0
+
+       pkts tx discard: 0
+
+       drv dropped tx total: 0
+
+          too many frags: 0
+
+          giant hdr: 0
+
+          hdr err: 0
+
+          tso: 0
+
+       ring full: 0
+
+       pkts linearized: 0
+
+       hdr cloned: 0
+
+       giant hdr: 0
+
+     Tx Queue#: 7
+
+       TSO pkts tx: 17765
+
+       TSO bytes tx: 53241951
+
+       ucast pkts tx: 25422117
+
+       ucast bytes tx: 1983056567
+
+       mcast pkts tx: 0
+
+       mcast bytes tx: 0
+
+       bcast pkts tx: 0
+
+       bcast bytes tx: 0
+
+       pkts tx err: 0
+
+       pkts tx discard: 0
+
+       drv dropped tx total: 0
+
+          too many frags: 0
+
+          giant hdr: 0
+
+          hdr err: 0
+
+          tso: 0
+
+       ring full: 0
+
+       pkts linearized: 0
+
+       hdr cloned: 0
+
+       giant hdr: 0
+
+     Rx Queue#: 0
+
+       LRO pkts rx: 4167
+
+       LRO byte rx: 43161978
+
+       ucast pkts rx: 26586693
+
+       ucast bytes rx: 10065125120
+
+       mcast pkts rx: 0
+
+       mcast bytes rx: 0
+
+       bcast pkts rx: 20002
+
+       bcast bytes rx: 1200120
+
+       pkts rx OOB: 0
+
+       pkts rx err: 0
+
+       drv dropped rx total: 0
+
+          err: 0
+
+          fcs: 0
+
+       rx buf alloc fail: 0
+
+     Rx Queue#: 1
+
+       LRO pkts rx: 3701
+
+       LRO byte rx: 25837530
+
+       ucast pkts rx: 24358272
+
+       ucast bytes rx: 9362677475
+
+       mcast pkts rx: 0
+
+       mcast bytes rx: 0
+
+       bcast pkts rx: 4631768258
+
+       bcast bytes rx: 1430078616502
+
+       pkts rx OOB: 0
+
+       pkts rx err: 0
+
+       drv dropped rx total: 0
+
+          err: 0
+
+          fcs: 0
+
+       rx buf alloc fail: 0
+
+     Rx Queue#: 2
+
+       LRO pkts rx: 2418
+
+       LRO byte rx: 4606631
+
+       ucast pkts rx: 23315607
+
+       ucast bytes rx: 8946787493
+
+       mcast pkts rx: 0
+
+       mcast bytes rx: 0
+
+       bcast pkts rx: 0
+
+       bcast bytes rx: 0
+
+       pkts rx OOB: 0
+
+       pkts rx err: 0
+
+       drv dropped rx total: 0
+
+          err: 0
+
+          fcs: 0
+
+       rx buf alloc fail: 0
+
+     Rx Queue#: 3
+
+       LRO pkts rx: 2400
+
+       LRO byte rx: 4286047
+
+       ucast pkts rx: 24734768
+
+       ucast bytes rx: 9331713218
+
+       mcast pkts rx: 0
+
+       mcast bytes rx: 0
+
+       bcast pkts rx: 0
+
+       bcast bytes rx: 0
+
+       pkts rx OOB: 0
+
+       pkts rx err: 0
+
+       drv dropped rx total: 0
+
+          err: 0
+
+          fcs: 0
+
+       rx buf alloc fail: 0
+
+     Rx Queue#: 4
+
+       LRO pkts rx: 3469
+
+       LRO byte rx: 30186298
+
+       ucast pkts rx: 26946468
+
+       ucast bytes rx: 9918073941
+
+       mcast pkts rx: 0
+
+       mcast bytes rx: 0
+
+       bcast pkts rx: 0
+
+       bcast bytes rx: 0
+
+       pkts rx OOB: 0
+
+       pkts rx err: 0
+
+       drv dropped rx total: 0
+
+          err: 0
+
+          fcs: 0
+
+       rx buf alloc fail: 0
+
+     Rx Queue#: 5
+
+       LRO pkts rx: 3662
+
+       LRO byte rx: 24217387
+
+       ucast pkts rx: 28777031
+
+       ucast bytes rx: 10486708750
+
+       mcast pkts rx: 0
+
+       mcast bytes rx: 0
+
+       bcast pkts rx: 0
+
+       bcast bytes rx: 0
+
+       pkts rx OOB: 0
+
+       pkts rx err: 0
+
+       drv dropped rx total: 0
+
+          err: 0
+
+          fcs: 0
+
+       rx buf alloc fail: 0
+
+     Rx Queue#: 6
+
+       LRO pkts rx: 4889
+
+       LRO byte rx: 56655760
+
+       ucast pkts rx: 28026951
+
+       ucast bytes rx: 10888248277
+
+       mcast pkts rx: 0
+
+       mcast bytes rx: 0
+
+       bcast pkts rx: 123711335
+
+       bcast bytes rx: 26307698546
+
+       pkts rx OOB: 0
+
+       pkts rx err: 0
+
+       drv dropped rx total: 0
+
+          err: 0
+
+          fcs: 0
+
+       rx buf alloc fail: 0
+
+     Rx Queue#: 7
+
+       LRO pkts rx: 2690
+
+       LRO byte rx: 14554665
+
+       ucast pkts rx: 24283759
+
+       ucast bytes rx: 9273703051
+
+       mcast pkts rx: 0
+
+       mcast bytes rx: 0
+
+       bcast pkts rx: 0
+
+       bcast bytes rx: 0
+
+       pkts rx OOB: 0
+
+       pkts rx err: 0
+
+       drv dropped rx total: 0
+
+          err: 0
+
+          fcs: 0
+
+       rx buf alloc fail: 0
+
+     tx timeout count: 0
