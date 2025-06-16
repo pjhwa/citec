@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# 연관 배열 선언
+# Declare associative array to store statistics
 declare -A stats
 
-# 현재 상태 변수 초기화
+# Initialize variables to track current state
 current_time=""
 current_vm=""
 current_section=""
 current_subsection=""
 in_rx_queue=false
 
-# ethtool 통계값 합계를 저장하는 함수
+# Function to store ethtool totals for a VM at a specific time
 store_ethtool_totals() {
     if [ "$current_section" == "ethtool" ] && [ -n "$current_vm" ] && [ -n "$current_time" ]; then
         stats["${current_vm}_${current_time}_drv dropped rx total"]=$drv_dropped_rx_total
@@ -20,9 +20,9 @@ store_ethtool_totals() {
     fi
 }
 
-# 입력 파일 파싱
+# Parse the input file
 while read -r line; do
-    # 타임스탬프 감지
+    # Detect timestamp
     if [[ $line =~ ^Mon\ Jun\ 16\ (07|09):55:01\ KST\ 2025$ ]]; then
         store_ethtool_totals
         current_time="${BASH_REMATCH[1]}:55:01"
@@ -31,13 +31,13 @@ while read -r line; do
         current_subsection=""
         in_rx_queue=false
 
-    # VM 및 섹션(netstat 또는 ethtool) 감지
+    # Detect VM and section (netstat or ethtool)
     elif [[ $line =~ ^(mca[0-9]+)_(netstat|ethtool)$ ]]; then
         store_ethtool_totals
         current_vm="${BASH_REMATCH[1]}"
         current_section="${BASH_REMATCH[2]}"
         if [ "$current_section" == "ethtool" ]; then
-            # ethtool 합계 초기화
+            # Initialize ethtool totals
             drv_dropped_rx_total=0
             rx_buf_alloc_fail=0
             pkts_rx_err=0
@@ -46,9 +46,9 @@ while read -r line; do
         current_subsection=""
         in_rx_queue=false
 
-    # netstat 섹션 처리
+    # Process netstat section
     elif [ "$current_section" == "netstat" ]; then
-        # 하위 섹션 감지
+        # Detect subsections
         if [[ $line == "Ip:" ]]; then
             current_subsection="Ip"
         elif [[ $line == "Udp:" ]]; then
@@ -57,7 +57,7 @@ while read -r line; do
             current_subsection="IpExt"
         fi
 
-        # 통계값 추출
+        # Extract statistics
         if [ "$current_subsection" == "Ip" ]; then
             if [[ $line =~ ([0-9]+)\ incoming\ packets\ discarded ]]; then
                 stats["${current_vm}_${current_time}_Ip InDiscards"]=${BASH_REMATCH[1]}
@@ -77,7 +77,7 @@ while read -r line; do
             fi
         fi
 
-    # ethtool 섹션 처리
+    # Process ethtool section
     elif [ "$current_section" == "ethtool" ]; then
         if [[ $line =~ Rx\ Queue#:\ [0-9]+ ]]; then
             in_rx_queue=true
@@ -95,50 +95,40 @@ while read -r line; do
     fi
 done < "data.txt"
 
-# 마지막 ethtool 섹션의 합계 저장
+# Store totals for the last ethtool section
 store_ethtool_totals
 
-# VM 및 통계값 목록 정의
+# Define VM list and statistics order
 vms=("mca5102" "mca5204" "mca5304" "mca7106" "mca7208" "mca7308")
-stats_list=(
+stats_order=(
+    "Udp packets received"
+    "Udp packet receive errors"
     "IpExt InBcastPkts"
     "UdpRcvbufErrors"
     "Ip InDiscards"
     "Udp InErrors"
-    "Udp packets received"
-    "Udp packet receive errors"
     "drv dropped rx total"
     "rx buf alloc fail"
     "pkts rx err"
     "bcast pkts rx"
 )
 
-# 표 헤더 출력
-printf "%-10s" "VM"
-for stat in "${stats_list[@]}"; do
-    printf " | %-20s" "$stat"
-done
-printf "\n"
+# Output markdown table header
+echo "| VM | Udp packets received | Udp packet receive errors | IpExt InBcastPkts | UdpRcvbufErrors | Ip InDiscards | Udp InErrors | drv dropped rx total | rx buf alloc fail | pkts rx err | bcast pkts rx |"
+echo "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |"
 
-# 구분선 출력
-printf "%-10s" "----------"
-for _ in "${stats_list[@]}"; do
-    printf " | --------------------"
-done
-printf "\n"
-
-# 각 VM의 델타값 계산 및 출력
+# Calculate and output delta values for each VM
 for vm in "${vms[@]}"; do
-    printf "%-10s" "$vm"
-    for stat in "${stats_list[@]}"; do
+    echo -n "| $vm "
+    for stat in "${stats_order[@]}"; do
         val1=${stats["${vm}_07:55:01_${stat}"]}
         val2=${stats["${vm}_09:55:01_${stat}"]}
         if [ -n "$val1" ] && [ -n "$val2" ]; then
             delta=$((val2 - val1))
-            printf " | %-20d" "$delta"
+            echo -n "| $delta "
         else
-            printf " | %-20s" "N/A"
+            echo -n "| N/A "
         fi
     done
-    printf "\n"
+    echo "|"
 done
