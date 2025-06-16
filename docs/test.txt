@@ -841,3 +841,88 @@ Tcp:
     0 bad segments received
 
     486572 resets sent
+
+...
+
+Mon Jun 16 09:55:01 KST 2025
+
+mca5102_netstat
+
+Ip:
+
+    Forwarding: 2
+
+    5082100751 total packets received
+
+    0 forwarded
+
+    0 incoming packets discarded
+
+    5082100751 incoming packets delivered
+
+    223783787 requests sent out
+
+    2 dropped because of missing route
+
+Icmp:
+
+    532 ICMP messages received
+
+    266 input ICMP message failed
+
+    ICMP input histogram:
+
+        destination unreachable: 532
+
+    12838 ICMP messages sent
+
+    0 ICMP messages failed
+
+    ICMP output histogram:
+
+        destination unreachable: 12838
+
+IcmpMsg:
+
+        InType3: 532
+
+        OutType3: 12838
+
+Tcp:
+
+    3137890 active connection openings
+
+    2143338 passive connection openings
+
+    965282 failed connection attempts
+
+    2371 connection resets received
+
+    307 connections established
+
+    207560408 segments received
+
+    222971707 segments sent out
+
+    8053 segments retransmitted
+
+    1 bad segments received
+
+    435704 resets sent
+
+Udp:
+
+    4873600670 packets received
+
+    12306 packets to unknown port received
+
+    885443 packet receive errors
+
+    1280452 packets sent
+
+    885443 receive buffer errors
+
+    0 send buffer errors
+
+    IgnoredMulti: 40697
+...
