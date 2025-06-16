@@ -3,21 +3,34 @@
 # 서버 목록
 servers=("mca5101" "mca5203" "mca5303")
 
-# 파일명 형식
-file1="_stats_0615_225500.txt"
-file2="_stats_0616_005500.txt"
+# 날짜 및 시간
+date1="0615_225500"  # UTC 6월 15일 22:55:00 (KST 6월 16일 07:55:00)
+date2="0616_005500"  # UTC 6월 16일 00:55:00 (KST 6월 16일 09:55:00)
+
+# 가능한 파일 접두사
+prefixes=("pb1hcn05-vc053-sam_" "pb1hcn05-vc053-sam.t1pb1.scpcloud.co.kr_")
 
 # 결과를 저장할 배열
 declare -A results
 
 for server in "${servers[@]}"; do
-    # 파일명 생성
-    file_0755="pb1hcn05-vc053-sam_[${server}]${file1}"
-    file_0955="pb1hcn05-vc053-sam_[${server}]${file2}"
+    # 파일명 생성 및 확인
+    file_0755=""
+    file_0955=""
+    for prefix in "${prefixes[@]}"; do
+        temp_file1="${prefix}[${server}]_stats_${date1}.txt"
+        temp_file2="${prefix}[${server}]_stats_${date2}.txt"
+        if [ -f "$temp_file1" ]; then
+            file_0755="$temp_file1"
+        fi
+        if [ -f "$temp_file2" ]; then
+            file_0955="$temp_file2"
+        fi
+    done
 
     # 파일이 존재하는지 확인
-    if [ ! -f "$file_0755" ] || [ ! -f "$file_0955" ]; then
-        echo "파일이 존재하지 않습니다: $file_0755 또는 $file_0955"
+    if [ -z "$file_0755" ] || [ -z "$file_0955" ]; then
+        echo "파일이 존재하지 않습니다: ${server}의 07:55:00 또는 09:55:00 파일"
         continue
     fi
 
@@ -58,9 +71,9 @@ for server in "${servers[@]}"; do
     results["${server}_pktsRxBroadcast"]=$delta_pkts_rx_broadcast
 done
 
-# 결과 출력
-echo "서버     | broadcast pkts rx ok | droppedRx | pktsRxBroadcast"
-echo "---------|----------------------|-----------|----------------"
+# Markdown 형식의 표 출력
+echo "| 서버     | broadcast pkts rx ok | droppedRx | pktsRxBroadcast |"
+echo "|----------|----------------------|-----------|-----------------|"
 for server in "${servers[@]}"; do
-    printf "%-8s | %-20s | %-9s | %-15s\n" "$server" "${results[${server}_broadcast pkts rx ok]}" "${results[${server}_droppedRx]}" "${results[${server}_pktsRxBroadcast]}"
+    printf "| %-8s | %-20s | %-9s | %-15s |\n" "$server" "${results[${server}_broadcast pkts rx ok]}" "${results[${server}_droppedRx]}" "${results[${server}_pktsRxBroadcast]}"
 done
