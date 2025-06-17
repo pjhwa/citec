@@ -4,9 +4,9 @@
 
 |VM|Udp packets received|Udp packet receive errors|IpExt InBcastPkts|UdpRcvbufErrors|Ip InDiscards|Udp InErrors|drv dropped rx total|rx buf alloc fail|pkts rx err|bcast pkts rx|
 |---|---|---|---|---|---|---|---|---|---|---|
-|mca5102	118726547	9880	118735732	9880	0	9880	0	0	0	118740740
-|mca5204	118765978	2195	118768269	2195	0	2195	0	0	0	118772997
-|mca5304	118814026	8548	118821440	8548	0	8548	0	0	0	118826683
+|mca5102|	118726547|	9880	|118735732|	9880|	0	|9880	|0|0	|0	|118740740|
+|mca5204	|118765978	|2195|	118768269|	2195|	0|	2195	|0	|0	|0	|118772997|
+|mca5304|	118814026|	8548|	118821440|	8548|	0	|8548	|0|0|	0	|118826683|
 
 |ESXi 서버|broadcast pkts rx ok|droppedRx|pktsRxBroadcast|
 |---|---|---|---|
