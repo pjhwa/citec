@@ -1,9 +1,17 @@
 #!/bin/bash
 
-# 현재 디렉토리 확인 (디버깅용)
-echo "현재 디렉토리: $(pwd)"
+# 인자 확인: 오늘 날짜 (MMDD 형식, 예: 0617)
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <MMDD>"
+    exit 1
+fi
 
-# 파일이 위치한 디렉토리 명시
+today=$1  # 오늘 날짜 (예: 0617)
+
+# 전날 날짜 계산 (예: 0616)
+yesterday=$(date -d "2025-$today -1 day" +%m%d 2>/dev/null || date -v-1d -j -f "%m%d" "2025$today" +%m%d)
+
+# 디렉토리 경로
 DIR="/mnt/c/Users/jooksan.park/src/esxi"
 
 # 서버 목록
@@ -34,24 +42,24 @@ for server in "${servers[@]}"; do
         continue
     fi
 
-    # 파일명 생성 (절대 경로 사용)
-    file_0755="${DIR}/${prefix}_[${server}]_stats_0615_225500.txt"
-    file_0955="${DIR}/${prefix}_[${server}]_stats_0616_005500.txt"
+    # 파일명 생성 (전날과 오늘 파일)
+    file_yesterday="${DIR}/${prefix}_[${server}]_stats_${yesterday}_225500.txt"
+    file_today="${DIR}/${prefix}_[${server}]_stats_${today}_005500.txt"
 
     # 디버깅: 확인하려는 파일명 출력
-    echo "서버 $server의 파일 확인: $file_0755 및 $file_0955"
+    echo "서버 $server의 파일 확인: $file_yesterday 및 $file_today"
 
     # 파일 존재 여부 확인
-    if [ ! -f "$file_0755" ]; then
-        echo "파일이 존재하지 않습니다: $file_0755"
+    if [ ! -f "$file_yesterday" ]; then
+        echo "파일이 존재하지 않습니다: $file_yesterday"
         results["${server}_broadcast pkts rx ok"]="N/A"
         results["${server}_droppedRx"]="N/A"
         results["${server}_pktsRxBroadcast"]="N/A"
         continue
     fi
 
-    if [ ! -f "$file_0955" ]; then
-        echo "파일이 존재하지 않습니다: $file_0955"
+    if [ ! -f "$file_today" ]; then
+        echo "파일이 존재하지 않습니다: $file_today"
         results["${server}_broadcast pkts rx ok"]="N/A"
         results["${server}_droppedRx"]="N/A"
         results["${server}_pktsRxBroadcast"]="N/A"
@@ -59,16 +67,16 @@ for server in "${servers[@]}"; do
     fi
 
     # 통계값 추출 (broadcast pkts rx ok)
-    broadcast_rx_ok_1=$(grep "broadcast pkts rx ok:" "$file_0755" | sed 's/.*broadcast pkts rx ok://' | tr -d ' ' | head -n 1)
-    broadcast_rx_ok_2=$(grep "broadcast pkts rx ok:" "$file_0955" | sed 's/.*broadcast pkts rx ok://' | tr -d ' ' | head -n 1)
+    broadcast_rx_ok_1=$(grep "broadcast pkts rx ok:" "$file_yesterday" | sed 's/.*broadcast pkts rx ok://' | tr -d ' ' | head -n 1)
+    broadcast_rx_ok_2=$(grep "broadcast pkts rx ok:" "$file_today" | sed 's/.*broadcast pkts rx ok://' | tr -d ' ' | head -n 1)
 
     # 통계값 추출 (droppedRx)
-    dropped_rx_1=$(grep "droppedRx:" "$file_0755" | sed 's/.*droppedRx://' | tr -d ' ' | head -n 1)
-    dropped_rx_2=$(grep "droppedRx:" "$file_0955" | sed 's/.*droppedRx://' | tr -d ' ' | head -n 1)
+    dropped_rx_1=$(grep "droppedRx:" "$file_yesterday" | sed 's/.*droppedRx://' | tr -d ' ' | head -n 1)
+    dropped_rx_2=$(grep "droppedRx:" "$file_today" | sed 's/.*droppedRx://' | tr -d ' ' | head -n 1)
 
     # 통계값 추출 (pktsRxBroadcast)
-    pkts_rx_broadcast_1=$(grep "pktsRxBroadcast:" "$file_0755" | sed 's/.*pktsRxBroadcast://' | tr -d ' ' | head -n 1)
-    pkts_rx_broadcast_2=$(grep "pktsRxBroadcast:" "$file_0955" | sed 's/.*pktsRxBroadcast://' | tr -d ' ' | head -n 1)
+    pkts_rx_broadcast_1=$(grep "pktsRxBroadcast:" "$file_yesterday" | sed 's/.*pktsRxBroadcast://' | tr -d ' ' | head -n 1)
+    pkts_rx_broadcast_2=$(grep "pktsRxBroadcast:" "$file_today" | sed 's/.*pktsRxBroadcast://' | tr -d ' ' | head -n 1)
 
     # 델타 계산 (숫자인지 확인)
     if [[ "$broadcast_rx_ok_1" =~ ^[0-9]+$ ]] && [[ "$broadcast_rx_ok_2" =~ ^[0-9]+$ ]]; then
