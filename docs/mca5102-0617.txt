@@ -775,3 +775,109 @@ NIC statistics:
           fcs: 0
        rx buf alloc fail: 0
      tx timeout count: 0
+
+Tue Jun 17 07:55:01 KST 2025
+VM: [mca5101]
+stats of a vmxnet3 vNIC rx queue {
+   LRO pkts rx ok:27923
+   LRO bytes rx ok:204355677
+   pkts rx ok:5462701233
+   bytes rx ok:1688917010920
+   unicast pkts rx ok:216149039
+   unicast bytes rx ok:81494001386
+   multicast pkts rx ok:0
+   multicast bytes rx ok:0
+   broadcast pkts rx ok:5246552194
+   broadcast bytes rx ok:1607423009534
+   running out of buffers:0
+   pkts receive error:0
+   1st ring size:4096
+   2nd ring size:512
+   # of times the 1st ring is full:0
+   # of times the 2nd ring is full:0
+   fail to map a rx buffer:0
+   request to page in a buffer:0
+   # of times rx queue is stopped:0
+   failed when copying into the guest buffer:0
+   # of pkts dropped due to large hdrs:0
+   # of pkts dropped due to max number of SG limits:0
+   pkts rx via data ring ok:0
+   bytes rx via data ring ok:0
+   Whether rx burst queuing is enabled:0
+   current backend burst queue length:0
+   maximum backend burst queue length so far:0
+   aggregate number of times packets are requeued:0
+   aggregate number of times packets are dropped by PktAgingList:0
+   # of pkts dropped due to large inner (encap) hdrs:0
+   number of times packets are dropped by burst queue:0
+   number of times packets are dropped by rx try lock queueing:0
+   number of packets delivered by burst queue:0
+   number of packets dropped by packet steering:0
+   number of memory region lookup pass in Rx.:0
+   number of packets dropped due to pkt length exceeds vNic mtu:0
+   number of packets dropped due to pkt truncation:0
+   amount of memory regions mapped for the vnic:0
+   total amount of memory regions registered for all vnics on the host:0
+}
+stats of a vmxnet3 vNIC rx queue {
+   LRO pkts rx ok:27923
+   LRO bytes rx ok:204355677
+   pkts rx ok:5462701233
+   bytes rx ok:1688917010920
+   unicast pkts rx ok:216149039
+   unicast bytes rx ok:81494001386
+   multicast pkts rx ok:0
+   multicast bytes rx ok:0
+   broadcast pkts rx ok:5246552194
+   broadcast bytes rx ok:1607423009534
+   running out of buffers:0
+   pkts receive error:0
+   1st ring size:4096
+   2nd ring size:512
+   # of times the 1st ring is full:0
+   # of times the 2nd ring is full:0
+   fail to map a rx buffer:0
+   request to page in a buffer:0
+   # of times rx queue is stopped:0
+   failed when copying into the guest buffer:0
+   # of pkts dropped due to large hdrs:0
+   # of pkts dropped due to max number of SG limits:0
+   pkts rx via data ring ok:0
+   bytes rx via data ring ok:0
+   Whether rx burst queuing is enabled:0
+   current backend burst queue length:0
+   maximum backend burst queue length so far:0
+   aggregate number of times packets are requeued:0
+   aggregate number of times packets are dropped by PktAgingList:0
+   # of pkts dropped due to large inner (encap) hdrs:0
+   number of times packets are dropped by burst queue:0
+   number of times packets are dropped by rx try lock queueing:0
+   number of packets delivered by burst queue:0
+   number of packets dropped by packet steering:0
+   number of memory region lookup pass in Rx.:0
+   number of packets dropped due to pkt length exceeds vNic mtu:0
+   number of packets dropped due to pkt truncation:0
+   amount of memory regions mapped for the vnic:0
+   total amount of memory regions registered for all vnics on the host:0
+}
+packet stats {
+   pktsTx:232834924
+   pktsTxMulticast:2
+   pktsTxBroadcast:1615
+   pktsRx:5462701235
+   pktsRxMulticast:0
+   pktsRxBroadcast:5246552195
+   droppedTx:15579
+   droppedRx:16
+}
+packet stats {
+   pktsTx:232834924
+   pktsTxMulticast:2
+   pktsTxBroadcast:1615
+   pktsRx:5462701235
+   pktsRxMulticast:0
+   pktsRxBroadcast:5246552195
+   droppedTx:15579
+   droppedRx:16
+}
+
