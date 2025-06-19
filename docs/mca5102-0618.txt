@@ -777,3 +777,107 @@ NIC statistics:
           fcs: 0
        rx buf alloc fail: 0
      tx timeout count: 0
+
+Wed Jun 18 07:55:01 KST 2025
+VM: [mca5101]
+stats of a vmxnet3 vNIC rx queue {
+   LRO pkts rx ok:29182
+   LRO bytes rx ok:206768323
+   pkts rx ok:6489578151
+   bytes rx ok:2005650419737
+   unicast pkts rx ok:234812367
+   unicast bytes rx ok:88113941743
+   multicast pkts rx ok:0
+   multicast bytes rx ok:0
+   broadcast pkts rx ok:6254765784
+   broadcast bytes rx ok:1917536477994
+   running out of buffers:0
+   pkts receive error:0
+   1st ring size:4096
+   2nd ring size:512
+   # of times the 1st ring is full:0
+   # of times the 2nd ring is full:0
+   fail to map a rx buffer:0
+   request to page in a buffer:0
+   # of times rx queue is stopped:0
+   failed when copying into the guest buffer:0
+   # of pkts dropped due to large hdrs:0
+   # of pkts dropped due to max number of SG limits:0
+   pkts rx via data ring ok:0
+   bytes rx via data ring ok:0
+   Whether rx burst queuing is enabled:0
+   current backend burst queue length:0
+   maximum backend burst queue length so far:0
+   aggregate number of times packets are requeued:0
+   aggregate number of times packets are dropped by PktAgingList:0
+   # of pkts dropped due to large inner (encap) hdrs:0
+   number of times packets are dropped by burst queue:0
+   number of times packets are dropped by rx try lock queueing:0
+   number of packets delivered by burst queue:0
+   number of packets dropped by packet steering:0
+   number of memory region lookup pass in Rx.:0
+   number of packets dropped due to pkt length exceeds vNic mtu:0
+   number of packets dropped due to pkt truncation:0
+   amount of memory regions mapped for the vnic:0
+   total amount of memory regions registered for all vnics on the host:0
+}
+packet stats {
+   pktsTx:253234202
+   pktsTxMulticast:2
+   pktsTxBroadcast:1783
+   pktsRx:6489578153
+   pktsRxMulticast:0
+   pktsRxBroadcast:6254765785
+   droppedTx:17119
+   droppedRx:16
+}
+NIC statistics for vmnic3
+   Packets received: 73431974843
+   Packets sent: 30709732544
+   Bytes received: 24812851838884
+   Bytes sent: 13859927224223
+   Receive packets dropped: 0
+   Transmit packets dropped: 0
+   Multicast packets received: 15631915
+   Broadcast packets received: 4624072158
+   Multicast packets sent: 5557179
+   Broadcast packets sent: 220
+   Total receive errors: 0
+   Receive length errors: 0
+   Receive over errors: 0
+   Receive CRC errors: 0
+   Receive frame errors: 0
+   Receive FIFO errors: 0
+   Receive missed errors: 0
+   Total transmit errors: 0
+   Transmit aborted errors: 0
+   Transmit carrier errors: 0
+   Transmit FIFO errors: 0
+   Transmit heartbeat errors: 0
+   Transmit window errors: 0
+NIC statistics for vmnic9
+   Packets received: 90448829777
+   Packets sent: 32554202570
+   Bytes received: 31278473913010
+   Bytes sent: 14883148574675
+   Receive packets dropped: 0
+   Transmit packets dropped: 0
+   Multicast packets received: 22841019
+   Broadcast packets received: 4624072174
+   Multicast packets sent: 5490157
+   Broadcast packets sent: 94
+   Total receive errors: 0
+   Receive length errors: 0
+   Receive over errors: 0
+   Receive CRC errors: 0
+   Receive frame errors: 0
+   Receive FIFO errors: 0
+   Receive missed errors: 0
+   Total transmit errors: 0
+   Transmit aborted errors: 0
+   Transmit carrier errors: 0
+   Transmit FIFO errors: 0
+   Transmit heartbeat errors: 0
+   Transmit window errors: 0
+
+Wed Jun 18 09:55:01 KST 2025
