@@ -1,3 +1,8 @@
+--- 
+title: "Kubernetes 클러스터 환경에서 firewalld 서비스와 calico plugin 통합 운영"
+date: 2025-06-24
+tags: [k8s, kubernetes, firewalld, calico, iptables]
+---
 
 # Kubernetes 클러스터 환경에서 firewalld 서비스와 calico plugin 통합 운영
 
