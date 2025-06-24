@@ -11,3 +11,4 @@ template: blog.html
 - [2025-06-16 | ""네트워크 패킷 유실률 분석""](/citec/blog/posts/2025/06/2025-06-16-network-monitoring/)
 - [2025-06-16 | ""네트워크 데이터 유실률 분석 - 09:55""](/citec/blog/posts/2025/06/2025-06-16-network-analysis-0955/)
 - [2025-06-17 | ""네트워크 데이터 유실률 분석 - 06/17 09:55""](/citec/blog/posts/2025/06/2025-06-17-network-analysis-0955/)
+- [2025-06-24 | ""Kubernetes 클러스터 환경에서 firewalld 서비스와 calico plugin 통합 운영""](/citec/blog/posts/2025/06/2025-06-24-k8s-firewalld-calico/)
