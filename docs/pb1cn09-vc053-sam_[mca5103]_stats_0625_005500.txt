@@ -50,3 +50,51 @@ packet stats {
    droppedTx:2733
    droppedRx:93
 }
+NIC statistics for vmnic5
+   Packets received: 28117822028
+   Packets sent: 35071543536
+   Bytes received: 9721884570325
+   Bytes sent: 30846162064072
+   Receive packets dropped: 0
+   Transmit packets dropped: 0
+   Multicast packets received: 16280134
+   Broadcast packets received: 2821070
+   Multicast packets sent: 989815
+   Broadcast packets sent: 105
+   Total receive errors: 0
+   Receive length errors: 0
+   Receive over errors: 0
+   Receive CRC errors: 0
+   Receive frame errors: 0
+   Receive FIFO errors: 0
+   Receive missed errors: 0
+   Total transmit errors: 0
+   Transmit aborted errors: 0
+   Transmit carrier errors: 0
+   Transmit FIFO errors: 0
+   Transmit heartbeat errors: 0
+   Transmit window errors: 0
+NIC statistics for vmnic9
+   Packets received: 8015391490
+   Packets sent: 33309845793
+   Bytes received: 3093039940006
+   Bytes sent: 47704255942141
+   Receive packets dropped: 0
+   Transmit packets dropped: 0
+   Multicast packets received: 23669924
+   Broadcast packets received: 2821070
+   Multicast packets sent: 989823
+   Broadcast packets sent: 134
+   Total receive errors: 0
+   Receive length errors: 0
+   Receive over errors: 0
+   Receive CRC errors: 0
+   Receive frame errors: 0
+   Receive FIFO errors: 0
+   Receive missed errors: 0
+   Total transmit errors: 0
+   Transmit aborted errors: 0
+   Transmit carrier errors: 0
+   Transmit FIFO errors: 0
+   Transmit heartbeat errors: 0
+   Transmit window errors: 0
