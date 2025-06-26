@@ -14,17 +14,18 @@ parse_file() {
     local drv_dropped_rx_total=0
     local rx_buf_alloc_fail=0
     local pkts_rx_err=0
-    local bcast_pkts_rx=0
+    local bcast_pkts_rx_total=0  # 모든 Rx Queue의 bcast pkts rx 합계를 위한 변수
 
     while read -r line; do
         # 타임스탬프 감지
-        if [[ $line =~ ^Tue\ Jun\ 24\ (07|09):55:01\ KST\ 2025$ ]]; then
+        if [[ $line =~ ^(Tue|Wed)\ Jun\ (24|25)\ (07|09):55:01\ KST\ 2025$ ]]; then
             store_ethtool_totals
-            current_time="${BASH_REMATCH[1]}:55:01"
+            current_time="${BASH_REMATCH[3]}:55:01"
             current_vm=""
             current_section=""
             current_subsection=""
             in_rx_queue=false
+            bcast_pkts_rx_total=0  # 새로운 타임스탬프마다 초기화
 
         # VM과 섹션(netstat 또는 ethtool) 감지
         elif [[ $line =~ ^(mca[0-9]+)\ (netstat|ethtool)$ ]]; then
@@ -36,7 +37,7 @@ parse_file() {
                 drv_dropped_rx_total=0
                 rx_buf_alloc_fail=0
                 pkts_rx_err=0
-                bcast_pkts_rx=0
+                bcast_pkts_rx_total=0  # 새로운 ethtool 섹션마다 초기화
             fi
             current_subsection=""
             in_rx_queue=false
@@ -84,7 +85,7 @@ parse_file() {
                 elif [[ $line =~ pkts\ rx\ err:\ ([0-9]+) ]]; then
                     ((pkts_rx_err += ${BASH_REMATCH[1]}))
                 elif [[ $line =~ bcast\ pkts\ rx:\ ([0-9]+) ]]; then
-                    ((bcast_pkts_rx += ${BASH_REMATCH[1]}))
+                    ((bcast_pkts_rx_total += ${BASH_REMATCH[1]}))  # 모든 Rx Queue의 bcast pkts rx를 합산
                 fi
             fi
         fi
@@ -100,7 +101,7 @@ store_ethtool_totals() {
         stats["${current_vm}_${current_time}_drv dropped rx total"]=$drv_dropped_rx_total
         stats["${current_vm}_${current_time}_rx buf alloc fail"]=$rx_buf_alloc_fail
         stats["${current_vm}_${current_time}_pkts rx err"]=$pkts_rx_err
-        stats["${current_vm}_${current_time}_bcast pkts rx"]=$bcast_pkts_rx
+        stats["${current_vm}_${current_time}_bcast pkts rx"]=$bcast_pkts_rx_total  # 합산된 값을 저장
     fi
 }
 
