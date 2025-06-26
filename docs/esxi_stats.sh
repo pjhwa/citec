@@ -15,13 +15,13 @@ yesterday=$(date -d "2025-$today -1 day" +%m%d 2>/dev/null || date -v-1d -j -f "
 DIR="/mnt/c/Users/jooksan.park/src/esxi"
 
 # 서버 목록
-servers=("mca5101" "mca5203" "mca5303")
+servers=("mca5103" "mca5201" "mca5301")
 
 # 파일명 접두사 정의
 prefixes=(
-    "mca5101:pb1hcn05-vc053-sam.t1pb1.scpcloud.co.kr"
-    "mca5203:pb1hcn01-vc053-sam"
-    "mca5303:pb1hcn05-vc053-sam.t1pb1.scpcloud.co.kr"
+    "mca5103:pb1hcn09-vc053-sam"
+    "mca5201:pb1hcn01-vc052-sam"
+    "mca5301:pb1hcn09-vc053-sam"
 )
 
 # 최대 대역폭 설정 (10Gbps = 10000 Mbps)
