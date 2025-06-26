@@ -9,10 +9,10 @@ fi
 today=$1  # 오늘 날짜 (예: 0617)
 
 # 전날 날짜 계산 (예: 0616)
-yesterday=$(date -d "2025-$today -1 day" +%m%d 2>/dev/null || date -v-1d -j -f "%m%d" "2025$today" +%m%d)
+yesterday=$(date -d "2025$today -1 day" +%m%d 2>/dev/null || date -v-1d -j -f "%m%d" "2025$today" +%m%d)
 
 # 디렉토리 경로
-DIR="/mnt/c/Users/jooksan.park/src/esxi"
+DIR="."
 
 # 서버 목록
 servers=("mca5103" "mca5201" "mca5301")
