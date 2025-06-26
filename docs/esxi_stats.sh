@@ -86,24 +86,28 @@ for server in "${servers[@]}"; do
     bytes_tx_1=$(awk '/NIC statistics for vmnic5/{flag=1} flag && /Bytes sent:/{print $3; flag=0}' "$file_yesterday")
     bytes_tx_2=$(awk '/NIC statistics for vmnic5/{flag=1} flag && /Bytes sent:/{print $3; flag=0}' "$file_today")
 
-    # 사용률 및 수신량 계산
+    # 사용률 및 송수신량 계산
     if [[ "$bytes_rx_1" =~ ^[0-9]+$ ]] && [[ "$bytes_rx_2" =~ ^[0-9]+$ ]] && [[ "$bytes_tx_1" =~ ^[0-9]+$ ]] && [[ "$bytes_tx_2" =~ ^[0-9]+$ ]]; then
-        rx_diff=$((bytes_rx_2 - bytes_rx_1))
-        tx_diff=$((bytes_tx_2 - bytes_tx_1))
-        
-        # 수신량 및 송신량을 MB 단위로 변환
+        rx_diff=$((bytes_rx_2 - bytes_rx_1))  # 수신 바이트 차이
+        tx_diff=$((bytes_tx_2 - bytes_tx_1))  # 송신 바이트 차이
+    
+        # MB 단위로 변환 (소수점 둘째 자리)
         rx_mb=$(echo "scale=2; $rx_diff / 1000000" | bc)
         tx_mb=$(echo "scale=2; $tx_diff / 1000000" | bc)
-        
-        # 초당 바이트 수 및 Mbps로 변환
-        rx_mbps=$(((rx_diff / TIME_INTERVAL) * 8 / 1000000))
-        tx_mbps=$(((tx_diff / TIME_INTERVAL) * 8 / 1000000))
-        
-        # 사용률 계산
+    
+        # 초당 바이트 수 계산
+        rx_bytes_per_sec=$(echo "scale=2; $rx_diff / $TIME_INTERVAL" | bc)
+        tx_bytes_per_sec=$(echo "scale=2; $tx_diff / $TIME_INTERVAL" | bc)
+    
+        # Mbps로 변환
+        rx_mbps=$(echo "scale=2; ($rx_bytes_per_sec * 8) / 1000000" | bc)
+        tx_mbps=$(echo "scale=2; ($tx_bytes_per_sec * 8) / 1000000" | bc)
+    
+        # 사용률 계산 (소수점 둘째 자리까지)
         rx_usage=$(echo "scale=2; ($rx_mbps / $MAX_BANDWIDTH) * 100" | bc)
         tx_usage=$(echo "scale=2; ($tx_mbps / $MAX_BANDWIDTH) * 100" | bc)
 
-        # 출력 형식: 수신량 MB (사용률 %)
+        # 출력 형식: 송수신량 MB (사용률 %)
         rx_output="${rx_mb}MB (${rx_usage}%)"
         tx_output="${tx_mb}MB (${tx_usage}%)"
     else
