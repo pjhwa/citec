@@ -24,6 +24,12 @@ prefixes=(
     "mca5303:pb1hcn05-vc053-sam.t1pb1.scpcloud.co.kr"
 )
 
+# 최대 대역폭 설정 (10Gbps = 10000 Mbps)
+MAX_BANDWIDTH=10000  # Mbps
+
+# 시간 간격 설정 (7200초 = 2시간)
+TIME_INTERVAL=7200  # seconds
+
 # 결과를 저장할 연관 배열
 declare -A results
 
@@ -55,6 +61,8 @@ for server in "${servers[@]}"; do
         results["${server}_broadcast pkts rx ok"]="N/A"
         results["${server}_droppedRx"]="N/A"
         results["${server}_pktsRxBroadcast"]="N/A"
+        results["${server}_vmnic5_rx_usage"]="N/A"
+        results["${server}_vmnic5_tx_usage"]="N/A"
         continue
     fi
 
@@ -63,6 +71,8 @@ for server in "${servers[@]}"; do
         results["${server}_broadcast pkts rx ok"]="N/A"
         results["${server}_droppedRx"]="N/A"
         results["${server}_pktsRxBroadcast"]="N/A"
+        results["${server}_vmnic5_rx_usage"]="N/A"
+        results["${server}_vmnic5_tx_usage"]="N/A"
         continue
     fi
 
@@ -78,34 +88,65 @@ for server in "${servers[@]}"; do
     pkts_rx_broadcast_1=$(grep "pktsRxBroadcast:" "$file_yesterday" | sed 's/.*pktsRxBroadcast://' | tr -d ' ' | head -n 1)
     pkts_rx_broadcast_2=$(grep "pktsRxBroadcast:" "$file_today" | sed 's/.*pktsRxBroadcast://' | tr -d ' ' | head -n 1)
 
-    # 델타 계산 (숫자인지 확인)
+    # 델타 계산 (broadcast pkts rx ok)
     if [[ "$broadcast_rx_ok_1" =~ ^[0-9]+$ ]] && [[ "$broadcast_rx_ok_2" =~ ^[0-9]+$ ]]; then
         delta_broadcast_rx_ok=$((broadcast_rx_ok_2 - broadcast_rx_ok_1))
     else
         delta_broadcast_rx_ok="N/A"
     fi
 
+    # 델타 계산 (droppedRx)
     if [[ "$dropped_rx_1" =~ ^[0-9]+$ ]] && [[ "$dropped_rx_2" =~ ^[0-9]+$ ]]; then
         delta_dropped_rx=$((dropped_rx_2 - dropped_rx_1))
     else
         delta_dropped_rx="N/A"
     fi
 
+    # 델타 계산 (pktsRxBroadcast)
     if [[ "$pkts_rx_broadcast_1" =~ ^[0-9]+$ ]] && [[ "$pkts_rx_broadcast_2" =~ ^[0-9]+$ ]]; then
         delta_pkts_rx_broadcast=$((pkts_rx_broadcast_2 - pkts_rx_broadcast_1))
     else
         delta_pkts_rx_broadcast="N/A"
     fi
 
+    # vmnic5 통계 추출
+    bytes_rx_1=$(awk '/NIC statistics for vmnic5/{flag=1} flag && /Bytes received:/{print $3; flag=0}' "$file_yesterday")
+    bytes_rx_2=$(awk '/NIC statistics for vmnic5/{flag=1} flag && /Bytes received:/{print $3; flag=0}' "$file_today")
+    bytes_tx_1=$(awk '/NIC statistics for vmnic5/{flag=1} flag && /Bytes sent:/{print $3; flag=0}' "$file_yesterday")
+    bytes_tx_2=$(awk '/NIC statistics for vmnic5/{flag=1} flag && /Bytes sent:/{print $3; flag=0}' "$file_today")
+
+    # 사용률 계산
+    if [[ "$bytes_rx_1" =~ ^[0-9]+$ ]] && [[ "$bytes_rx_2" =~ ^[0-9]+$ ]] && [[ "$bytes_tx_1" =~ ^[0-9]+$ ]] && [[ "$bytes_tx_2" =~ ^[0-9]+$ ]]; then
+        rx_diff=$((bytes_rx_2 - bytes_rx_1))
+        tx_diff=$((bytes_tx_2 - bytes_tx_1))
+        
+        # 초당 바이트 수
+        rx_bytes_per_sec=$((rx_diff / TIME_INTERVAL))
+        tx_bytes_per_sec=$((tx_diff / TIME_INTERVAL))
+        
+        # Mbps로 변환
+        rx_mbps=$((rx_bytes_per_sec * 8 / 1000000))
+        tx_mbps=$((tx_bytes_per_sec * 8 / 1000000))
+        
+        # 사용률 계산
+        rx_usage=$(echo "scale=2; ($rx_mbps / $MAX_BANDWIDTH) * 100" | bc)
+        tx_usage=$(echo "scale=2; ($tx_mbps / $MAX_BANDWIDTH) * 100" | bc)
+    else
+        rx_usage="N/A"
+        tx_usage="N/A"
+    fi
+
     # 결과 저장
     results["${server}_broadcast pkts rx ok"]=$delta_broadcast_rx_ok
     results["${server}_droppedRx"]=$delta_dropped_rx
     results["${server}_pktsRxBroadcast"]=$delta_pkts_rx_broadcast
+    results["${server}_vmnic5_rx_usage"]=$rx_usage
+    results["${server}_vmnic5_tx_usage"]=$tx_usage
 done
 
 # Markdown 표 출력
-echo "| 서버     | broadcast pkts rx ok | droppedRx | pktsRxBroadcast |"
-echo "|----------|----------------------|-----------|-----------------|"
+echo "| 서버     | broadcast pkts rx ok | droppedRx | pktsRxBroadcast | vmnic5 Rx 사용률 (%) | vmnic5 Tx 사용률 (%) |"
+echo "|----------|----------------------|-----------|-----------------|----------------------|----------------------|"
 for server in "${servers[@]}"; do
-    printf "| %-8s | %-20s | %-9s | %-15s |\n" "$server" "${results[${server}_broadcast pkts rx ok]}" "${results[${server}_droppedRx]}" "${results[${server}_pktsRxBroadcast]}"
+    printf "| %-8s | %-20s | %-9s | %-15s | %-20s | %-20s |\n" "$server" "${results[${server}_broadcast pkts rx ok]}" "${results[${server}_droppedRx]}" "${results[${server}_pktsRxBroadcast]}" "${results[${server}_vmnic5_rx_usage]}" "${results[${server}_vmnic5_tx_usage]}"
 done
