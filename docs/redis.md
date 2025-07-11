@@ -474,3 +474,98 @@ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff810b08c0>] ? insert_kthread_wo
 Memory Usage 98~99%로 되어있는 수치가 정확히 어떤 방식으로 집게되는지는 모르겠지만 buffer + cache 값이 더해진 수치일 것으로 보이며, 실제 가용 메모리는 충분했을 것으로 예상 됩니다.
 
 결론적으로, 메모리 부족 상황은 아닌 것으로 예상되지만 I/O hang과 같은 상태가 발생되면서 전체 resource 에도 영향을 미쳤을 것으로 분석 됩니다.
+
+--------------------------------
+Pacemaker Status:
+ 
+
+
+  
+Pacemaker Config:
+ 
+
+Cluster Name: sdspgdbprdd_SERVICE-mZuWWmgEsFmP6JrHfUKVjn
+Corosync Nodes:
+ scp-sdspgdb4p01 scp-sdspgdb4p02
+Pacemaker Nodes:
+ scp-sdspgdb4p01 scp-sdspgdb4p02
+
+Resources:
+ Master: DataSync
+  Meta Attrs: master-node-max=1 clone-max=2 notify=true master-max=1 clone-node-max=1 
+  Resource: drbd_res (class=ocf provider=linbit type=drbd)
+   Attributes: drbd_resource=drbd_res01
+   Operations: demote interval=0s timeout=90 (drbd_res-demote-interval-0s)
+               monitor interval=60 role=Master timeout=60 (drbd_res-monitor-interval-60)
+               monitor interval=61 role=Slave timeout=60 (drbd_res-monitor-interval-61)
+               notify interval=0s timeout=90 (drbd_res-notify-interval-0s)
+               promote interval=0s timeout=90 (drbd_res-promote-interval-0s)
+               reload interval=0s timeout=30 (drbd_res-reload-interval-0s)
+               start interval=0s timeout=240 (drbd_res-start-interval-0s)
+               stop interval=0s timeout=100 (drbd_res-stop-interval-0s)
+ Group: HA-GROUP
+  Resource: Filesystem (class=ocf provider=heartbeat type=Filesystem)
+   Attributes: device=/dev/drbd0 directory=/data fstype=xfs options=noatime
+   Operations: monitor interval=60 timeout=60 OCF_CHECK_LEVEL=20 (Filesystem-monitor-interval-60)
+               notify interval=0s timeout=60 (Filesystem-notify-interval-0s)
+               start interval=0s timeout=60 (Filesystem-start-interval-0s)
+               stop interval=0s timeout=60 (Filesystem-stop-interval-0s)
+  Resource: DB (class=ocf provider=heartbeat type=pgsql)
+   Operations: demote interval=0s timeout=120 (DB-demote-interval-0s)
+               methods interval=0s timeout=5 (DB-methods-interval-0s)
+               monitor interval=60 timeout=60 (DB-monitor-interval-60)
+               notify interval=0s timeout=90 (DB-notify-interval-0s)
+               promote interval=0s timeout=120 (DB-promote-interval-0s)
+               start interval=0s timeout=120 (DB-start-interval-0s)
+               stop interval=0s timeout=120 (DB-stop-interval-0s)
+  Resource: VIP (class=ocf provider=heartbeat type=IPaddr2)
+   Attributes: cidr_netmask=32 ip=70.225.1.43
+   Operations: monitor interval=30 timeout=60 (VIP-monitor-interval-30)
+               start interval=0s timeout=20s (VIP-start-interval-0s)
+               stop interval=0s timeout=20s (VIP-stop-interval-0s)
+
+Stonith Devices:
+ Resource: mysbd01 (class=stonith type=fence_sbd)
+  Attributes: devices=/dev/disk/by-path/ip-182.197.56.166:3260-iscsi-sdspgdbprdd_SERVICE-mZuWWmgEsFmP6JrHfUKVjn-lun-1,/dev/disk/by-path/ip-182.197.56.167:3260-iscsi-sdspgdbprdd_SERVICE-mZuWWmgEsFmP6JrHfUKVjn-lun-1,/dev/disk/by-path/ip-182.197.56.168:3260-iscsi-sdspgdbprdd_SERVICE-mZuWWmgEsFmP6JrHfUKVjn-lun-1 pcmk_delay_base=5 pcmk_delay_max=15 pcmk_host_list=scp-sdspgdb4p01,scp-sdspgdb4p02 power_timeout=25
+  Operations: monitor interval=60s (mysbd01-monitor-interval-60s)
+ Resource: mysbd02 (class=stonith type=fence_sbd)
+  Attributes: devices=/dev/disk/by-path/ip-182.197.56.166:3260-iscsi-sdspgdbprdd_SERVICE-mZuWWmgEsFmP6JrHfUKVjn-lun-1,/dev/disk/by-path/ip-182.197.56.167:3260-iscsi-sdspgdbprdd_SERVICE-mZuWWmgEsFmP6JrHfUKVjn-lun-1,/dev/disk/by-path/ip-182.197.56.168:3260-iscsi-sdspgdbprdd_SERVICE-mZuWWmgEsFmP6JrHfUKVjn-lun-1 pcmk_delay_base=5 pcmk_delay_max=15 pcmk_host_list=scp-sdspgdb4p01,scp-sdspgdb4p02 power_timeout=25
+  Operations: monitor interval=60s (mysbd02-monitor-interval-60s)
+Fencing Levels:
+
+Location Constraints:
+  Resource: mysbd01
+    Disabled on: scp-sdspgdb4p02 (score:-INFINITY) (id:location-mysbd01-scp-sdspgdb4p02--INFINITY)
+  Resource: mysbd02
+    Disabled on: scp-sdspgdb4p01 (score:-INFINITY) (id:location-mysbd02-scp-sdspgdb4p01--INFINITY)
+Ordering Constraints:
+  promote DataSync then start Filesystem (kind:Mandatory)
+Colocation Constraints:
+  HA-GROUP with DataSync (score:INFINITY) (with-rsc-role:Master)
+Ticket Constraints:
+
+Alerts:
+ No alerts defined
+
+Resources Defaults:
+ resource-stickiness: 100
+Operations Defaults:
+ No defaults set
+
+Cluster Properties:
+ cluster-infrastructure: corosync
+ cluster-name: sdspgdbprdd_SERVICE-mZuWWmgEsFmP6JrHfUKVjn
+ dc-version: 1.1.18-11.el7_5.2-2b07d5c5a9
+ default-resource-stickiness: 100
+ have-watchdog: true
+ last-lrm-refresh: 1712385184
+ no-quorum-policy: suicide
+ stonith-enabled: true
+
+Quorum:
+  Options:
+  Device:
+    votes: 1
+    Model: net
+      algorithm: ffsplit
+      host: dbswprdqrm02
