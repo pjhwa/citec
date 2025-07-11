@@ -394,3 +394,82 @@ Jul  9 11:45:23 scp-sdspgdb4p02 lrmd[2089]:    crit: Filesystem_monitor_60000 pr
 kswapd0 데몬은 효율적인 메모리 사용을 위해 정기적으로 수행되지만 xfs 파일시스템에서 mutex lock 경합으로 인해 120초 이상 block된 상황 입니다.
 
 이는 I/O와 관련된 서브시스템과 연관되어있으며, 파일시스템 및 DRBD 복제 과정이나 하위 스토리지(디스크 컨트롤러 hang & SAN array 응답 지연) 문제로 발생될 수 있는 현상 입니다.
+처음 문제로 인지했던 DB 뿐만 아니라 전체 resource(VIP, DB, Filesystem, DRBD) resource에서 영향을 받은 상황으로 이후 기록된 로그를 토대로 추측해볼 수 있습니다.
+
+
+
+kswapd0 데몬은 효율적인 메모리 사용을 위해 정기적으로 수행되지만 xfs 파일시스템에서 mutex lock 경합으로 인해 120초 이상 block된 상황 입니다.
+
+이는 I/O와 관련된 서브시스템과 연관되어있으며, 파일시스템 및 DRBD 복제 과정이나 하위 스토리지(디스크 컨트롤러 hang & SAN array 응답 지연) 문제로 발생될 수 있는 현상 입니다.
+
+
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: INFO: task kswapd0:100 blocked for more than 120 seconds.
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: kswapd0         D ffff880fc76e3570     0   100      2 0x00000000
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: ffff880ffc2cba20 0000000000000046 ffff880ffc250fd0 ffff880ffc2cbfd8
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: ffff880ffc2cbfd8 ffff880ffc2cbfd8 ffff880ffc250fd0 ffff880fc76e3568
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: ffff880fc76e356c ffff880ffc250fd0 00000000ffffffff ffff880fc76e3570
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: Call Trace:
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff816aa3e9>] schedule_preempt_disabled+0x29/0x70
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff816a8317>] __mutex_lock_slowpath+0xc7/0x1d0
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff816a772f>] mutex_lock+0x1f/0x2f
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffffc026fe7c>] xfs_reclaim_inodes_ag+0x2dc/0x390 [xfs]
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff810ce8d8>] ? check_preempt_wakeup+0x148/0x250
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff810c12d5>] ? check_preempt_curr+0x85/0xa0
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff8113914d>] ? call_rcu_sched+0x1d/0x20
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff8121819c>] ? d_free+0x4c/0x70
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff8121a3b4>] ? shrink_dentry_list+0x274/0x490
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffffc0270df3>] xfs_reclaim_inodes_nr+0x33/0x40 [xfs]
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffffc02806f5>] xfs_fs_free_cached_objects+0x15/0x20 [xfs]
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff81203888>] prune_super+0xe8/0x170
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff81195413>] shrink_slab+0x163/0x330
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff811f7537>] ? vmpressure+0x87/0x90
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff81199081>] balance_pgdat+0x4b1/0x5e0
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff81199323>] kswapd+0x173/0x440
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff810b1910>] ? wake_up_atomic_t+0x30/0x30
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff811991b0>] ? balance_pgdat+0x5e0/0x5e0
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff810b098f>] kthread+0xcf/0xe0
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff810b08c0>] ? insert_kthread_work+0x40/0x40
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff816b4f18>] ret_from_fork+0x58/0x90
+
+Jul  9 11:47:22 scp-sdspgdb4p02 kernel: [<ffffffff810b08c0>] ? insert_kthread_work+0x40/0x40
+
+
+
+해당 시스템에 sysstat이 설치되어있지 않아서 sar 데이터가 없는 관계로 정확한 resource 사용률 추이는 확인되지 않지만,
+
+공유해주신 사내 시스템에서 당시 메모리 사용량을 점유하고 있는 수치를 보면 실제 메모리 사용량은 Memory Usage [Actual]: 26%대로 그다지 높지 않은 수치로 확인 됩니다.
+
+
+
+Memory Usage 98~99%로 되어있는 수치가 정확히 어떤 방식으로 집게되는지는 모르겠지만 buffer + cache 값이 더해진 수치일 것으로 보이며, 실제 가용 메모리는 충분했을 것으로 예상 됩니다.
+
+결론적으로, 메모리 부족 상황은 아닌 것으로 예상되지만 I/O hang과 같은 상태가 발생되면서 전체 resource 에도 영향을 미쳤을 것으로 분석 됩니다.
