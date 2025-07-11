@@ -359,3 +359,38 @@ Pacemaker crmd 프로세스 자체가 블록되어 클러스터 의사결정 기
 장애 재발 방지 및 성능 개선을 위해 Redhat 공식 문서 및 내부 사례들을 찾아보았지만, 현재 사용 중인 커널이 3.10.0-693.el7.x86_64 버전으로 너무 오래된 버전을 사용 중이라 개선될 여지는 없어 보입니다.
 
 추후에도 동일 현상이 발생될 경우에는 RHEL7.9 버전에서 제공하는 latest 버전까지 업데이트 고려 부탁 드립니다.
+
+-----------------------------
+DB 서비스 비정상 동작 상태에 따른 문의 내역 답변 드립니다.
+
+
+
+문제 발생 증상으로 보이는 11:45:09경 DB resource 에서 monitor timeout 이 발생되었습니다.
+
+resource에서 monitoring이 실패된 이후에는 on-fail=restart(default) 에 의해 재시작하게되는데 이후 로그들을 보면, 전부 다 중지를 할 수 없었던 상태로 확인 됩니다.
+
+Jul  9 11:45:09 scp-sdspgdb4p02 lrmd[2089]: warning: DB_monitor_60000 process (PID 2254) timed out
+
+Jul  9 11:45:15 scp-sdspgdb4p02 lrmd[2089]: warning: drbd_res_monitor_60000 process (PID 2256) timed out
+
+Jul  9 11:45:15 scp-sdspgdb4p02 lrmd[2089]:    crit: DB_monitor_60000 process (PID 2254) will not die!
+
+Jul  9 11:45:15 scp-sdspgdb4p02 lrmd[2089]: warning: VIP_monitor_30000 process (PID 2258) timed out
+
+Jul  9 11:45:18 scp-sdspgdb4p02 lrmd[2089]: warning: Filesystem_monitor_60000 process (PID 2264) timed out
+
+Jul  9 11:45:20 scp-sdspgdb4p02 lrmd[2089]:    crit: drbd_res_monitor_60000 process (PID 2256) will not die!
+
+Jul  9 11:45:20 scp-sdspgdb4p02 lrmd[2089]:    crit: VIP_monitor_30000 process (PID 2258) will not die!
+
+Jul  9 11:45:23 scp-sdspgdb4p02 lrmd[2089]:    crit: Filesystem_monitor_60000 process (PID 2264) will not die!
+
+
+
+처음 문제로 인지했던 DB 뿐만 아니라 전체 resource(VIP, DB, Filesystem, DRBD) resource에서 영향을 받은 상황으로 이후 기록된 로그를 토대로 추측해볼 수 있습니다.
+
+
+
+kswapd0 데몬은 효율적인 메모리 사용을 위해 정기적으로 수행되지만 xfs 파일시스템에서 mutex lock 경합으로 인해 120초 이상 block된 상황 입니다.
+
+이는 I/O와 관련된 서브시스템과 연관되어있으며, 파일시스템 및 DRBD 복제 과정이나 하위 스토리지(디스크 컨트롤러 hang & SAN array 응답 지연) 문제로 발생될 수 있는 현상 입니다.
