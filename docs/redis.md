@@ -238,3 +238,44 @@ CPU 부하 불균형
 모니터링 데이터 수집 중단
 
 ****
+5. 3 Call Trace 분석: 정기적 메모리 관리 흐름 확인 
+
+ kswapd0 정상적인 메모리 관리 흐름
+
+ [<ffffffff81199323>] kswapd                    # 메모리 회수 데몬 실행
+
+ [<ffffffff81199081>] balance_pgdat             # 메모리 균형 조정
+
+ [<ffffffff81195413>] shrink_slab               # 슬랩 캐시 축소
+
+ [<ffffffff81203888>] prune_super               # 수퍼블록 정리
+
+ [<ffffffffc02806f5>] xfs_fs_free_cached_objects # XFS 캐시 객체 해제 요청
+
+ [<ffffffffc0270df3>] xfs_reclaim_inodes_nr     # XFS inode 회수 요청
+
+ [<ffffffffc026fe7c>] xfs_reclaim_inodes_ag     # AG별 inode 정리 ← Block 지점
+
+
+
+ 공통 Block 지점
+
+ 1. kswapd0: xfs_reclaim_inodes_ag에서 mutex_lock+0x1f/0x2f
+
+ 2. crmd: 파일 open 시 mutex_lock+0x1f/0x2f
+
+ 3. vmtoolsd: 파일 open 시 mutex_lock+0x1f/0x2f
+
+ 4. irqbalance: XFS inode 정리에서 mutex_lock+0x1f/0x2f
+
+ 5. matricbeat: 파일 lookup/open 에서 mutex_lock+0x1f/0x2f
+
+
+
+핵심 발견사항
+
+모든 Block 프로세스에서 공통적으로 다음 패턴 확인 → __mutex_lock_slowpath → mutex_lock → XFS 관련 함수
+
+동일한 mutex 주소에서 여러 프로세스 대기 (ffff88017f80c0f0, ffff880fc76e3570)
+
+XFS 파일시스템 내부 락 경합으로 인한 데드락 상황(Block된 프로세스들은 TASK_UNINTERRUPTIBLE인 D state 상태)
