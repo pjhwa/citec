@@ -279,3 +279,83 @@ CPU 부하 불균형
 동일한 mutex 주소에서 여러 프로세스 대기 (ffff88017f80c0f0, ffff880fc76e3570)
 
 XFS 파일시스템 내부 락 경합으로 인한 데드락 상황(Block된 프로세스들은 TASK_UNINTERRUPTIBLE인 D state 상태)
+관련 로그
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: INFO: task kswapd0:100 blocked for more than 120 seconds.
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: kswapd0         D ffff880fc76e3570     0   100      2 0x00000000
+
+
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: INFO: task vmtoolsd:1135 blocked for more than 120 seconds.
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: vmtoolsd        D ffff88017f80c0f0     0  1135      1 0x00000080
+
+
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: INFO: task irqbalance:1161 blocked for more than 120 seconds.
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: irqbalance      D ffff880fc76e3570     0  1161      1 0x00000080
+
+
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: INFO: task crmd:2092 blocked for more than 120 seconds.
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: crmd            D ffff88017f80c0f0     0  2092   2086 0x00000080
+
+
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: INFO: task metricbeat:2611 blocked for more than 120 seconds.
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: metricbeat      D ffff88017f80c0f0     0  2611      1 0x00000080
+
+ ...
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: metricbeat      D ffff88017f80c0f0     0  2616      1 0x00000080
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: metricbeat      D ffff88017f80c0f0     0  2625      1 0x00000080
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: metricbeat      D ffff88017f80c0f0     0  2626      1 0x00000080
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: metricbeat      D ffff880fdb7d3b50     0  3099      1 0x00000080
+
+ Jul  9 11:47:22 scp-sdspgdb4p02 kernel: metricbeat      D ffff88017f80c0f0     0 10896      1 0x00000080
+
+ ( metricbeat 프로세스의 경우 다수 발생된 상황으로 일부 로그 생략 )
+
+
+
+6. 결론
+근본 원인
+
+kswapd0 정기 메모리 관리 중 XFS 파일시스템 mutex 데드락으로 인한 시스템 전체 hang 발생.
+
+메모리 부족 현상이 아닌, 커널에서 효율적인 메모리 관리 과정에서 XFS inode cache 회수 중에 발생한 시스템 레벨 데드락.
+
+모든 파일시스템 접근이 동일 mutex 에서 Block된점으로 보아 시스템 전체 파일 접근이 차단되었을 가능성이 높음.
+
+클러스터 동작에 있어, 중요 결정을 담당하는 crmd 프로세스 Block으로 클러스터 관련 파일 접근 불가로 기능 상실.
+
+절체 및 펜싱이 동작하지 않은 이유
+
+Pacemaker crmd 프로세스 자체가 블록되어 클러스터 의사결정 기능 마비.
+
+파일시스템 hang으로 인한 블록 디바이스 접근 차단.
+
+시스템 레벨 hang 상태가 높은 확률로 예상되며, 그로인한 클러스터 전체 동작 불가.
+
+
+
+장애 재발 방지 및 성능 개선을 위해 Redhat 공식 문서 및 내부 사례들을 찾아보았지만, 현재 사용 중인 커널이 3.10.0-693.el7.x86_64 버전으로 너무 오래된 버전을 사용 중이라 개선될 여지는 없어 보입니다.
+
+추후에도 동일 현상이 발생될 경우에는 RHEL7.9 버전에서 제공하는 latest 버전까지 업데이트 고려 부탁 드립니다.
