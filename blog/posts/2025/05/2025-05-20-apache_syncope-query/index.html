@@ -1,0 +1,860 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Grok에 물어보고 얻은 답을 정리한 블로그">
+      
+      
+      
+        <link rel="canonical" href="https://pjhwa.github.io/citec/blog/posts/2025/05/2025-05-20-apache_syncope-query/">
+      
+      
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.15">
+    
+    
+      
+        <title>Apache Syncope Query로 인한 Temp Disk Full - Grok Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.342714a4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="../../../../.." title="Grok Docs" class="md-header__button md-logo" aria-label="Grok Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Grok Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Apache Syncope Query로 인한 Temp Disk Full
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="검색">
+        
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            검색 초기화
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../.." title="Grok Docs" class="md-nav__button md-logo" aria-label="Grok Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Grok Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    홈
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    블로그
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            블로그
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../04/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    2025
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            2025
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    05월
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    아카이브
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      장애 개요 및 발생 과정
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="장애 개요 및 발생 과정">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      장애 현상
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      발생 과정
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mariadb-mdev-33813" class="md-nav__link">
+    <span class="md-ellipsis">
+      MariaDB 버그(MDEV-33813) 분석
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MariaDB 버그(MDEV-33813) 분석">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      버그 내용
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#singleid" class="md-nav__link">
+    <span class="md-ellipsis">
+      SingleID 장애와의 연관성
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      버그 픽스와 장애 방지 가능성
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="버그 픽스와 장애 방지 가능성">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      버그 픽스 내용
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#singleid_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      SingleID 장애와의 관계
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      각 주장의 타당성 분석
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="각 주장의 타당성 분석">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      애플리케이션 담당자의 주장
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      데이터베이스 지원 전문가의 주장
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      장애 등급 판정 위원회 의견
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      판단 근거
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="판단 근거">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      근본 원인: 비효율적인 쿼리
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      버그의 역할
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      쿼리 최적화의 필요성
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      애플리케이션 담당자를 논리적으로 설득하는 반박
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="애플리케이션 담당자를 논리적으로 설득하는 반박">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      반박 1: 쿼리의 비효율성이 주원인
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      반박 2: 버그의 역할은 장애 악화, 원인 아님
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      반박 3: 버그 픽스만으로는 불충분
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      반박 4: 지속적인 관리의 중요성
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      제안
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      결론
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Apache Syncope Query로 인한 Temp Disk Full</h1>
+
+<h2 id="_1">장애 개요 및 발생 과정</h2>
+<h3 id="_2"><strong>장애 현상</strong></h3>
+<ul>
+<li><strong>환경</strong>: MFA 서비스 SingleID DB (MariaDB 10.6.14, 이중화 구조, cl-ps-prd-tdb01, 02)</li>
+<li><strong>문제</strong>: 임시 디스크(56GB)가 가득 차면서 데이터베이스 Hang 발생</li>
+<li><strong>발생 시점</strong>: 4개의 장시간 실행 쿼리가 대규모 정렬을 유발하며 임시 디스크를 모두 소진</li>
+<li>예: <ul>
+<li><code>thread ID: 337423063, RUNTIME: 3046 sec</code></li>
+<li><code>thread ID: 337418590, RUNTIME: 2985 sec</code></li>
+<li><code>thread ID: 337425505, RUNTIME: 2925 sec</code></li>
+<li><code>thread ID: 337427163, RUNTIME: 2986 sec</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="_3"><strong>발생 과정</strong></h3>
+<ol>
+<li><strong>비효율적인 쿼리 실행</strong>: 조회 조건에 해당하는 컬럼에 인덱스가 없어 쿼리 실행 계획이 비효율적으로 변경됨. 이는 MariaDB의 통계 정보 자동 업데이트로 인해 발생.</li>
+<li><strong>임시 디스크 소진</strong>: 대규모 정렬 작업으로 인해 임시 디스크(56GB)가 완전히 가득 참.</li>
+<li><strong>데이터베이스 Hang</strong>: MariaDB 10.6.14에서는 임시 디스크가 가득 차면 공간이 확보될 때까지 최대 60초 간격으로 대기하며, 이로 인해 모든 세션이 중단됨.</li>
+</ol>
+<hr />
+<h2 id="mariadb-mdev-33813">MariaDB 버그(MDEV-33813) 분석</h2>
+<h3 id="_4"><strong>버그 내용</strong></h3>
+<ul>
+<li><strong>설명</strong>: MDEV-33813은 임시 디스크가 가득 찬 후 공간이 확보되었음에도 후속 쿼리가 "no space left on device" 오류로 실패하는 문제를 다룸.</li>
+<li><strong>재현 조건</strong>: Aria 스토리지 엔진에서 테스트됨. 임시 디스크가 100% 가득 찼다가 공간이 확보된 상황에서 오류 발생.</li>
+<li><strong>수정</strong>: MariaDB 10.6.18에서 패치됨. 디스크가 가득 차면 해당 쿼리를 즉시 에러 처리하고 사용 중이던 임시 파일을 삭제하여 공간을 확보.</li>
+<li><strong>패치 내용</strong>: <a href="https://github.com/MariaDB/server/commit/3655cefc42">GitHub Commit 3655cefc42</a></li>
+<li><strong>결과</strong>: 문제가 있는 쿼리만 종료되고, 다른 세션은 정상적으로 작동.</li>
+</ul>
+<h3 id="singleid"><strong>SingleID 장애와의 연관성</strong></h3>
+<ul>
+<li><strong>차이점</strong>:</li>
+<li><strong>MDEV-33813</strong>: 디스크가 가득 찼다가 공간이 확보된 후에도 오류가 지속됨.</li>
+<li><strong>SingleID</strong>: 디스크가 100% 가득 찬 상태가 지속됨. 공간이 확보되지 않음.</li>
+<li><strong>버그의 역할</strong>: SingleID에서는 디스크가 계속 100% 유지되었으므로, 버그의 "공간 확보 후 오류 지속" 시나리오와는 다름. 다만, 버그로 인해 디스크가 가득 찼을 때 쿼리가 즉시 종료되지 않고 대기 상태에 들어가면서 장애가 악화됨.</li>
+</ul>
+<hr />
+<h2 id="_5">버그 픽스와 장애 방지 가능성</h2>
+<p>애플리케이션 담당자는 버그가 픽스되면 문제가 있는 쿼리를 즉시 종료(kill)하여 자원을 반납하고, 대기 중인 세션에 알림을 주어 정상 수행이 가능하다고 주장합니다. 이를 확인해보겠습니다.</p>
+<h3 id="_6"><strong>버그 픽스 내용</strong></h3>
+<ul>
+<li><strong>변경 사항</strong>: 디스크가 가득 차면 해당 쿼리를 즉시 에러 처리하고, 사용 중이던 임시 파일을 삭제하여 공간을 확보.</li>
+<li><strong>영향</strong>: 문제가 있는 쿼리는 실패하지만, 다른 세션은 영향을 받지 않고 정상적으로 작동.</li>
+</ul>
+<h3 id="singleid_1"><strong>SingleID 장애와의 관계</strong></h3>
+<ul>
+<li><strong>장애 방지 여부</strong>: 버그가 픽스되었다면(10.6.18 이상), 디스크가 가득 찼을 때 문제가 있는 쿼리가 즉시 종료되어 임시 파일이 삭제되고, 디스크 공간이 확보되었을 것입니다. 이로 인해 다른 세션이 대기 상태에 빠지지 않고 정상적으로 작동했을 가능성이 있습니다.</li>
+<li><strong>제한점</strong>: 그러나 이는 <strong>장애의 심각성을 완화</strong>할 뿐, <strong>근본 원인을 해결하지 않습니다</strong>. 쿼리가 비효율적이면 여전히 많은 자원을 소모하며, 빈번한 에러 발생으로 사용자 경험에 영향을 줄 수 있습니다. 또한, 4개의 쿼리가 동시에 실행 중이었던 상황에서, 디스크가 가득 차기 전에 모든 쿼리를 종료시키는 것이 현실적으로 어려울 수 있습니다. 즉, temp 영역이 다 차기 전에 쿼리를 종료하여 장애를 완전히 방지한다는 보장은 없습니다.</li>
+</ul>
+<hr />
+<h2 id="_7">각 주장의 타당성 분석</h2>
+<h3 id="_8"><strong>애플리케이션 담당자의 주장</strong></h3>
+<ol>
+<li><strong>쿼리 생성</strong>: Apache Syncope에서 JPA로 자동 생성된 쿼리이며, 장애 전까지 문제없던 쿼리였다.</li>
+<li><strong>버그 연관성</strong>: MDEV-33813으로 인해 디스크가 가득 찼을 때 DB Hang이 발생했으며, 버그가 수정되었다면 다른 세션에 영향을 주지 않았을 것.</li>
+<li><strong>영향 범위</strong>: 버그가 없었다면 단순 느린 쿼리로 끝났을 것.</li>
+</ol>
+<h3 id="_9"><strong>데이터베이스 지원 전문가의 주장</strong></h3>
+<ol>
+<li><strong>근본 원인</strong>: 인덱스 부재로 쿼리가 비효율적으로 실행되며 임시 디스크를 소진한 것이 주원인.</li>
+<li><strong>버그와의 차이</strong>: MDEV-33813은 디스크가 가득 찼다가 공간이 확보된 경우를 다루지만, SingleID는 디스크가 계속 100% 유지됨.</li>
+<li><strong>쿼리 관리 필요성</strong>: 지속적인 쿼리 최적화가 필요하며, 버그 픽스만으로는 충분하지 않음.</li>
+</ol>
+<h3 id="_10"><strong>장애 등급 판정 위원회 의견</strong></h3>
+<ul>
+<li>데이터 증가와 통계 정보 변화로 쿼리 실행 계획이 변하며 성능 문제가 발생할 수 있음.</li>
+<li>운영 중 장시간 실행 쿼리에 대한 지속적인 관리와 개선 필요성을 강조.</li>
+</ul>
+<hr />
+<h2 id="_11">판단 근거</h2>
+<h3 id="_12"><strong>근본 원인: 비효율적인 쿼리</strong></h3>
+<ul>
+<li><strong>증거</strong>: 4개의 쿼리가 각각 2900초 이상 실행되며 대규모 정렬을 유발, 임시 디스크(56GB)를 모두 소진.</li>
+<li><strong>분석</strong>: 인덱스가 없었다면 쿼리는 전체 테이블 스캔 또는 비효율적인 정렬을 수행했을 가능성이 높음. 이는 데이터 증가와 통계 정보 업데이트로 실행 계획이 악화됨.</li>
+<li><strong>결론</strong>: 임시 디스크가 가득 찬 것은 버그가 아니라 쿼리의 비효율성 때문.</li>
+</ul>
+<h3 id="_13"><strong>버그의 역할</strong></h3>
+<ul>
+<li><strong>영향</strong>: 버그로 인해 디스크가 가득 찼을 때 쿼리가 즉시 종료되지 않고 대기 상태에 들어가면서 장애가 악화됨(10.6.14의 동작 방식).</li>
+<li><strong>제한</strong>: 버그 픽스(10.6.18)는 디스크 소진 시 쿼리를 에러 처리하지만, 쿼리가 디스크를 소진하는 것을 막지 못함. 즉, 근본 원인을 해결하지 않음.</li>
+</ul>
+<h3 id="_14"><strong>쿼리 최적화의 필요성</strong></h3>
+<ul>
+<li>위원회의 의견처럼, 데이터 증가와 실행 계획 변화는 피할 수 없는 현상. 지속적인 쿼리 관리와 최적화가 필요함.</li>
+</ul>
+<p><strong>결론</strong>: 데이터베이스 지원 전문가의 주장이 더 타당함. 버그는 장애의 심각성을 악화시켰지만, 근본 원인은 비효율적인 쿼리에 있음.</p>
+<hr />
+<h2 id="_15">애플리케이션 담당자를 논리적으로 설득하는 반박</h2>
+<h3 id="1"><strong>반박 1: 쿼리의 비효율성이 주원인</strong></h3>
+<ul>
+<li><strong>당신의 주장</strong>: 쿼리는 Apache Syncope에서 생성된 것이며, 장애 전까지 문제없었다.</li>
+<li><strong>반박</strong>: 쿼리가 자동 생성되었다 하더라도, 인덱스 부재로 인해 56GB 임시 디스크를 소진한 것은 부인할 수 없는 사실입니다. 2900초 이상 실행된 쿼리는 비정상적이며, 이는 실행 계획이 비효율적으로 변경된 결과입니다. 버그가 없었다 하더라도 디스크 소진은 피할 수 없었을 것이며, 이는 근본적인 쿼리 설계 문제를 드러냅니다.</li>
+</ul>
+<h3 id="2"><strong>반박 2: 버그의 역할은 장애 악화, 원인 아님</strong></h3>
+<ul>
+<li><strong>당신의 주장</strong>: 버그로 인해 DB Hang이 발생했으며, 픽스되었다면 다른 세션에 영향을 주지 않았을 것.</li>
+<li><strong>반박</strong>: 버그는 디스크가 가득 찼을 때 쿼리를 즉시 종료하지 않고 대기하게 만들어 장애를 악화시켰습니다(10.6.14의 60초 대기 동작). 하지만 디스크가 가득 찬 이유는 쿼리의 비효율성 때문입니다. 버그 픽스(10.6.18)는 쿼리를 에러 처리하여 다른 세션을 보호하지만, 쿼리가 디스크를 소진하는 근본 원인을 해결하지 않습니다. 즉, 버그는 결과일 뿐 원인이 아닙니다.</li>
+</ul>
+<h3 id="3"><strong>반박 3: 버그 픽스만으로는 불충분</strong></h3>
+<ul>
+<li><strong>당신의 주장</strong>: 버그가 픽스되면 문제가 있는 쿼리를 즉시 종료하여 장애를 방지할 수 있다.</li>
+<li><strong>반박</strong>: 버그 픽스는 디스크가 가득 찼을 때 쿼리를 종료하여 장애의 심각성을 줄일 수 있습니다. 하지만 이번 장애는 4개의 쿼리가 동시에 실행되며 디스크를 소진한 경우로, 디스크가 100% 가득 차기 전에 모든 쿼리를 종료시키는 것이 현실적으로 불가능했을 가능성이 높습니다. 설령 픽스가 적용되었다 해도, 비효율적인 쿼리는 여전히 많은 자원을 소모하며 빈번한 에러를 유발할 수 있습니다. 이는 장기적인 시스템 안정성에 문제를 초래하므로, 쿼리 최적화가 필수입니다.</li>
+</ul>
+<h3 id="4"><strong>반박 4: 지속적인 관리의 중요성</strong></h3>
+<ul>
+<li><strong>당신의 주장</strong>: 버그가 없었다면 단순 느린 쿼리로 끝났을 것.</li>
+<li><strong>반박</strong>: 2900초 이상 실행된 쿼리는 "단순 느린 쿼리"가 아닙니다. 이는 시스템 전체에 심각한 부하를 주며, 버그 없이도 성능 저하를 유발할 수 있습니다. 장애 등급 판정 위원회의 의견처럼, 데이터 증가와 실행 계획 변화는 피할 수 없는 현상입니다. 지속적인 쿼리 관리와 최적화 없이는 유사한 문제가 반복될 것입니다.</li>
+</ul>
+<h3 id="_16"><strong>제안</strong></h3>
+<ul>
+<li><strong>행동 방안</strong>: 버전 업그레이드(10.6.18 이상)를 통해 버그를 수정하는 동시에, 인덱스를 추가하고 쿼리 실행 계획을 정기적으로 모니터링하세요. 데이터 증가를 고려한 설계와 최적화를 병행해야 합니다. 버그 픽스는 보조적 조치일 뿐, 근본 해결책은 쿼리 관리에 있습니다. 두 가지 접근을 결합하면 재발을 확실히 방지할 수 있습니다.</li>
+</ul>
+<hr />
+<h2 id="_17">결론</h2>
+<p>데이터베이스 지원 전문가의 입장이 옳으며, 장애의 근본 원인은 인덱스 없는 비효율적인 쿼리입니다. MariaDB 버그(MDEV-33813)는 장애의 심각성을 악화시켰을 뿐, 주원인이 아닙니다. 버그 픽스와 쿼리 최적화를 모두 수행하여 재발을 방지해야 합니다. 애플리케이션 담당자의 버그 관련 지적은 유효하지만, 쿼리 최적화 없이는 장기적인 안정성을 보장할 수 없음을 인지해야 합니다.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../../../..", "features": ["navigation.sections", "navigation.indexes"], "search": "../../../../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.56ea9cef.min.js"></script>
+      
+    
+  </body>
+</html>
