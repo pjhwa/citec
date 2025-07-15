@@ -3,89 +3,44 @@
 이전 분석에서 LB 편중(특정 서버 #1, #5, #6에 세션/리퀘스트 집중)을 persistence 설정, hashing collision, 포트 제한(20701~20710)으로 인한 포트 고갈, 그리고 Round-robin(RR)에서 Least Connections로의 변경 효과 부족으로 설명했습니다. 새롭게 제공된 정보(60개 세션 동시 접속, 지속적 사용으로 long-lived 세션, 포트 재사용 없음, A10 RR이 CPU 사용량 모니터링 기반 분산)를 반영해 다각도로 재분석하겠습니다. 이는 A10 Networks Thunder ADC 문서, 커뮤니티 사례, 그리고 일반 네트워크 원리를 사실 기반으로 하며, 각 원인을 비판적으로 검증합니다. 이해를 돕기 위해 개념 설명 후 원인 나열, 그리고 추천 방안을 단계적으로 설명하겠습니다.
 
 #### 기본 개념 재확인: A10 RR의 작동 방식과 동시 접속 환경
-- **A10 RR의 특성**: 표준 RR은 새로운 연결을 서버 목록 순서대로 순환 분배합니다. 그러나 A10 Thunder ADC의 RR은 proprietary(독자적) 알고리즘으로, 서버 선택 시 CPU load를 모니터링합니다.<grok:render card_id="cefaf2" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">19</argument>
-</grok:render><grok:render card_id="46ab4b" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">6</argument>
-</grok:render> 즉, 단순 순차가 아닌, 요청이 도착한 CPU가 heavy load(높은 부하) 상태면 해당 서버를 피하고 다른 서버로 리디렉션할 수 있습니다. 이는 동적 균형을 위해 설계되었으나, 초기 상태(모든 서버 CPU가 비슷할 때)에는 표준 RR처럼 동작합니다.<grok:render card_id="8a543b" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">17</argument>
-</grok:render><grok:render card_id="8efe9b" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">27</argument>
-</grok:render>
+- **A10 RR의 특성**: 표준 RR은 새로운 연결을 서버 목록 순서대로 순환 분배합니다. 그러나 A10 Thunder ADC의 RR은 proprietary(독자적) 알고리즘으로, 서버 선택 시 CPU load를 모니터링합니다.
+ 즉, 단순 순차가 아닌, 요청이 도착한 CPU가 heavy load(높은 부하) 상태면 해당 서버를 피하고 다른 서버로 리디렉션할 수 있습니다. 이는 동적 균형을 위해 설계되었으나, 초기 상태(모든 서버 CPU가 비슷할 때)에는 표준 RR처럼 동작합니다.
+
 - **동시 접속 환경(60개 세션 simultaneous)**: 테스트에서 60개 세션이 "동시에" 접속하고 지속적으로 사용되면, LB는 ingress(유입) 트래픽을 한 번에 처리해야 합니다. 포트 재사용이 없고 포트당 복수 세션 사용이라면, 클라이언트 측 source ports가 고정적(20701~20710)으로 재사용 없이 세션을 유지하는 구조로 보입니다. 이는 long-lived 세션(오래 유지되는 연결)으로, 초기 분배 후 새로운 연결이 적어 편중이 고착됩니다.
-- **비판적 검증**: A10 문서에서 RR은 "sequential distribution"으로 설명되지만<grok:render card_id="d5e3bf" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">27</argument>
-</grok:render>, 커뮤니티 사례에서 CPU monitoring이 확인됩니다.<grok:render card_id="91985d" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">19</argument>
-</grok:render> 그러나 이는 모든 버전/설정에 적용되는지 불확실 – 공식 데이터시트에는 명시되지 않아<grok:render card_id="493468" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">0</argument>
-</grok:render><grok:render card_id="e185e2" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">5</argument>
-</grok:render>, 실제 config(예: `slb service-group` 명령어)에서 확인 필요. 만약 CPU monitoring이 off거나 threshold가 높으면 표준 RR처럼 편중 발생.
+- **비판적 검증**: A10 문서에서 RR은 "sequential distribution"으로 설명되지만, 커뮤니티 사례에서 CPU monitoring이 확인됩니다. 그러나 이는 모든 버전/설정에 적용되는지 불확실 – 공식 데이터시트에는 명시되지 않아, 실제 config(예: `slb service-group` 명령어)에서 확인 필요. 만약 CPU monitoring이 off거나 threshold가 높으면 표준 RR처럼 편중 발생.
 
 #### 다각도 원인 분석: 왜 초기 분산이 안 되는가?
 60개 세션이 동시에 접속할 때 분산 실패는 단일 원인이 아닌 복합적입니다. 아래에서 네트워크 계층, LB 알고리즘, 테스트 환경 측면으로 다각도로 분석하며, 각 원인을 사실 기반으로 설명하고 비판적으로 검증합니다. 데이터(#6에 33개 세션, #5에 17개 등)를 반영해, 초기 rush(급증)에서 hashing이나 persistence가 주요 culprit(원인)으로 보입니다.
 
 1. **Persistence(세션 지속성) 설정 영향 (가장 높은 가능성)**:
-   - **설명**: A10에서 source IP persistence를 사용하면, 같은 클라이언트 IP의 연결을 동일 서버로 유지합니다.<grok:render card_id="2ce418" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">27</argument>
-</grok:render> 테스트가 single 클라이언트(또는 NAT 뒤)에서 60개 세션을 동시에 보내면, 모든 세션이 하나의 IP로 보여 첫 세션이 할당된 서버(#6 등)로 몰립니다. 지속적 사용으로 세션이 long-lived되어 편중 유지.
+   - **설명**: A10에서 source IP persistence를 사용하면, 같은 클라이언트 IP의 연결을 동일 서버로 유지합니다. 테스트가 single 클라이언트(또는 NAT 뒤)에서 60개 세션을 동시에 보내면, 모든 세션이 하나의 IP로 보여 첫 세션이 할당된 서버(#6 등)로 몰립니다. 지속적 사용으로 세션이 long-lived되어 편중 유지.
    - **동시 접속과의 연계**: 초기 SYN 패킷(접속 요청)이 동시에 도착하면 LB가 persistence 테이블을 즉시 생성, 후속 세션을 같은 서버로 보냅니다. CPU monitoring이 있어도 persistence가 우선될 수 있습니다.
-   - **비판적 검증**: A10 문서에서 persistence는 template으로 설정되며, timeout(기본 5분) 내 유지됩니다.<grok:render card_id="dda456" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">27</argument>
-</grok:render> 그러나 만약 persistence가 off라면 이 원인은 배제 – 하지만 쿠폰 시스템처럼 stateful(상태 유지) 필요 시 on일 가능성 큽니다. 커뮤니티 사례에서 RR 편중이 persistence로 해결된 예가 있음.<grok:render card_id="bb6db9" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">7</argument>
-</grok:render> 데이터에서 세션 분포가 IP 그룹화처럼 보이는 점(33,17,2 등)이 이 가설 지지.
+   - **비판적 검증**: A10 문서에서 persistence는 template으로 설정되며, timeout(기본 5분) 내 유지됩니다. 그러나 만약 persistence가 off라면 이 원인은 배제 – 하지만 쿠폰 시스템처럼 stateful(상태 유지) 필요 시 on일 가능성 큽니다. 커뮤니티 사례에서 RR 편중이 persistence로 해결된 예가 있음. 데이터에서 세션 분포가 IP 그룹화처럼 보이는 점(33,17,2 등)이 이 가설 지지.
 
 2. **Hashing 알고리즘과 포트 제한의 collision (Collision 충돌)**:
    - **설명**: A10 LB는 연결 분배에 consistent hashing을 사용, source IP/port + dest IP/port를 기반으로 서버 매핑합니다. 포트 범위가 좁은(20701~20710, 10개) 상태에서 60개 세션이 동시에 접속하면, hashing 값이 비슷해 특정 서버로 집중됩니다. 재사용 없어도 초기 할당 시 collision 발생.
    - **동시 접속과의 연계**: Simultaneous 연결은 LB의 ingress queue에서 병렬 처리되지만, hashing이 deterministic(결정적)이라 비슷한 포트/IP 조합이 같은 서버로 갑니다. CPU monitoring은 hashing 후 적용될 수 있어 초기 편중 방지 못함.
-   - **비판적 검증**: A10은 hashing으로 stateless 분배 지원하지만<grok:render card_id="1e32cd" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">27</argument>
-</grok:render>, 공식 문서에 포트 기반 상세 없음. 그러나 유사 LB(F5, Citrix)에서 포트 범위 좁으면 collision 확인됨. 포트 10개로 60세션은 mathematical하게 collision 확률 높음(비둘기 집 원리: 10개 구멍에 60개 비둘기). 만약 서버 포트라면 영향 적지만, 이전 분석처럼 클라이언트 포트일 가능성 큼.
+   - **비판적 검증**: A10은 hashing으로 stateless 분배 지원하지만, 공식 문서에 포트 기반 상세 없음. 그러나 유사 LB(F5, Citrix)에서 포트 범위 좁으면 collision 확인됨. 포트 10개로 60세션은 mathematical하게 collision 확률 높음(비둘기 집 원리: 10개 구멍에 60개 비둘기). 만약 서버 포트라면 영향 적지만, 이전 분석처럼 클라이언트 포트일 가능성 큼.
 
 3. **CPU Monitoring의 초기 상태 한계**:
-   - **설명**: A10 RR은 CPU load를 모니터링해 heavy CPU 서버를 피합니다.<grok:render card_id="386281" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">19</argument>
-</grok:render><grok:render card_id="113c8f" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">6</argument>
-</grok:render> 그러나 초기(모든 서버 CPU 0% 비슷)에는 표준 RR처럼 순차 분배. 60개 세션이 동시에 도착하면 첫 몇 개가 서버 #1/#5/#6에 할당되고, 즉시 CPU spike로 후속 세션이 피하지만, 이미 편중된 상태.
+   - **설명**: A10 RR은 CPU load를 모니터링해 heavy CPU 서버를 피합니다. 그러나 초기(모든 서버 CPU 0% 비슷)에는 표준 RR처럼 순차 분배. 60개 세션이 동시에 도착하면 첫 몇 개가 서버 #1/#5/#6에 할당되고, 즉시 CPU spike로 후속 세션이 피하지만, 이미 편중된 상태.
    - **동시 접속과의 연계**: Rush 트래픽에서 모니터링 간격(초 단위)이 지연되어 초기 분배 불균형. 지속적 사용으로 CPU 불균형 고착.
-   - **비판적 검증**: 커뮤니티에서 "CPU heavy load 시 request redirection" 확인되지만<grok:render card_id="e7fb97" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">6</argument>
-</grok:render>, A10 데이터시트에는 명시되지 않아 proprietary 기능일 수 있음.<grok:render card_id="5510b9" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">0</argument>
-</grok:render> 만약 monitoring threshold가 높거나 off라면 무의미. 슬라이드에서 RR은 "equal connections" 목표지만, 서버 capacity 다르면 실패.<grok:render card_id="d0b163" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">27</argument>
-</grok:render>
+   - **비판적 검증**: 커뮤니티에서 "CPU heavy load 시 request redirection" 확인되지만, A10 데이터시트에는 명시되지 않아 proprietary 기능일 수 있음. 만약 monitoring threshold가 높거나 off라면 무의미. 슬라이드에서 RR은 "equal connections" 목표지만, 서버 capacity 다르면 실패.
 
 4. **Least Connections 변경 후 잔여 영향과 Long-Lived 세션**:
-   - **설명**: RR에서 Least로 변경했으나, 기존 세션이 유지되면(재접속 안 함) 새로운 연결만 Least 적용되어 초기 편중 해소 안 됨.<grok:render card_id="33cdf0" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">17</argument>
-</grok:render><grok:render card_id="8607b5" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">27
-</argument>
-</grok:render> 60개가 long-lived로 지속되면 Least가 active connections 고려하지만, 초기 분배는 RR 잔재로.
+   - **설명**: RR에서 Least로 변경했으나, 기존 세션이 유지되면(재접속 안 함) 새로운 연결만 Least 적용되어 초기 편중 해소 안 됨. 60개가 long-lived로 지속되면 Least가 active connections 고려하지만, 초기 분배는 RR 잔재로.
    - **동시 접속과의 연계**: Simultaneous 시 Least는 실시간 최소 연결 서버 선택, but 초기 모든 서버 0개라 RR처럼 동작.
-   - **비판적 검증**: A10 가이드에서 변경 시 "clear sessions" 추천, 하지만 테스트 중이라면 생략 가능성.<grok:render card_id="d7f107" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">3</argument>
-</grok:render> 데이터에서 #6의 33개는 long session으로 누적된 듯.
+   - **비판적 검증**: A10 가이드에서 변경 시 "clear sessions" 추천, 하지만 테스트 중이라면 생략 가능성. 데이터에서 #6의 33개는 long session으로 누적된 듯.
 
 5. **테스트 환경의 구조적 문제 (NAT, 클라이언트 단일성)**:
    - **설명**: 클라이언트가 NAT 뒤 single IP면 모든 세션이 하나로 보여 persistence/hash 편중. 동시 접속 툴(예: JMeter)이 포트 고정 시 문제 악화.
-   - **비판적 검증**: A10 CGNAT에서 session limit 언급되지만<grok:render card_id="b3b4e1" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">18</argument>
-</grok:render>, 실제 로그(tcpdump)로 IP 다양성 확인 필요. 만약 multi-client라면 배제.
+   - **비판적 검증**: A10 CGNAT에서 session limit 언급되지만, 실제 로그(tcpdump)로 IP 다양성 확인 필요. 만약 multi-client라면 배제.
 
 #### 추천 해결 방안: 단계적 적용
-1. **즉시 확인**: A10 CLI로 `show slb service-group` (분배 확인), `show session` (persistence 테이블), `show cpu` (모니터링 로그).<grok:render card_id="2a4eb1" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">27</argument>
-</grok:render>
+1. **즉시 확인**: A10 CLI로 `show slb service-group` (분배 확인), `show session` (persistence 테이블), `show cpu` (모니터링 로그).
 2. **설정 조정**: Persistence off 또는 mask 조정(예: /32 대신 /24). Least Connections에 weighted(가중치) 추가.
 3. **테스트 재설계**: 세션 리셋 후 재접속, 포트 범위 확대(1024~65535), multi-IP 클라이언트 사용.
-4. **모니터링**: health check 강화, aFleX 스크립트로 custom 분배.<grok:render card_id="3c5161" card_type="citation_card" type="render_inline_citation">
-<argument name="citation_id">5</argument>
-</grok:render>
+4. **모니터링**: health check 강화, aFleX 스크립트로 custom 분배.
 5. **A10 지원**: 로그 제출, firmware 업데이트 확인(CPU monitoring 버그 가능).
 
 이 분석은 A10 공식/커뮤니티 사실 기반이며, 실제 config 검토로 검증하세요. 추가 데이터 공유 시 더 세밀한 진단 가능.
