@@ -1,0 +1,648 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Grok에 물어보고 얻은 답을 정리한 블로그">
+      
+      
+      
+        <link rel="canonical" href="https://pjhwa.github.io/citec/stability/">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.15">
+    
+    
+      
+        <title>Stability - Grok Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href=".." title="Grok Docs" class="md-header__button md-logo" aria-label="Grok Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Grok Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Stability
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="검색">
+        
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            검색 초기화
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Grok Docs" class="md-nav__button md-logo" aria-label="Grok Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Grok Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    홈
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../blog/posts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    블로그
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            블로그
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../blog/posts/2025/04/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    2025
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            2025
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../blog/posts/2025/05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    05월
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    아카이브
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      리던던시 비교
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sla" class="md-nav__link">
+    <span class="md-ellipsis">
+      가용성 비교 (SLA)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      성능 비교
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Stability</h1>
+
+<h3 id="_1">리던던시 비교</h3>
+<p>리던던시는 클라우드 서비스의 데이터와 서비스를 중복 배치하여 장애 시 안정성을 높이는 요소입니다. 주요 비교 항목으로 Regions (지리적 독립 영역), Availability Zones (AZ, 지역 내 독립 데이터센터 그룹), Placement Group (인스턴스 그룹화로 네트워크 지연 최소화) 등을 고려했습니다. 각 CSP의 공식 문서와 검색 결과를 교차 검증한 결과, 한국 기반 CSP들은 주로 한국 내 multiple AZ를 제공하며, 글로벌 확장성을 강조합니다. 그러나 Placement Group은 AWS-like 기능으로, 모든 CSP에서 명시되지 않아 해당 경우 'Not specified'로 표기했습니다. 데이터는 2025년 기준 최신 공식 사이트에서 추출되었으며, 일부 CSP의 경우 상세 spec이 JS 기반 페이지로 인해 추출 어려움이 있었으나, 검색 snippets로 보완했습니다.</p>
+<table>
+<thead>
+<tr>
+<th>CSP</th>
+<th>Regions 수</th>
+<th>AZ 수 (대표 지역 기준)</th>
+<th>Placement Group</th>
+<th>기타 Redundancy 특징</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCP (Samsung Cloud Platform)</td>
+<td>1 (Korea 주, 글로벌 연결 가능)</td>
+<td>Not specified (architecture에서 multiple sites 언급)</td>
+<td>Not specified</td>
+<td>Global service backbone으로 N-to-N 연결 지원, 고객 사이트 redundancy</td>
+</tr>
+<tr>
+<td>Naver Cloud</td>
+<td>5 (Korea, US West, Singapore, Japan, Germany)</td>
+<td>2 (Korea: KR-1, KR-2; Singapore: SGN-4, SGN-5; Japan: JPN-4, JPN-5)</td>
+<td>Not specified</td>
+<td>Server redundancy 및 DR (Disaster Recovery) 시스템 구축 가능, multi-zone 확장 중</td>
+</tr>
+<tr>
+<td>NHN Cloud</td>
+<td>4 (Korea Pangyo, Korea Pyeongchon, Japan Tokyo, US California)</td>
+<td>Multiple available areas (명시적 AZ 수 없음, 지역 내 다중 영역)</td>
+<td>Not specified</td>
+<td>Redundant data configuration, 다중 지역/영역 배포로 high availability 지원</td>
+</tr>
+<tr>
+<td>KT Cloud</td>
+<td>3 (Korea Central A, Central B, South)</td>
+<td>3 (Korea 내 AZ 분산)</td>
+<td>Not specified</td>
+<td>Hyperscale redundancy, GPU clustering으로 fault tolerance 강화</td>
+</tr>
+</tbody>
+</table>
+<p>출처: cloud.samsungsds.com, guide.ncloud-docs.com, docs.nhncloud.com, cloud.kt.com. 교차검증: 각 공식 문서와 web search 결과 (e.g., Splunk AZ guide for general context, but CSP-specific은 official 우선).</p>
+<h3 id="sla">가용성 비교 (SLA)</h3>
+<p>가용성은 SLA (Service Level Agreement)로 측정되며, 월간 uptime percentage (%)로 표현합니다. 높은 %는 더 낮은 다운타임을 의미합니다 (e.g., 99.9%는 월 43분 다운타임 허용). 상품군별 (Compute, Storage, Network, GPU) 비교를 위해 공식 SLA 문서를 우선으로 했습니다. 대부분의 CSP가 99.9% 수준을 보장하나, 일부 서비스 (e.g., Live Station)는 별도 적용. 교차검증 결과, 한국 CSP들은 compute/storage에서 유사한 수준을 유지하나, credit 보상 비율에서 차이 (e.g., SCP 10-25% credit).</p>
+<table>
+<thead>
+<tr>
+<th>CSP</th>
+<th>Compute SLA (%)</th>
+<th>Storage SLA (%)</th>
+<th>Network SLA (%)</th>
+<th>GPU SLA (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCP</td>
+<td>99.9</td>
+<td>99.9</td>
+<td>99.9</td>
+<td>99.9</td>
+</tr>
+<tr>
+<td>Naver Cloud</td>
+<td>99.9 (Server)</td>
+<td>99.9 (Block/Object)</td>
+<td>99.9</td>
+<td>99.9 (GPU Server)</td>
+</tr>
+<tr>
+<td>NHN Cloud</td>
+<td>99.9</td>
+<td>99.9</td>
+<td>99.9</td>
+<td>99.9</td>
+</tr>
+<tr>
+<td>KT Cloud</td>
+<td>99.9 (Server/GPU Server)</td>
+<td>99.9 (Object Storage)</td>
+<td>99.9 (GSLB)</td>
+<td>99.9 (GPU)</td>
+</tr>
+</tbody>
+</table>
+<p>출처: cloud.samsungsds.com/serviceportal/policy/sla.html, xv-ncloud.pstatic.net/images/provision/ServerSLA.pdf, docs.nhncloud.com/en/nhncloud/en/sla/, gcloud.kt.com/terms/sla. 교차검증: NVIDIA SLA (99.9% reference)와 유사, but CSP별 official 값 우선. 비판: SLA는 보장치이나 실제 uptime은 모니터링 필요 (e.g., 99.9% 미달 시 credit만, 비즈니스 손실 보상 아님).</p>
+<h3 id="_2">성능 비교</h3>
+<p>성능은 Spec 기반 정량 데이터 (e.g., Compute: max vCPU/RAM, Storage: max IOPS/throughput, Network: max bandwidth, GPU: model/TFLOPS/memory)로 비교합니다. 각 CSP의 제품 페이지와 검색 결과를 교차 검증했으나, 일부 (e.g., SCP, KT)는 JS 페이지로 상세 추출 어려움; 대신 snippets와 case study로 보완. 고성능 인스턴스 기준으로 max 값 사용. GPU는 AI/HPC workload 중심. 비판: Spec은 이론치로, 실제 성능은 workload/network에 따라 변동 (e.g., benchmark 필요).</p>
+<table>
+<thead>
+<tr>
+<th>CSP</th>
+<th>Compute (max vCPU / max RAM)</th>
+<th>Storage (max IOPS / max Throughput)</th>
+<th>Network (max Bandwidth)</th>
+<th>GPU (Model / TFLOPS / Memory / Bandwidth)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCP</td>
+<td>Not specified (high-performance physical server, up to enterprise level)</td>
+<td>Not specified (Block Storage free up to 100GB)</td>
+<td>Not specified (global backbone)</td>
+<td>Not specified (GPU Server 지원, but spec 미상)</td>
+</tr>
+<tr>
+<td>Naver Cloud</td>
+<td>Up to 128 vCPU / 1TB RAM (typical high-end)</td>
+<td>20,000 IOPS (4KiB I/O) / Not specified</td>
+<td>Up to 3,200 Gbps (high-bandwidth NICs)</td>
+<td>GPU Server (KVM-based, model e.g., V100-like) / Not specified / Not specified / Not specified</td>
+</tr>
+<tr>
+<td>NHN Cloud</td>
+<td>Up to 64 vCPU / 512GB RAM (GPU instance 기준)</td>
+<td>Not specified</td>
+<td>Not specified</td>
+<td>NVIDIA Tesla V100 / 15.7 (Single), 125 (Tensor) / 32GB / 900GB/sec</td>
+</tr>
+<tr>
+<td>KT Cloud</td>
+<td>Up to 96 vCPU / 1TB RAM (hyperscale)</td>
+<td>Not specified (high IOPS, benchmark 1위)</td>
+<td>40Gbps backbone</td>
+<td>AMD Instinct (e.g., MI series) / Not specified / Up to 24,576GB (48 GPUs) / Not specified</td>
+</tr>
+</tbody>
+</table>
+<p>출처: cloud.samsungsds.com/serviceportal/product/compute, www.ncloud.com/product/compute/server, docs.nhncloud.com/en/Compute/GPU%20Instance/en/overview/, cloud.kt.com/product/compute/server, amd.com/en/resources/case-studies/kt-cloud.html. 교차검증: Intel/AMD case study와 유사 spec 확인, but 실제 사용 시 benchmark (e.g., Cloud Harmony) 추천. 비판: Spec 미상 항목은 공식 문서 부족으로, 2025년 업데이트 확인 필요; Naver/KT는 GPU clustering으로 scale-up 강점, NHN은 V100으로 AI 특화.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.sections", "navigation.indexes"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.56ea9cef.min.js"></script>
+      
+    
+  </body>
+</html>
