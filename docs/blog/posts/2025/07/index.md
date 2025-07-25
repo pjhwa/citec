@@ -10,3 +10,4 @@ template: blog.html
 - [2025-07-14 | ""클라우드 플랫폼 비교""](/citec/blog/posts/2025/07/2025-07-14-csp-roadmap/)
 - [2025-07-16 | ""Ubuntu 22.04 LTS Linux Server dmesg 분석""](/citec/blog/posts/2025/07/2025-07-16-ubuntu-dmesg/)
 - [2025-07-17 | ""Linux: irqbalance 서비스 권고""](/citec/blog/posts/2025/07/2025-07-17-linux-irqbalance/)
+- [2025-07-25 | ""OpenStack 환경에서 vProtect 백업 솔루션의 Snapshot 볼륨 Attach 불가 에러""](/citec/blog/posts/2025/07/2025-07-25-cinder-vprotect/)
