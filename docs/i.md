@@ -24,3 +24,58 @@ SCP BM 의 V1 대비 V2 변경 사항
 iSCSI 용 네트워크는 기존 L2 방식에서 L3 방식으로 변경됨 → Static Route 추가 필요 
 iSCSI 용 본딩 bond-iscsi 는 기존 물리 NIC 사용에서 VLAN Tagging 으로 변경됨 → VLAN ID 별 VLAN 디바이스로 설정 필요
 
+3. BM 서버의 초기 iSCSI NIC 구성 확인 
+  - SCP BM 서버는 기본적으로 iSCSI 연결을 위한 NIC 구성은 Active-Standby Bonding 구성으로 제공
+
+  - Bond iSCSI(bond-iscsi) 의 NIC 정보 확인 : 아래의 경우 ens5f0, ens6f1 로 구성되어 있고 VLAN ID  확인함 
+
+  - iSCSI 스토리지 연결 용 IP 확인 : 아래의 경우 172.30.4.2/24
+```
+# ip a
+
+..중략 ..
+16: bond-srv.3706@bond-srv: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc noqueue state UP group default qlen 1000
+    link/ether ec:e7:a7:0d:ab:34 brd ff:ff:ff:ff:ff:ff
+    inet 172.31.4.2/24 brd 172.31.4.255 scope global noprefixroute bond-srv.3706
+       valid_lft forever preferred_lft forever
+17: bond-iscsi: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 9000 qdisc noqueue state UP group default qlen 1000
+    link/ether ec:e7:a7:0d:ac:f0 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::eee7:a7ff:fe0d:acf0/64 scope link 
+       valid_lft forever preferred_lft forever
+18: bond-iscsi.3706@bond-iscsi: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc noqueue state UP group default qlen 1000
+    link/ether ec:e7:a7:0d:ac:f0 brd ff:ff:ff:ff:ff:ff
+    inet 172.30.4.2/24 brd 172.30.4.255 scope global noprefixroute bond-iscsi.3706
+       valid_lft forever preferred_lft forever
+
+
+
+# cat /proc/net/bonding/bond-iscsi
+
+Ethernet Channel Bonding Driver: v3.7.1 (April 27, 2011)
+
+Bonding Mode: fault-tolerance (active-backup)
+Primary Slave: None
+Currently Active Slave: ens5f0
+MII Status: up
+MII Polling Interval (ms): 100
+Up Delay (ms): 0
+Down Delay (ms): 0
+Peer Notification Delay (ms): 0
+
+Slave Interface: ens5f0
+MII Status: up
+Speed: 25000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: ec:e7:a7:0d:ac:f0
+Slave queue ID: 0
+
+Slave Interface: ens6f1
+MII Status: up
+Speed: 25000 Mbps
+Duplex: full
+Link Failure Count: 0
+Permanent HW addr: ec:e7:a7:0d:a2:b1
+Slave queue ID: 0
+```
+
