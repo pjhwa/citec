@@ -105,3 +105,51 @@ tcp: [12] 172.19.88.16:3260,1041 iqn.1992-08.com.netapp:sn.7fefe00e7bf111efa3f0d
 
 # iscsiadm -m session
 ```
+
+5. iSCSI 파라미터 설정 
+- iSCSI 세션을 최적화 하기 위한 파라미터 설정 후 iscsid 서비스 재가동
+```
+# vi /etc/iscsi/iscsid.conf
+
+..중략.. 
+
+
+# ********
+# Timeouts
+# ********
+#
+node.session.timeo.replacement_timeout = 5
+
+# Time interval to wait for on connection before sending a ping.
+
+node.conn[0].timeo.noop_out_interval = 5
+
+# To specify the time to wait for a Nop-out response before failing
+# the connection, edit this line. Failing the connection will
+# cause IO to be failed back to the SCSI layer. If using dm-multipath
+# this will cause the IO to be failed to the multipath layer.
+node.conn[0].timeo.noop_out_timeout = 5
+
+################################
+# session and device queue depth
+################################
+
+# To control how many commands the session will queue set
+# node.session.cmds_max to an integer between 2 and 2048 that is also
+# a power of 2. The default is 128.
+#node.session.cmds_max = 128
+node.session.cmds_max = 2048
+
+# To control the device's queue depth set node.session.queue_depth
+# to a value between 1 and 1024. The default is 32.
+#node.session.queue_depth = 32
+node.session.queue_depth = 64
+
+# For multipath configurations, you may want more than one session to be
+# created on each iface record.  If node.session.nr_sessions is greater
+# than 1, performing a 'login' for that node will ensure that the
+# appropriate number of sessions is created.
+node.session.nr_sessions = 1
+#node.session.nr_sessions = 2
+```
+                                                      
