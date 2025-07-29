@@ -268,3 +268,38 @@ net.ipv4.conf.ens6f1-isc/3706.arp_announce=2
 
 # sysctl -p /etc/sysctl.d/iscsi-aa.conf
 ```
+8. iSCSI 용 NIC 별 네트워크 확인
+  - VLAN NIC 별로 스토리지의 iSCSI Node 로 Ping 이 되는지 확인 
+```
+# NIC 별로 스토리지 IP 로 ping 정상 여부 확인 
+
+# ping -I ens5f0-isc.3706 <iSCSI Node IP1>
+
+# ping -I ens6f1-isc.3706 <iSCSI Node IP1>
+
+
+
+# ping -I ens5f0-isc.3706 <iSCSI Node IP2>
+
+# ping -I ens6f1-isc.3706 <iSCSI Node IP2>
+```
+9. iSCSI Interface 설정 
+  - iSCSI 세션이 NIC 별로 연결되도록 2개의 iSCSI Interface 를 설정함
+
+  - iSCSI 용 2 개 VLAN NIC 확인 후 iface.net_ifacename 으로 설정 함 
+     (SCP V1 에서는 iface.hwaddress  로 설정했으나 물리 NIC 과 VLAN NIC 의 MAC Address 가 동일하므로 NIC 이름으로 설정함)
+```
+# iscsiadm -m iface -I iscsi-ens5f0-isc.3706-o new
+
+# iscsiadm -m iface -I iscsi-ens6f1-isc.3706-o new
+
+
+
+# iscsiadm -m iface -I iscsi-ens5f0-isc.3706 -o update -n iface.net_ifacename -v ens5f0-isc.3706 -n iface.ipaddress -v 172.30.4.2/24 -n iface.vlan_id -v 3706   
+# iscsiadm -m iface -I iscsi-ens6f1-isc.3706 -o update -n iface.net_ifacename -v ens6f1-isc.3706 -n iface.ipaddress -v 172.30.4.202/24 -n iface.vlan_id -v 3706
+
+  (*참고:  iface.net_ifacename 만 설정해도 문제 없고 iface.ipaddress, iface.vlan_id 값은 부가적인 정보임)
+
+
+# iscsiadm -m iface
+```
