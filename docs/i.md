@@ -241,3 +241,30 @@ default         _gateway        0.0.0.0         UG    403    0        0 bond-srv
 
 .. 생략.. 
 ```
+
+7. 커널 파라미터 설정 
+- iSCSI 트래픽이 2개의 NIC 별로 통신이 되도록 커널 파라미터 설정
+
+- iSCSI 서비스를 위한 NIC 에 해당하는 커널 파라미터만 설정함 (VLAN NIC 에 커널 파라미터 설정해야 하고 VLAN ID는 "/" 구분 함)
+```
+# vi /etc/sysctl.d/iscsi-aa.conf 
+
+net.ipv4.conf.ens5f0.rp_filter=2  
+net.ipv4.conf.ens5f0.arp_ignore=1
+net.ipv4.conf.ens5f0.arp_announce=2
+
+net.ipv4.conf.ens6f1.rp_filter=2
+net.ipv4.conf.ens6f1.arp_ignore=1
+net.ipv4.conf.ens6f1.arp_announce=2
+
+
+net.ipv4.conf.ens5f0-isc/3706.rp_filter=2 
+net.ipv4.conf.ens5f0-isc/3706.arp_ignore=1
+net.ipv4.conf.ens5f0-isc/3706.arp_announce=2
+
+net.ipv4.conf.ens6f1-isc/3706.rp_filter=2
+net.ipv4.conf.ens6f1-isc/3706.arp_ignore=1
+net.ipv4.conf.ens6f1-isc/3706.arp_announce=2
+
+# sysctl -p /etc/sysctl.d/iscsi-aa.conf
+```
