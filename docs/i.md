@@ -79,3 +79,29 @@ Permanent HW addr: ec:e7:a7:0d:a2:b1
 Slave queue ID: 0
 ```
 
+4. 구성 전 사전 작업 
+  - /etc/sysconfig/network-scripts/ifcfg-bond-iscsi*, /etc/sysconfig/network-scripts/route-bond-iscsi*  파일 등을 /etc/sysconfig/network-scripts/backup  디렉토리에 백업 
+
+  - 서버에 Block Storage 가 추가되어 있다면 마운트 상태 확인 및 iSCSI 로그아웃 
+
+  - cron 에 작업 시간 동안 수행되는 JOB 이 있을 경우 주석 처리
+
+- crontab 확인 <-------------------------- 자주 실행되는 스토리지 작업이 있을 경우 작업 시간 동안 주석처리 
+```
+# crontab -l 
+
+- umount 
+# umount <FS  NAME>
+
+- iSCSI logout 
+
+# iscsiadm -m session   <-------------------------- 연결된 iSCSI Node 정보 확인
+
+tcp: [1] 172.19.88.15:3260,1035 iqn.1992-08.com.netapp:sn.7fefe00e7bf111efa3f0d039eab8d501:vs.4 (non-flash)
+tcp: [12] 172.19.88.16:3260,1041 iqn.1992-08.com.netapp:sn.7fefe00e7bf111efa3f0d039eab8d501:vs.4 (non-flash)
+
+# iscsiadm -m node -p <iSCSI Node IP1> -u            <----------------  위의 경우 iSCSI Node IP1 : 172.19.88.15
+# iscsiadm -m node -p <iSCSI Node IP2> -u            <----------------  위의 경우 iSCSI Node IP2 : 172.19.88.16
+
+# iscsiadm -m session
+```
