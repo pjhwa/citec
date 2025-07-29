@@ -153,3 +153,90 @@ node.session.nr_sessions = 1
 #node.session.nr_sessions = 2
 ```
                                                       
+6. iSCSI A-A 네트워크 설정 
+  - SCP BM 서버의 초기 프로비전 시 세팅 되었던 A-S Bonding 구성을 삭제하고 A-A 구성으로 변경
+
+  - VLAN Tagging 을 사용하므로 vlan 타입 및 vlan 디바이스로 설정함 
+
+  - iSCSI NIC의 MTU 는 9000 으로 설정 및 확인
+
+1. 기존 bond-iscsi 관련 디바이스 삭제
+
+# nmcli con down "Vlan bond-iscsi.3706"
+
+# nmcli con down "Bond bond-iscsi"
+
+# nmcli con del "Vlan bond-iscsi.3706"
+# nmcli con del "Bond bond-iscsi"
+
+
+
+2. A-A 에 사용할 vlan NIC 설정
+
+# nmcli con add type vlan con-name "ens5f0-isc.3706" ifname ens5f0-isc.3706 vlan.parent ens5f0 vlan.id 3706 ipv4.addresses 172.30.4.2/24 ipv4.method manual ipv6.method ignore 
+# nmcli con add type vlan con-name "ens6f1-isc.3706" ifname ens6f1-isc.3706 vlan.parent ens6f1 vlan.id 3706 ipv4.addresses 172.30.4.202/24 ipv4.method manual ipv6.method ignore 
+
+# nmcli con mod "ens5f0-isc.3706" mtu 9000
+# nmcli con mod "ens6f1-isc.3706" mtu 9000
+
+# ip link set mtu 9000 dev ens5f0
+# ip link set mtu 9000 dev ens6f1
+
+# nmcli con show
+
+
+
+3. 스토리지 통신을 위한 static route 추가 
+
+# cp /etc/sysconfig/network-scripts/backup/route-bond-iscsi /etc/sysconfig/network-scripts/backup/route-ens5f0-isc.3706 
+
+# cp /etc/sysconfig/network-scripts/backup/route-bond-iscsi /etc/sysconfig/network-scripts/backup/route-ens6f1-isc.3706 
+
+# systemctl restart NetworkManager
+
+
+
+  - 수동으로 추가할 경우 다음 커맨드 수행
+
+# route add -net 172.18.88.0 netmask 255.255.254.0 gw 172.30.4.1 dev ens5f0-isc.3706
+# route add -net 172.18.88.0 netmask 255.255.254.0 gw 172.30.4.1 dev ens6f1-isc.3706
+
+
+
+4. 라우팅 및 Network 설정 상태 확인
+
+# ip a
+
+..중략.. 
+
+11: ens7f1: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 9000 qdisc mq master bond-srv state UP group default qlen 1000
+    link/ether ec:e7:a7:0d:ab:34 brd ff:ff:ff:ff:ff:ff permaddr ec:e7:a7:0d:ac:f1
+    altname enp201s0f1
+12: ens5f0-isc.3706@ens5f0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc noqueue state UP group default qlen 1000
+    link/ether ec:e7:a7:0d:ac:f0 brd ff:ff:ff:ff:ff:ff
+    inet 172.30.4.2/24 brd 172.30.4.255 scope global noprefixroute ens5f0-isc.3706
+       valid_lft forever preferred_lft forever
+    inet6 fe80::eee7:a7ff:fe0d:acf0/64 scope link 
+       valid_lft forever preferred_lft forever
+13: ens6f1-isc.3706@ens6f1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc noqueue state UP group default qlen 1000
+    link/ether ec:e7:a7:0d:a2:b1 brd ff:ff:ff:ff:ff:ff
+    inet 172.30.4.202/24 brd 172.30.4.255 scope global noprefixroute ens6f1-isc.3706
+       valid_lft forever preferred_lft forever
+    inet6 fe80::eee7:a7ff:fe0d:a2b1/64 scope link 
+       valid_lft forever preferred_lft forever
+
+
+
+# route
+
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         _gateway        0.0.0.0         UG    403    0        0 bond-srv.641
+..중략.. 
+172.19.88.0     172.30.4.1      255.255.254.0   UG    400    0        0 ens5f0-isc.3706
+172.19.88.0     172.30.4.1      255.255.254.0   UG    401    0        0 ens6f1-isc.3706
+172.30.4.0      0.0.0.0         255.255.255.0   U     400    0        0 ens5f0-isc.3706
+172.30.4.0      0.0.0.0         255.255.255.0   U     401    0        0 ens6f1-isc.3706
+
+
+.. 생략.. 
