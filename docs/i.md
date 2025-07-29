@@ -161,18 +161,18 @@ node.session.nr_sessions = 1
   - iSCSI NIC의 MTU 는 9000 으로 설정 및 확인
 
 1. 기존 bond-iscsi 관련 디바이스 삭제
-
+```
 # nmcli con down "Vlan bond-iscsi.3706"
 
 # nmcli con down "Bond bond-iscsi"
 
 # nmcli con del "Vlan bond-iscsi.3706"
 # nmcli con del "Bond bond-iscsi"
-
+```
 
 
 2. A-A 에 사용할 vlan NIC 설정
-
+```
 # nmcli con add type vlan con-name "ens5f0-isc.3706" ifname ens5f0-isc.3706 vlan.parent ens5f0 vlan.id 3706 ipv4.addresses 172.30.4.2/24 ipv4.method manual ipv6.method ignore 
 # nmcli con add type vlan con-name "ens6f1-isc.3706" ifname ens6f1-isc.3706 vlan.parent ens6f1 vlan.id 3706 ipv4.addresses 172.30.4.202/24 ipv4.method manual ipv6.method ignore 
 
@@ -183,11 +183,11 @@ node.session.nr_sessions = 1
 # ip link set mtu 9000 dev ens6f1
 
 # nmcli con show
-
+```
 
 
 3. 스토리지 통신을 위한 static route 추가 
-
+```
 # cp /etc/sysconfig/network-scripts/backup/route-bond-iscsi /etc/sysconfig/network-scripts/backup/route-ens5f0-isc.3706 
 
 # cp /etc/sysconfig/network-scripts/backup/route-bond-iscsi /etc/sysconfig/network-scripts/backup/route-ens6f1-isc.3706 
@@ -200,11 +200,11 @@ node.session.nr_sessions = 1
 
 # route add -net 172.18.88.0 netmask 255.255.254.0 gw 172.30.4.1 dev ens5f0-isc.3706
 # route add -net 172.18.88.0 netmask 255.255.254.0 gw 172.30.4.1 dev ens6f1-isc.3706
-
+```
 
 
 4. 라우팅 및 Network 설정 상태 확인
-
+```
 # ip a
 
 ..중략.. 
@@ -240,3 +240,4 @@ default         _gateway        0.0.0.0         UG    403    0        0 bond-srv
 
 
 .. 생략.. 
+```
