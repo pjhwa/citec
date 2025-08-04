@@ -1,10 +1,8 @@
 ---
+title: 2025년 08월 블로그
 template: blog.html
-title: 블로그
 ---
 
-# 📚 최신 블로그 글
+# 2025년 08월 블로그
 
 - [2025-08-04 | ""AWS 환경에서의 Multicast 성능 테스트""](/citec/blog/posts/2025/08/2025-08-04-aws-multicast/)
-
-[더 많은 글 보러가기 →](/citec/blog/)
