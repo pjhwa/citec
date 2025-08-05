@@ -214,14 +214,10 @@ AWS 특이: TGW 멀티캐스트 도메인 (서브넷 associate, IGMPv2 ON)
 
 ---
 
-안녕하세요, 저는 CSP 환경에서 멀티캐스트 통신을 전문으로 다루는 네트워크 엔지니어입니다. 회의에서 논의된 SCP v2 PP VPC의 멀티캐스트 설정(IGMP Snooping ON, TRM OFF, IGMP v2 확인 중, L2만 지원)과 AWS TGW의 L2 멀티캐스트(멀티캐스트 도메인 활성화)를 기반으로, 이전에 제공한 테스트 환경 구성, 시나리오, 스크립트, 다이어그램을 확장해서 모든 추가 내용을 설명드릴게요. 네트워크를 잘 모르신다고 하시니, 기본부터 비유를 들어 쉽게 풀어가겠습니다. 비유로 말하자면, 이 테스트는 두 아파트(SCP/AWS)의 TV 신호 시스템을 검사하는 거예요 – 이제 "신호 기록(로그 분석)", "시스템 세팅(설정 상세)", "미세 튜닝(세부 조정)" 같은 부분을 세밀하게 설명하겠습니다. 회의에서 강조된 OVN의 IGMP Snooping disable 문제(브로드캐스트 변질 가능), iperf v2 옵션(글로벌 스탠다드), 보조 도구(perfSONAR, mtrace 등), 운영계 영향 피하기를 모두 반영했어요.
-
-이 설명은 이전 종합 시나리오를 보완하는 거라서, 기존 내용(테스트 케이스, 변형 테이블 등)을 참조하세요. 실제 테스트 시, 수원/상암 센터 설정처럼 센터별 차이를 확인하고, L3 미지원(백본/방화벽/TGW/VPC 피어링 연계 복잡)으로 L2에 초점을 맞추세요. 추가로, 로그 분석을 위한 Python 스크립트 예시도 포함했어요.
-
-### 1. 로그 분석: iperf 로그와 보조 도구 결과 해석
+## 1. 로그 분석: iperf 로그와 보조 도구 결과 해석
 iperf v2 테스트 후 생성되는 로그(/tmp/sender_log.txt, /tmp/receiver_log.txt)는 대역폭, 지터, 패킷 손실 등의 핵심 지표를 포함해요. 회의에서 글로벌 옵션(-i 10으로 10초 간격 보고)으로 테스트하라고 했으니, 로그는 시간대별로 세밀하게 나옵니다. 분석은 "왜 성능이 떨어지는가?"를 파악하는 데 초점 – 예: OVN disable 시 브로드캐스트 플러딩으로 손실률 증가.
 
-#### 1.1 iperf 로그 예시와 해석
+### 1.1 iperf 로그 예시와 해석
 - **Sender 로그 예시** (iperf -s ... 실행 후):
   ```
   [ ID] Interval           Transfer     Bandwidth
@@ -278,10 +274,10 @@ iperf v2 테스트 후 생성되는 로그(/tmp/sender_log.txt, /tmp/receiver_lo
   - **perfSONAR**: 로그 예: "Latency: 0.5ms, Throughput: 10Mbps" – 장기 테스트(-t 3600)에서 누적 지연 트렌드 그래프화(Matplotlib 사용 추천).
   - **전체 비교**: SCP vs AWS 테이블 생성 – 예: Python으로 여러 로그 합쳐 CSV 출력, Excel로 시각화. 인사이트: AWS TGW가 고부하 시 안정적(오버헤드 적음) vs SCP OVN 취약(브로드캐스트).
 
-### 2. 설정 상세: SCP와 AWS의 멀티캐스트 구성 단계
+## 2. 설정 상세: SCP와 AWS의 멀티캐스트 구성 단계
 회의에서 IGMP Snooping/TRM/IGMP Query 설정 필요하다고 했으니, 세부 명령어와 단계 설명. L2만 지원(L3 미지원으로 VPC 절반 줄음)하니 격리된 테스트 VPC 사용.
 
-#### 2.1 SCP (OpenStack 기반) 설정 상세
+### 2.1 SCP (OpenStack 기반) 설정 상세
 - **IGMP Snooping 활성화** (OVN 기본 disable, 회의: 모든 포트 브로드캐스트 문제):
   - 명령어: OpenStack 컨트롤러에서 `ovn-nbctl set logical_switch <switch-name> other_config:mcast_snoop=true` (IGMP Snooping ON). TRM OFF: `ovn-nbctl set logical_router <router-name> options:mcast_relay=false`.
   - IGMP v2 확인: `ovn-nbctl show`로 버전 체크(회의 확인 중, v2만 지원 가정).
@@ -289,7 +285,7 @@ iperf v2 테스트 후 생성되는 로그(/tmp/sender_log.txt, /tmp/receiver_lo
 - **VM 생성 및 서브넷**: `openstack network create test-net --provider-network-type vxlan` (VxLAN for L2, 회의 CISCO 사례 참고). VM: `openstack server create --flavor m1.small --image ubuntu sender-vm` 등. Affinity: `openstack server group create --policy affinity test-group` (호스트 분산).
 - **테스트 전 확인**: `tcpdump -i <interface> igmp`로 IGMP 메시지 캡처 – Snooping ON 시 그룹 가입만 패킷.
 
-#### 2.2 AWS TGW 설정 상세
+### 2.2 AWS TGW 설정 상세
 - **TGW 멀티캐스트 도메인 생성** (기본 VPC 미지원, 회의: TGW 활성화):
   - AWS 콘솔: Transit Gateways → Create Transit Gateway → Multicast 지원 체크.
   - 도메인 생성: TGW 선택 → Multicast domains → Create multicast domain.
@@ -300,7 +296,7 @@ iperf v2 테스트 후 생성되는 로그(/tmp/sender_log.txt, /tmp/receiver_lo
 
 - **공통 세부**: 방화벽: Security Group에서 UDP 5001 포트 허용. 운영계 영향 피하기: 별도 VPC(회의: M-Route 건드리지 말기).
 
-### 3. 세부 조정: 스크립트/시나리오 미세 튜닝과 위험 관리
+## 3. 세부 조정: 스크립트/시나리오 미세 튜닝과 위험 관리
 스크립트는 기본 제공했지만, 변형에 따라 조정하세요. 회의에서 iperf 외 도구 조사(perfSONAR 등)하라고 했으니 통합.
 
 - **스크립트 세부 조정**:
@@ -323,4 +319,91 @@ iperf v2 테스트 후 생성되는 로그(/tmp/sender_log.txt, /tmp/receiver_lo
   - **디버깅**: 실패 시(예: iperf 연결 안 됨) – `ping 239.0.0.1`으로 그룹 확인, `netstat -g`로 IGMP 멤버십.
   - **인사이트 추출**: 로그 분석 후 보고서 작성 – "SCP OVN 개선: IGMP 자동 ON" 제안(회의: L3 지원 계획 없음, CISCO 사례 부족 반영). 고객 PP 서비스에 적용: 영상 회의 안정성 증대.
 
-이 모든 추가 내용으로 테스트를 완벽히 실행할 수 있을 거예요. 실제 결과 공유해주시면 더 세밀한 조언 드릴게요! 😊
+---
+
+## 3. 최종 테스트 시나리오 (mcast/iperf 통합, 글로벌 스탠다드)
+mcast를 주력으로, iperf v2로 비교. 변형 케이스: 부하(Throughput), VM 스케일링, IGMP 시뮬, 장기 지속, 패킷 로스, 도구 통합, 호스트 간 트래픽. 각 테스트 5회 반복, 평균/표준편차 계산.
+
+### 3.1 기본 절차
+1. **준비**: VM 생성, mcast/iperf 설치, IGMP 확인(mtrace `mtrace 239.1.1.5`).
+2. **실행**: Sender(mcast send/iperf -s), Receiver(mcast receive/iperf -c). 병행: perfSONAR/mtrace.
+3. **종료**: 로그 분석(Python), SCP vs AWS 비교 테이블.
+4. **위험 관리**: 격리 VPC, M-Route 미사용(회의: 운영계 영향 방지).
+
+### 3.2 변형 케이스 (글로벌 스탠다드 반영)
+| 변형 유형 | 세부 케이스 | mcast 옵션 (iperf 비교) | 이유 (회의 연결) | 인사이트 (mcast 통찰) |
+|-----------|-------------|-------------------------|-------------------|------------------------|
+| **Throughput/부하** | 저부하: mcast -interval 1000ms, -padding 512 (iperf -b 1M, -l 512)<br>중부하: -interval 100ms, -padding 1470 (-b 10M, -l 1470)<br>고부하: -interval 10ms, -padding 8192 (-b 100M, -l 8192) | mcast send/receive -group 239.1.1.5 -max 1000. Throughput: (패킷 수 * 크기) / 시간. iperf -u -T 1. | 글로벌 옵션, 내부 성능. | mcast 통계로 손실 위치(예: SCP 8% vs AWS 2%) – 통찰: OVN 플러딩 vs TGW 안정, 고객 앱(스트리밍) 최적 대역폭. |
+| **VM 스케일링** | 소규모: 3개<br>중규모: 6개<br>대규모: 9개 | mcast receive VM별 로그, CIDR(239.1.1.0/24). iperf -c 병렬. | Receiver 9개 분산. | Receiver별 지연 분포(mcast) – 통찰: 9개 시 SCP 지터 2ms ↑, AWS 1ms 유지, PP 서비스 스케일링 전략. |
+| **IGMP 시뮬** | 조인: mtrace<br>리브: 수동 탈퇴<br>쿼리: -interval 10/125/300s | mcast receive + mtrace. iperf -t 300. | OVN Querier 확인. | 조인 지연(ms, mcast 로그) – 통찰: SCP OVN disable 취약, AWS TGW 빠른 재조인, IGMP v3 고려. |
+| **장기 지속** | 단기: -max 100 (-t 60)<br>중기: -max 1000 (-t 600)<br>장기: -max 0 (-t 3600) | mcast -text "{c}" (카운터). perfSONAR 병행. | 내부 성능, 도구 조사. | 누적 손실(mcast 카운터) – 통찰: 장기 안정성, 비디오 컨퍼런스 열화 원인(OVN vs TGW). |
+| **패킷 로스** | 저로스: tc 1%<br>고로스: tc 5% | mcast receive + tcpdump. iperf 손실률 비교. | 운영계 시뮬. | 회복 시간(mcast 통계) – 통찰: SCP 취약, AWS 회복 빠름, L3 미지원 이유 보강. |
+| **도구 통합** | mcast + mtrace + perfSONAR | mcast 병행 실행, mrouted 추가. | 도구 조사. | 종합 통계 – 통찰: mcast 유연성으로 멀티그룹 분석, SCP/AWS 비교 깊이. |
+| **호스트 간** | 동일 vs 분산 호스트 | mcast -interface-ip. iperf -B. | 호스트 분산. | 지연 분포 – 통찰: 분산 효과, AWS Placement 우위. |
+
+## 4. 테스트 스크립트 (mcast/iperf 통합)
+### 4.1 Sender (sender_test.sh)
+```bash
+#!/bin/bash
+INTERVAL=${1:-100}  # ms
+PADDING=${2:-1470}
+MAX=${3:-1000}
+SNOOP=${4:-on}
+GROUP="239.1.1.5"
+
+# IGMP Snooping (실제 환경에서 OVN/TGW 설정)
+[ "$SNOOP" = "off" ] && echo "Snooping OFF 가정"
+
+# mcast
+mcast send -group $GROUP -interval $INTERVAL -padding $PADDING -max $MAX -text "Test {c}" > /tmp/mcast_sender_log.txt &
+# iperf 비교
+iperf -s -u -G $GROUP -T 1 -i 10 -b ${INTERVAL}M -l $PADDING -t $((MAX/10)) > /tmp/iperf_sender_log.txt &
+mtrace $GROUP >> /tmp/mcast_sender_log.txt
+echo "Sender 완료: /tmp/mcast_sender_log.txt, /tmp/iperf_sender_log.txt"
+```
+
+### 4.2 Receiver (receiver_test.sh)
+```bash
+#!/bin/bash
+TIME=${1:-60}
+QUERY=${2:-125}
+LOSS=${3:-0}
+GROUP="239.1.1.5"
+
+# 패킷 로스 시뮬
+[ $LOSS -gt 0 ] && sudo tc qdisc add dev eth0 root netem loss ${LOSS}%
+
+# mcast
+mcast receive -group $GROUP -show true > /tmp/mcast_receiver_log.txt &
+# iperf
+iperf -c $GROUP -u -t $TIME > /tmp/iperf_receiver_log.txt &
+# 보조
+tcpdump -i any -n -c 100 udp -w /tmp/mcast_capture.pcap &
+perfsonar-ps-traceroute $GROUP >> /tmp/mcast_receiver_log.txt
+sleep $TIME
+killall tcpdump
+[ $LOSS -gt 0 ] && sudo tc qdisc del dev eth0 root
+echo "Receiver 완료: /tmp/mcast_receiver_log.txt, /tmp/iperf_receiver_log.txt"
+```
+
+### 4.3 로그 분석 (parse_logs.py)
+```python
+import re, sys
+log_file = sys.argv[1]
+tool = sys.argv[2]  # mcast or iperf
+with open(log_file, 'r') as f:
+    log = f.read()
+if tool == "mcast":
+    packets = len(re.findall(r'Test \d+', log))
+    loss = (1000 - packets) / 1000 * 100 if "max 1000" in log else 0
+    print(f"mcast: 수신 패킷 {packets}, 손실률 {loss:.2f}%")
+else:
+    bandwidths = re.findall(r'(\d+\.\d+) Mbits/sec', log)
+    jitters = re.findall(r'(\d+\.\d+) ms', log)
+    losses = re.findall(r'\d+/\d+ \((\d+\.\d+)%\)', log)
+    print(f"iperf: 평균 대역폭 {sum(float(b) for b in bandwidths)/len(bandwidths):.2f} Mbits/sec, 지터 {sum(float(j) for j in jitters)/len(jitters):.2f} ms, 손실률 {sum(float(l) for l in losses)/len(losses):.2f}%")
+```
+
+## 5. 세부 조정 및 인사이트
+- **조정**: mcast -interval 1ms로 극한 테스트, IGMP 리브 시뮬(mtrace + 수동 인터페이스 다운: `ip link set eth0 down`), perfSONAR로 그래프(Matplotlib). 운영계 격리: SCP 프로젝트/AWS 계정 분리.
+- **인사이트**: mcast 통계로 SCP OVN의 플러딩(손실률 10%↑), AWS TGW의 안정성(지연 1ms 미만) 비교. PP 서비스에 적용: 멀티캐스트 안정성 증대, OVN 개선 제안(IGMP v3 도입).
