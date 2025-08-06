@@ -71,7 +71,7 @@ WINDOW 1  # 분석 윈도우 1초 (지터/손실률 측정 간격)
   - 예상: Throughput ~4 Kbps, Loss ~0%, Jitter <1ms.
 - **중부하**: 중간 rate/medium size. 일부 손실 발생 가능.
   - PERIODIC [10 1024] (10 packets/sec, 1024 bytes).
-  - 예상: Throughput ~80 Kbps, Loss <5%, Jitter 1~5ms.
+  - 예상: Throughput ~80 Kbps, Loss <5%, Jitter 1 ~ 5ms.
 - **고부하**: 높은 rate/large size. 네트워크 포화로 손실/지터 증가.
   - PERIODIC [100 8192] (100 packets/sec, 8192 bytes, UDP max size).
   - 예상: Throughput ~6 Mbps, Loss >10%, Jitter >10ms.
@@ -81,29 +81,151 @@ WINDOW 1  # 분석 윈도우 1초 (지터/손실률 측정 간격)
 
 ## RHEL 8.4 기반 설치 및 테스트 방법
 
-RHEL 8.4에서 MGEN 설치/실행:
-1. **의존성 설치**: 기본 라이브러리 필요 (문서 10. Compile options 참조).
-   - 명령어: `sudo dnf install gcc gcc-c++ make libpcap-devel` (HAVE_PCAP 옵션용, 필수 아님).
-   - IPv6 지원: `sudo dnf install libipv6-devel` (HAVE_IPV6 옵션).
+### Protolib 필요 여부 확인
 
-2. **MGEN 다운로드 및 컴파일**:
-   - NRL 사이트(https://www.nrl.navy.mil/itd/ncs/products/mgen)에서 최신 버전(5.02 이상) 다운로드 (mgen-5.02.tar.gz).
-   - 압축 해제: `tar -xvf mgen-5.02.tar.gz`
-   - 컴파일: `cd mgen-5.02/protolib; make unix` (protolib 먼저 빌드).
-     - MGEN 빌드: `cd ../mgen; make unix` (UNIX 옵션으로 RHEL 지원).
-     - 옵션 추가: Makefile에서 HAVE_IPV6, RANDOM_FILL 등 활성화 (broadcast 테스트에 불필요하지만, RANDOM_FILL로 페이로드 랜덤화 가능).
-   - 설치: `sudo make install` (기본 /usr/local/bin/mgen).
+GitHub 리포지토리(https://github.com/USNavalResearchLaboratory/mgen)의 README 및 빌드 지침 섹션에서 MGEN(Multi-Generator) 버전 5.x를 빌드하려면 **Protolib**이 필수 의존성으로 명시되어 있습니다. Protolib은 MGEN의 코어 라이브러리로, 소스 트리(source tree) 형태로 MGEN 소스 트리의 최상위 수준에 배치되어야 합니다. 이는 빌드 과정에서 Protolib의 헤더와 라이브러리를 참조하기 때문입니다. Protolib은 별도 GitHub 리포지토리(https://github.com/USNavalResearchLaboratory/protolib)에서 다운로드할 수 있으며, MGEN 빌드 시 symbolic link나 직접 복사로 통합해야 합니다.
 
-3. **테스트 환경 설정**:
-   - 방화벽: `sudo firewall-cmd --add-port=5000/udp --permanent; sudo firewall-cmd --reload` (포트 5000 UDP 허용).
-   - SELinux: `sudo setsebool -P nis_enabled 1` (필요 시, 네트워크 도구 허용).
-   - NTP 동기: `sudo dnf install chrony; sudo systemctl enable chronyd` (latency 측정 정확도).
-   - 여러 호스트: SSH 키 공유로 원격 실행/로그 수집 자동화.
+**비판적 검증**: 이 요구사항은 MGEN의 오래된 설계(Naval Research Laboratory의 PROTEAN 프로젝트 기반)에서 비롯되며, 최신 버전(5.02c 기준)에서도 유지됩니다. 만약 Protolib을 생략하면 컴파일 오류(예: 헤더 파일 누락)가 발생할 수 있습니다. 그러나 Protolib 자체가 가볍고 독립적이기 때문에 큰 부담은 아니며, IPv6 지원 등 MGEN 기능의 안정성을 보장합니다. RHEL 8.4처럼 안정적인 엔터프라이즈 Linux 환경에서 잘 동작하지만, gcc 버전 호환성(8.5 기본)을 확인하세요. 만약 Protolib이 제대로 배치되지 않으면 빌드 실패가 빈번하니, 사전 테스트를 권장합니다.
 
-4. **실행 및 디버그**:
-   - `mgen --version`으로 확인.
-   - 로그: /var/log/messages에서 오류 확인.
-   - 문제: Windows-Mac 상호작용 이슈(11.1) 없음 (RHEL 기반). 버퍼 크기(11.2)는 TX/RXBUFFER로 설정.
+### **준비 단계: 시스템 요구사항 확인 및 의존성 설치**
+MGEN은 C++ 기반으로, 기본 개발 도구와 라이브러리가 필요합니다. Protolib은 추가 의존성 없이 빌드되지만, MGEN은 Protolib을 참조합니다.
+
+1. **RHEL 8.4 업데이트 및 개발 도구 설치**:
+   - 이유: 최신 패키지로 컴파일 오류 방지. gcc, make, git 등이 필요.
+   - 명령어:
+     ```
+     sudo dnf update -y
+     sudo dnf groupinstall "Development Tools" -y
+     sudo dnf install git -y
+     ```
+   - 추가 라이브러리(선택적, 하지만 IPv6나 PCAP 지원 시 유용):
+     ```
+     sudo dnf install libpcap-devel -y  # HAVE_PCAP 옵션용, tcpdump 클론 기능
+     sudo dnf install openssl-devel -y  # 체크섬 등 보안 기능
+     ```
+   - 잠재적 오류: dnf가 활성화되지 않았다면 `sudo subscription-manager register`로 RHEL 구독 확인.
+   - 비판적 검증: RHEL 8.4의 gcc 8.5는 MGEN 5.x와 호환되지만, 너무 오래된 gcc(예: 4.x)라면 오류 발생 가능. 개발 도구 그룹은 make, gcc, g++ 등을 한 번에 설치하므로 효율적입니다.
+
+2. **작업 디렉토리 생성**:
+   - 이유: 소스 코드를 체계적으로 관리.
+   - 명령어:
+     ```
+     mkdir -p ~/src/mgen_build
+     cd ~/src/mgen_build
+     ```
+
+### **Protolib 다운로드 및 준비**
+Protolib은 MGEN 빌드의 기반 라이브러리입니다. MGEN 소스 트리에 Protolib 소스를 배치해야 합니다.
+
+1. **Protolib 클론**:
+   - 이유: GitHub에서 최신 버전(현재 master 브랜치) 다운로드.
+   - 명령어:
+     ```
+     git clone https://github.com/USNavalResearchLaboratory/protolib.git
+     ```
+   - 비판적 검증: 클론 후 `ls protolib`로 소스 확인. 만약 GitHub 접근 오류라면 NRL 공식 사이트(https://www.nrl.navy.mil/itd/ncs/products/protolib)에서 tar.gz 다운로드 후 압축 해제: `tar -xvf protolib.tar.gz`.
+
+2. **Protolib 빌드 (선택적, 하지만 권장)**:
+   - 이유: Protolib 자체를 먼저 빌드해 라이브러리 생성. MGEN 빌드가 이를 참조.
+   - 명령어:
+     ```
+     cd protolib/makefiles
+     make -f Makefile.linux
+     ```
+   - 결과: libProto.a 등의 라이브러리 생성.
+   - 잠재적 오류: Makefile.linux가 없으면 리포지토리 확인. 빌드 실패 시 `make clean` 후 재시도.
+   - 비판적 검증: Protolib 빌드는 간단하지만, RHEL의 glibc 버전과 충돌 가능성 있음. 성공 시 "No errors" 메시지 확인.
+
+### **MGEN 다운로드 및 Protolib 통합**
+1. **MGEN 클론**:
+   - 명령어:
+     ```
+     cd ~/src/mgen_build  # 상위 디렉토리로 이동
+     git clone https://github.com/USNavalResearchLaboratory/mgen.git
+     ```
+   - 비판적 검증: 클론 후 `git log`로 최신 커밋 확인(예: 5.02c 버그 픽스 포함).
+
+2. **Protolib을 MGEN 소스 트리에 배치**:
+   - 이유: README에 명시된 대로, MGEN 최상위 수준에 Protolib 소스 트리나 symbolic link 필요.
+   - 명령어 (symbolic link 추천, 공간 절약):
+     ```
+     cd mgen
+     ln -s ../protolib protolib  # symbolic link 생성
+     ```
+   - 대안 (직접 복사):
+     ```
+     cp -r ../protolib .
+     ```
+   - 확인: `ls mgen`에서 protolib 디렉토리 보임.
+   - 잠재적 오류: link가 실패하면 절대 경로 사용: `ln -s /home/user/src/mgen_build/protolib protolib`.
+   - 비판적 검증: 이 단계가 생략되면 컴파일 시 "protolib not found" 오류 발생. symbolic link는 업데이트 용이하지만, 파일 시스템 권한 문제(SELinux)로 실패할 수 있음. SELinux가 enforcing 모드라면 `sudo setenforce 0`으로 일시 비활성화 테스트.
+
+### **MGEN 컴파일**
+1. **빌드 디렉토리로 이동**:
+   - 명령어:
+     ```
+     cd makefiles
+     ```
+
+2. **컴파일 실행**:
+   - 이유: Makefile.linux는 Linux 환경(RHEL 포함)에 최적화됨.
+   - 명령어:
+     ```
+     make -f Makefile.linux
+     ```
+   - 옵션 추가 (필요 시, Makefile 수정 또는 CFLAGS 설정):
+     - HAVE_IPV6 활성화: `make -f Makefile.linux CFLAGS="-DHAVE_IPV6"`
+     - HAVE_GPS: `make -f Makefile.linux CFLAGS="-DHAVE_GPS"`
+     - RANDOM_FILL: `make -f Makefile.linux CFLAGS="-DRANDOM_FILL"`
+   - 결과: mgen 바이너리 생성 (mgen 디렉토리에 생성됨).
+   - 소요 시간: 1~5분.
+   - 잠재적 오류:
+     - "protolib not found": 위 통합 단계 재확인.
+     - "undefined reference": Protolib 빌드 실패 시 재빌드.
+     - "permission denied": `chmod +x Makefile.linux` 또는 sudo 사용.
+     - clean 빌드: `make -f Makefile.linux clean` 후 재시도.
+   - 비판적 검증: RHEL 8.4의 gcc는 C++11 이상 지원하므로 문제없지만, 오래된 코드(5.x)로 warning 발생 가능. -Wall 플래그로 확인. IPv6/DF 기능은 5.02c에서 픽스되었으니 최신 클론 사용.
+
+### **MGEN 설치**
+1. **바이너리 설치**:
+   - 이유: 시스템 PATH에 추가해 어디서나 실행 가능.
+   - 명령어 (Makefile에 install 타겟 없으면 수동):
+     ```
+     sudo cp ../mgen /usr/local/bin/mgen  # mgen 바이너리 복사
+     sudo chmod +x /usr/local/bin/mgen
+     ```
+   - 만약 Makefile에 install 타겟 있으면:
+     ```
+     sudo make -f Makefile.linux install
+     ```
+   - Python 패키지(선택적, mgenctl 등):
+     ```
+     cd ../python
+     sudo python3 setup.py install  # Protolib의 protokit 필요
+     ```
+
+2. **설치 확인**:
+   - 명령어:
+     ```
+     mgen --version  # 버전 출력 (예: Mgen Version 5.02c)
+     ```
+   - 비판적 검증: 설치 후 SELinux가 바이너리 실행 막을 수 있음. `sudo ausearch -m avc`로 로그 확인 후 `sudo restorecon -v /usr/local/bin/mgen` 적용.
+
+### **추가 설정 및 테스트**
+- **방화벽/SELinux**: 
+  ```
+  sudo firewall-cmd --add-port=5000-6000/udp --permanent  # MGEN 포트 허용
+  sudo firewall-cmd --reload
+  sudo setsebool -P nis_enabled 1  # 네트워크 도구 허용
+  ```
+- **테스트 실행**: 간단 스크립트로 확인.
+  ```
+  echo "0.0 ON 1 UDP DST 127.0.0.1/5000 PERIODIC [1 1024]" > test.mgn
+  mgen input test.mgn output test_log.txt
+  ```
+- **문제 해결**: 로그 확인 `/var/log/messages`. IPv6 오류 시 HAVE_IPV6 옵션 비활성화. RHEL 8.4의 AppStream 리포지토리 활성화 확인.
+
+**비판적 검증 요약**: 이 방법은 GitHub README 기반으로 사실적이지만, RHEL 8.4 특화되지 않아 추가 패키지(예: libpcap-devel) 필요할 수 있음. 오래된 코드로 보안 취약점 가능성 있으니, 프로덕션 아닌 테스트 환경 사용. 성공률 높지만, git submodule이 Protolib 포함 안 할 수 있으니 수동 배치 필수. NRL 문서(https://www.nrl.navy.mil/itd/ncs/products/mgen) 추가 참조 권장.
 
 ## 분석 자동화 스크립트 (Python 기반)
 
@@ -201,3 +323,40 @@ if __name__ == "__main__":
 - **설명**: RECV 이벤트 정규표현식 파싱, 메트릭스 계산 (throughput: 비트 단위, jitter: latency 표준편차, loss: seq 기반). 에러 핸들링: 빈 로그 시 기본값 반환. CSV 출력으로 분석 용이.
 - **정교성 향상**: ANALYTICS 글로벌 사용 시 REPORT 이벤트 추가 파싱 가능 (loss/latency 내장). 대규모 로그: multiprocessing 추가 고려.
 - **비판적 검증**: 스크립트는 로그 형식이 정확할 때 동작. tcpdump로 검증: `tcpdump -i eth0 udp port 5000 -w capture.pcap` 후 wireshark 분석.
+
+## 1. **trpr (Trace Plot Real-time)**: 결과 분석 프로그램
+
+**trpr**는 MGEN 로그 파일 및 기타 네트워크 트레이스 파일(tcpdump, ns-2 등)을 분석하여 네트워크 성능 메트릭스를 시각화하는 도구입니다. 이는 **결과 분석 프로그램**으로, MGEN 테스트 결과를 처리하고 그래픽으로 표현하는 데 주로 사용됩니다.
+
+### **주요 기능**:
+- **분석 대상**: MGEN 로그 파일(drec 포맷), tcpdump 트레이스 파일, ns-2 시뮬레이션 트레이스 파일.
+- **분석 내용**: 
+  - 데이터 전송률(data rate), 패킷 손실률(loss rate), 지연 시간(latency), 지터(jitter) 등의 네트워크 성능 메트릭스를 계산.
+  - 특정 데이터 흐름(flow)을 필터링하여 프로토콜 타입, 소스/목적지 주소별로 분석 가능.
+  - 히스토그램 및 시계열 그래프 생성.
+- **시각화**: gnuplot을 사용하여 실시간 또는 사후(post-processing) 그래프를 생성. 출력 파일은 다른 플로팅 도구나 스프레드시트로 가져올 수 있음.
+- **특징**:
+  - 실시간 분석: tcpdump의 stdout을 파이프하여 실시간 네트워크 모니터링 가능(‘network oscilloscope’).
+  - 히스토그램 병합: `hcat` 유틸리티로 다중 히스토그램 데이터를 결합하고 요약 통계 제공.
+  - IPv4/IPv6 지원: MGEN 로그 및 tcpdump 트레이스 파일의 IPv4/IPv6 데이터 처리.
+  - 필터 옵션: `auto`, `flow`, `exclude` 명령으로 특정 데이터 흐름 선택/제외.
+
+### **trpr 다운로드**:
+- **PROTEAN Tools 웹페이지**: 문서에 따르면 trpr는 **http://manimac.itd.nrl.navy.mil/Tools/dist**에서 다운로드 가능(). 하지만 이 링크는 오래된 정보일 수 있으므로, 최신 배포는 **GitHub - USNavalResearchLaboratory/trpr** (https://github.com/USNavalResearchLaboratory/trpr)에서 확인해야 합니다(,).[](https://perso.liris.cnrs.fr/alain.mille/enseignements/iup_reseau/TP_apprentis_2004/trpr.htm)[](https://github.com/USNavalResearchLaboratory/trpr)[](https://github.com/USNavalResearchLaboratory/trpr/blob/master/trpr.xml)
+- **컴파일**: RHEL 8.4에서 컴파일하려면 `gcc`, `g++`, `gnuplot` 설치 필요:
+  ```bash
+  sudo dnf install gcc gcc-c++ make gnuplot
+  git clone https://github.com/USNavalResearchLaboratory/trpr
+  cd trpr
+  g++ -o trpr trpr.cpp -lm
+  ```
+- **설치 확인**: `./trpr --help`로 사용법 확인.
+
+### **trpr 사용 예시**:
+MGEN 로그 파일(`log.drc`)을 분석하고 gnuplot으로 플롯 생성:
+```bash
+trpr input log.drc auto output plot.dat
+gnuplot -e "plot 'plot.dat' with lines" -persist
+```
+- **설명**: `auto`는 모든 흐름을 자동 감지, `output plot.dat`은 플롯 데이터를 파일로 저장. gnuplot으로 시각화.
+- **대역폭/지터/손실률 분석**: `loss` 명령으로 손실률 프로필 생성, `interarrival` 또는 `latency`로 지터 계산().[](https://perso.liris.cnrs.fr/alain.mille/enseignements/iup_reseau/TP_apprentis_2004/trpr.htm)
