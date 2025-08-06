@@ -83,7 +83,7 @@ WINDOW 1  # 분석 윈도우 1초 (지터/손실률 측정 간격)
 
 ### Protolib 필요 여부 확인
 
-GitHub 리포지토리(https://github.com/USNavalResearchLaboratory/mgen)의 README 및 빌드 지침 섹션에서 MGEN(Multi-Generator) 버전 5.x를 빌드하려면 **Protolib**이 필수 의존성으로 명시되어 있습니다. Protolib은 MGEN의 코어 라이브러리로, 소스 트리(source tree) 형태로 MGEN 소스 트리의 최상위 수준에 배치되어야 합니다. 이는 빌드 과정에서 Protolib의 헤더와 라이브러리를 참조하기 때문입니다. Protolib은 별도 GitHub 리포지토리(https://github.com/USNavalResearchLaboratory/protolib)에서 다운로드할 수 있으며, MGEN 빌드 시 symbolic link나 직접 복사로 통합해야 합니다.
+GitHub 리포지토리(https://github.com/USNavalResearchLaboratory/mgen )의 README 및 빌드 지침 섹션에서 MGEN(Multi-Generator) 버전 5.x를 빌드하려면 **Protolib**이 필수 의존성으로 명시되어 있습니다. Protolib은 MGEN의 코어 라이브러리로, 소스 트리(source tree) 형태로 MGEN 소스 트리의 최상위 수준에 배치되어야 합니다. 이는 빌드 과정에서 Protolib의 헤더와 라이브러리를 참조하기 때문입니다. Protolib은 별도 GitHub 리포지토리(https://github.com/USNavalResearchLaboratory/protolib )에서 다운로드할 수 있으며, MGEN 빌드 시 symbolic link나 직접 복사로 통합해야 합니다.
 
 **비판적 검증**: 이 요구사항은 MGEN의 오래된 설계(Naval Research Laboratory의 PROTEAN 프로젝트 기반)에서 비롯되며, 최신 버전(5.02c 기준)에서도 유지됩니다. 만약 Protolib을 생략하면 컴파일 오류(예: 헤더 파일 누락)가 발생할 수 있습니다. 그러나 Protolib 자체가 가볍고 독립적이기 때문에 큰 부담은 아니며, IPv6 지원 등 MGEN 기능의 안정성을 보장합니다. RHEL 8.4처럼 안정적인 엔터프라이즈 Linux 환경에서 잘 동작하지만, gcc 버전 호환성(8.5 기본)을 확인하세요. 만약 Protolib이 제대로 배치되지 않으면 빌드 실패가 빈번하니, 사전 테스트를 권장합니다.
 
