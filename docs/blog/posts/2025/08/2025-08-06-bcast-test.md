@@ -38,7 +38,7 @@ BROADCAST ON  # Broadcast 활성화 (기본 ON이지만 명시)
 TTL 1  # Broadcast는 TTL 1로 충분
 
 # Transmission Events
-0.0 ON 1 UDP DST 255.255.255.255/5000 PERIODIC [10 1024]  # 10 packets/sec, 1024 bytes each (중부하 예시)
+0.0 ON 1 UDP DST 255.255.255.255/5000 PERIODIC [10 1024]  # 10 packets/sec, 1024 bytes each (0.1MBytes)
 10.0 OFF 1  # 10초 후 종료 (테스트 기간 제한)
 ```
 - **설명**: DST에 broadcast 주소(255.255.255.255)와 포트(5000) 지정. PERIODIC 패턴으로 규칙적 트래픽 생성. rate(10)는 packets/sec, size(1024)는 바이트 단위.
@@ -247,50 +247,65 @@ def parse_mgen_log(log_file):
     recv_events = []
     with open(log_file, 'r') as f:
         for line in f:
-            if 'RECV' in line:
-                # 예: 01:17:01.983235 RECV proto>UDP flow>1 seq>1 src>127.0.0.1/5000 dst>127.0.0.1/5000 sent>01:17:01.983000 size>1024 latency>0.000235
-                match = re.search(r'(\d{2}:\d{2}:\d{2}\.\d+) RECV .*seq>(\d+) .*sent>(\d{2}:\d{2}:\d{2}\.\d+) size>(\d+) latency>(\d+\.\d+)', line)
+            if 'RECV' in line and 'REPORT' not in line:  # REPORT 라인 제외
+                match = re.search(r'(\d{2}:\d{2}:\d{2}\.\d+) RECV .*seq>(\d+) .*sent>(\d{2}:\d{2}:\d{2}\.\d+) size>(\d+)', line)
                 if match:
-                    recv_time_str, seq, sent_time_str, size, latency = match.groups()
-                    recv_time = datetime.strptime(recv_time_str, '%H:%M:%S.%f')
-                    sent_time = datetime.strptime(sent_time_str, '%H:%M:%S.%f')
-                    recv_events.append({
-                        'seq': int(seq),
-                        'sent_time': sent_time,
-                        'recv_time': recv_time,
-                        'size': int(size),
-                        'latency': float(latency)
-                    })
+                    recv_time_str, seq, sent_time_str, size = match.groups()
+                    try:
+                        recv_time = datetime.strptime(recv_time_str, '%H:%M:%S.%f')
+                        sent_time = datetime.strptime(sent_time_str, '%H:%M:%S.%f')
+                        latency = (recv_time - sent_time).total_seconds()
+                        recv_events.append({
+                            'seq': int(seq),
+                            'sent_time': sent_time,
+                            'recv_time': recv_time,
+                            'size': int(size),
+                            'latency': latency
+                        })
+                    except ValueError:
+                        continue  # 타임스탬프 파싱 오류 스킵
     return recv_events
 
 def analyze_metrics(events):
     """
-    메트릭스 계산: throughput (kbps), jitter (ms), loss rate (%)
+    메트릭스 계산: throughput (Mbits/sec), jitter (ms), loss rate (%)
     """
     if not events:
-        return {'throughput': 0, 'jitter': 0, 'loss': 100}
+        return {'throughput_mbits_sec': 0, 'jitter_ms': 0, 'loss_rate_percent': 100, 'avg_latency_ms': 0, 'transfer_bytes': 0, 'duration_sec': 0, 'lost_total': '0/0'}
 
     seqs = [e['seq'] for e in events]
     min_seq, max_seq = min(seqs), max(seqs)
     expected_msgs = max_seq - min_seq + 1
     received_msgs = len(events)
     loss_rate = ((expected_msgs - received_msgs) / expected_msgs) * 100 if expected_msgs else 100
+    lost_total = f"{expected_msgs - received_msgs}/{expected_msgs} ({loss_rate:.1f}%)"
 
     total_bytes = sum(e['size'] for e in events)
     start_time = min(e['recv_time'] for e in events)
     end_time = max(e['recv_time'] for e in events)
     duration = (end_time - start_time).total_seconds()
-    throughput = (total_bytes * 8 / 1024) / duration if duration > 0 else 0  # kbps
+    throughput_mbits_sec = (total_bytes * 8 / 1_000_000) / duration if duration > 0 else 0  # Mbits/sec
 
     latencies = [e['latency'] * 1000 for e in events]  # ms 단위
     jitter = statistics.stdev(latencies) if len(latencies) > 1 else 0  # 표준편차로 지터
+    avg_latency = statistics.mean(latencies) if latencies else 0
 
     return {
-        'throughput_kbps': round(throughput, 2),
-        'jitter_ms': round(jitter, 2),
-        'loss_rate_percent': round(loss_rate, 2),
-        'avg_latency_ms': round(statistics.mean(latencies), 2) if latencies else 0
+        'throughput_mbits_sec': round(throughput_mbits_sec, 2),
+        'jitter_ms': round(jitter, 3),  # iperf처럼 소수점 3자리
+        'loss_rate_percent': round(loss_rate, 1),
+        'avg_latency_ms': round(avg_latency, 3),
+        'transfer_bytes': total_bytes,
+        'duration_sec': round(duration, 1),
+        'lost_total': lost_total
     }
+
+def print_iperf_like_table(host, metrics):
+    """
+    iperf-like 테이블 형식으로 콘솔 출력
+    """
+    print(f"[ ID] Interval       Transfer     Bandwidth       Jitter    Lost/Total Datagrams")
+    print(f"[  1] 0.0-{metrics['duration_sec']} sec   {metrics['transfer_bytes']/1_000_000:.2f} MBytes  {metrics['throughput_mbits_sec']} Mbits/sec  {metrics['jitter_ms']} ms  {metrics['lost_total']}")
 
 def main(log_files, output_csv):
     """
@@ -299,16 +314,22 @@ def main(log_files, output_csv):
     """
     results = defaultdict(dict)
     with open(output_csv, 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=['host', 'throughput_kbps', 'jitter_ms', 'loss_rate_percent', 'avg_latency_ms'])
+        writer = csv.DictWriter(csvfile, fieldnames=['host', 'throughput_mbits_sec', 'jitter_ms', 'loss_rate_percent', 'avg_latency_ms'])
         writer.writeheader()
 
         for log in log_files:
-            host = log.split('_')[0]  # 파일명에서 호스트 추출 (e.g., receiver1_log.txt -> receiver1)
+            host = log.split('_')[0]  # 파일명에서 호스트 추출
             events = parse_mgen_log(log)
             metrics = analyze_metrics(events)
             metrics['host'] = host
-            writer.writerow(metrics)
-            print(f"{host} 분석: {metrics}")
+            writer.writerow({
+                'host': host,
+                'throughput_mbits_sec': metrics['throughput_mbits_sec'],
+                'jitter_ms': metrics['jitter_ms'],
+                'loss_rate_percent': metrics['loss_rate_percent'],
+                'avg_latency_ms': metrics['avg_latency_ms']
+            })
+            print_iperf_like_table(host, metrics)  # iperf-like 출력 추가
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
@@ -320,43 +341,12 @@ if __name__ == "__main__":
 ```
 
 - **사용법**: `python analyze_mgen.py receiver1_log.txt receiver2_log.txt output.csv`
+- root@k4:~# python3 analyze_mgen.py receiver_log3.txt receiver_log4.txt output.csv
+[ ID] Interval       Transfer     Bandwidth       Jitter    Lost/Total Datagrams
+[  1] 0.0-10.0 sec   10.24 MBytes  8.19 Mbits/sec  0.017 ms  0/10001 (0.0%)
+[ ID] Interval       Transfer     Bandwidth       Jitter    Lost/Total Datagrams
+[  1] 0.0-10.0 sec   10.24 MBytes  8.19 Mbits/sec  0.013 ms  0/10001 (0.0%)
+
 - **설명**: RECV 이벤트 정규표현식 파싱, 메트릭스 계산 (throughput: 비트 단위, jitter: latency 표준편차, loss: seq 기반). 에러 핸들링: 빈 로그 시 기본값 반환. CSV 출력으로 분석 용이.
 - **정교성 향상**: ANALYTICS 글로벌 사용 시 REPORT 이벤트 추가 파싱 가능 (loss/latency 내장). 대규모 로그: multiprocessing 추가 고려.
 - **비판적 검증**: 스크립트는 로그 형식이 정확할 때 동작. tcpdump로 검증: `tcpdump -i eth0 udp port 5000 -w capture.pcap` 후 wireshark 분석.
-
-## 1. **trpr (Trace Plot Real-time)**: 결과 분석 프로그램
-
-**trpr**는 MGEN 로그 파일 및 기타 네트워크 트레이스 파일(tcpdump, ns-2 등)을 분석하여 네트워크 성능 메트릭스를 시각화하는 도구입니다. 이는 **결과 분석 프로그램**으로, MGEN 테스트 결과를 처리하고 그래픽으로 표현하는 데 주로 사용됩니다.
-
-### **주요 기능**:
-- **분석 대상**: MGEN 로그 파일(drec 포맷), tcpdump 트레이스 파일, ns-2 시뮬레이션 트레이스 파일.
-- **분석 내용**: 
-  - 데이터 전송률(data rate), 패킷 손실률(loss rate), 지연 시간(latency), 지터(jitter) 등의 네트워크 성능 메트릭스를 계산.
-  - 특정 데이터 흐름(flow)을 필터링하여 프로토콜 타입, 소스/목적지 주소별로 분석 가능.
-  - 히스토그램 및 시계열 그래프 생성.
-- **시각화**: gnuplot을 사용하여 실시간 또는 사후(post-processing) 그래프를 생성. 출력 파일은 다른 플로팅 도구나 스프레드시트로 가져올 수 있음.
-- **특징**:
-  - 실시간 분석: tcpdump의 stdout을 파이프하여 실시간 네트워크 모니터링 가능(‘network oscilloscope’).
-  - 히스토그램 병합: `hcat` 유틸리티로 다중 히스토그램 데이터를 결합하고 요약 통계 제공.
-  - IPv4/IPv6 지원: MGEN 로그 및 tcpdump 트레이스 파일의 IPv4/IPv6 데이터 처리.
-  - 필터 옵션: `auto`, `flow`, `exclude` 명령으로 특정 데이터 흐름 선택/제외.
-
-### **trpr 다운로드**:
-- **PROTEAN Tools 웹페이지**: 문서에 따르면 trpr는 **http://manimac.itd.nrl.navy.mil/Tools/dist**에서 다운로드 가능(). 하지만 이 링크는 오래된 정보일 수 있으므로, 최신 배포는 **GitHub - USNavalResearchLaboratory/trpr** (https://github.com/USNavalResearchLaboratory/trpr)에서 확인해야 합니다(,).[](https://perso.liris.cnrs.fr/alain.mille/enseignements/iup_reseau/TP_apprentis_2004/trpr.htm)[](https://github.com/USNavalResearchLaboratory/trpr)[](https://github.com/USNavalResearchLaboratory/trpr/blob/master/trpr.xml)
-- **컴파일**: RHEL 8.4에서 컴파일하려면 `gcc`, `g++`, `gnuplot` 설치 필요:
-  ```bash
-  sudo dnf install gcc gcc-c++ make gnuplot
-  git clone https://github.com/USNavalResearchLaboratory/trpr
-  cd trpr
-  g++ -o trpr trpr.cpp -lm
-  ```
-- **설치 확인**: `./trpr --help`로 사용법 확인.
-
-### **trpr 사용 예시**:
-MGEN 로그 파일(`log.drc`)을 분석하고 gnuplot으로 플롯 생성:
-```bash
-trpr input log.drc auto output plot.dat
-gnuplot -e "plot 'plot.dat' with lines" -persist
-```
-- **설명**: `auto`는 모든 흐름을 자동 감지, `output plot.dat`은 플롯 데이터를 파일로 저장. gnuplot으로 시각화.
-- **대역폭/지터/손실률 분석**: `loss` 명령으로 손실률 프로필 생성, `interarrival` 또는 `latency`로 지터 계산().[](https://perso.liris.cnrs.fr/alain.mille/enseignements/iup_reseau/TP_apprentis_2004/trpr.htm)
