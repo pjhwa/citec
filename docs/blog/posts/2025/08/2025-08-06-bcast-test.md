@@ -341,11 +341,14 @@ if __name__ == "__main__":
 ```
 
 - **사용법**: `python analyze_mgen.py receiver1_log.txt receiver2_log.txt output.csv`
-- root@k4:~# python3 analyze_mgen.py receiver_log3.txt receiver_log4.txt output.csv
+- **출력 예시**:
+```
+root@k4:~# python3 analyze_mgen.py receiver_log3.txt receiver_log4.txt output.csv
 [ ID] Interval       Transfer     Bandwidth       Jitter    Lost/Total Datagrams
 [  1] 0.0-10.0 sec   10.24 MBytes  8.19 Mbits/sec  0.017 ms  0/10001 (0.0%)
 [ ID] Interval       Transfer     Bandwidth       Jitter    Lost/Total Datagrams
 [  1] 0.0-10.0 sec   10.24 MBytes  8.19 Mbits/sec  0.013 ms  0/10001 (0.0%)
+```
 
 - **설명**: RECV 이벤트 정규표현식 파싱, 메트릭스 계산 (throughput: 비트 단위, jitter: latency 표준편차, loss: seq 기반). 에러 핸들링: 빈 로그 시 기본값 반환. CSV 출력으로 분석 용이.
 - **정교성 향상**: ANALYTICS 글로벌 사용 시 REPORT 이벤트 추가 파싱 가능 (loss/latency 내장). 대규모 로그: multiprocessing 추가 고려.
