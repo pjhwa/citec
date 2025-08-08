@@ -1,0 +1,639 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Grok에 물어보고 얻은 답을 정리한 블로그">
+      
+      
+      
+        <link rel="canonical" href="https://pjhwa.github.io/citec/blog/posts/2025/07/2025-07-10-tsogro/">
+      
+      
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
+    
+    
+      
+        <title>리눅스 네트워크 스택에서 TSO, RRO의 상호 작용 이해 - Grok Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.7e37652d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tso-rro" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="../../../../.." title="Grok Docs" class="md-header__button md-logo" aria-label="Grok Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Grok Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              리눅스 네트워크 스택에서 TSO, RRO의 상호 작용 이해
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="검색">
+        
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            검색 초기화
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../.." title="Grok Docs" class="md-nav__button md-logo" aria-label="Grok Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Grok Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    홈
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    블로그
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            블로그
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../04/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    2025
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            2025
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    05월
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    아카이브
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      질문
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      답변
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="답변">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-tso-gro" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. TSO와 GRO의 기본 동작 및 상호 작용
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 패킷 캡처 지점에 따른 차이와 현상 원인
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 가능한 오해 명확히 및 비판적 검증
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 예시
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. 참조 자료
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="tso-rro">리눅스 네트워크 스택에서 TSO, RRO의 상호 작용 이해</h1>
+<h2 id="_1">질문</h2>
+<p>환경: Ubuntu 22.04, PowerEdge XE9680, BCM57504 NetXtreme-E 10Gb/25Gb/40Gb/50Gb/100Gb/200Gb Ethernet [14e4:1751] (rev 12)</p>
+<p>리눅스 네트워크 스택에서 TSO (TCP Segmentation Offload)가 활성화된 상태에서 GRO (Generic Receive Offload)를 활성화하면, 패킷 덤프 도구 (예: tcpdump 또는 Wireshark)에서 TSO가 적용되지 않은 것처럼 패킷이 작은 크기로 분할되어 보이는 현상이 발생하는데, 이는 왜 그런가? TSO와 GRO의 상호 작용, NIC (Network Interface Card)의 offload 처리 과정, 패킷 캡처 지점 (예: 네트워크 스택 내 위치)에 따른 차이, 그리고 관련 ethtool 설정이나 커널 동작을 고려하여 사실 기반으로 자세히 설명해 주세요. 비판적 검증을 통해 가능한 오해 (예: TSO가 실제로 비활성화되는지 여부)를 명확히 하고, 예시나 참조 자료를 포함하세요.</p>
+<h2 id="_2">답변</h2>
+<p>리눅스 네트워크 스택에서 TSO (TCP Segmentation Offload)와 GRO (Generic Receive Offload)는 각각 송신과 수신 측의 성능 최적화를 위한 기능입니다. 사용자의 질문처럼 TSO가 활성화된 상태에서 GRO를 활성화하면 패킷 덤프 도구 (예: tcpdump 또는 Wireshark)에서 TSO가 비활성화된 것처럼 패킷이 작은 크기로 분할되어 보이는 현상이 발생할 수 있습니다. 이는 TSO가 실제로 비활성화되는 것이 아니라, GRO로 인한 TCP 스택의 오동작이 간접적으로 송신 패킷 크기를 제한하기 때문입니다. 아래에서 사실 기반으로 단계적으로 설명하겠습니다. 설명은 이해하기 쉽게 구조화하되, 비판적 검증을 통해 오해를 명확히 하고, 예시 및 참조 자료를 포함합니다.</p>
+<h3 id="1-tso-gro">1. TSO와 GRO의 기본 동작 및 상호 작용</h3>
+<ul>
+<li><strong>TSO (TCP Segmentation Offload)</strong>: 송신 측 offload 기능으로, TCP 스택이 큰 데이터 블록 (예: 64KB)을 NIC (Network Interface Card) 드라이버에 넘기면 NIC 하드웨어가 MTU (Maximum Transmission Unit, 보통 1500바이트) 크기로 자동 분할합니다. 이는 CPU 부하를 줄여 고속 네트워킹 (예: 10Gbps 이상)에서 유용합니다. </li>
+<li>캡처 지점: tcpdump나 Wireshark는 PF_PACKET 소켓을 통해 NIC 드라이버 직전에서 패킷을 캡처하므로, TSO가 활성화되면 송신 패킷이 큰 크기 (MTU 초과)로 보입니다. 실제 와이어 상에서는 작은 패킷으로 분할됩니다.</li>
+<li>
+<p>관련 설정: <code>ethtool -K &lt;interface&gt; tso on/off</code>로 제어. 예: <code>ethtool -K eth0 tso on</code>.</p>
+</li>
+<li>
+<p><strong>GRO (Generic Receive Offload)</strong>: 수신 측 offload 기능으로, NIC 드라이버가 여러 작은 패킷을 하나의 큰 패킷으로 합쳐 (coalesce) TCP 스택에 넘깁니다. LRO (Large Receive Offload)의 일반화 버전으로, 유사한 성능 향상을 제공합니다.</p>
+</li>
+<li>캡처 지점: GRO는 드라이버 수준에서 발생하므로, tcpdump는 합쳐진 큰 패킷을 캡처합니다. GRO가 비활성화되면 와이어 상의 작은 패킷 그대로 보입니다.</li>
+<li>
+<p>관련 설정: <code>ethtool -K &lt;interface&gt; gro on/off</code>로 제어. 예: <code>ethtool -K eth0 gro on</code>.</p>
+</li>
+<li>
+<p><strong>상호 작용</strong>: TSO와 GRO는 독립적이지만, TCP 연결에서 상호 영향을 줍니다. 송신 측 TSO가 큰 데이터를 보내도, 수신 측 GRO가 패킷을 합치면 TCP 스택이 수신 패킷 크기를 기반으로 MSS (Maximum Segment Size)나 TCP window 크기를 계산합니다. 여기서 문제가 발생: <strong>GRO로 합쳐진 패킷 크기를 기반으로 MSS 추정이 잘못되면 TCP window가 비정상적으로 작아집니다 (window clamping). 결과적으로 송신 측이 작은 window를 광고받아 작은 패킷만 보내게 되고, TSO가 적용될 여지가 없어집니다.</strong></p>
+</li>
+<li>
+<p><strong>NIC offload 처리 과정</strong>: </p>
+</li>
+<li>송신: TCP 스택 → 큰 세그먼트 → 드라이버 (GSO: Generic Segmentation Offload로 소프트웨어 지원) → NIC 하드웨어 분할 → 와이어.</li>
+<li>수신: 와이어 → NIC → 드라이버 (GRO 합침) → TCP 스택.</li>
+<li>커널 동작: 리눅스 커널 (예: 4.x 이상)에서 offload는 netdev_features로 관리되며, ethtool로 확인/설정 가능. 루프백 인터페이스 (lo)에서도 지원되지만, 가상 인터페이스라 실제 분할 없이 큰 MTU (보통 65536바이트)로 동작합니다.</li>
+</ul>
+<h3 id="2">2. 패킷 캡처 지점에 따른 차이와 현상 원인</h3>
+<p>패킷 덤프에서 TSO가 "비활성화된 것처럼" 보이는 이유는 GRO 활성화로 인한 TCP 스택의 MSS 추정 오류입니다. 이는 Red Hat와 같은 배포본에서 문서화된 알려진 문제로, 사실 기반으로 검증됩니다.</p>
+<ul>
+<li><strong>캡처 지점 영향</strong>:</li>
+<li>송신 측 캡처: TSO on 시 큰 패킷 (MTU 초과)으로 보임. GRO는 수신 offload라 송신 캡처에 직접 영향 없음.</li>
+<li>수신 측 캡처: TSO on인 송신으로부터 작은 패킷 도착 → GRO on 시 합쳐져 큰 패킷으로 보임. 하지만 GRO가 MSS 계산을 왜곡하면 TCP ACK에서 작은 window를 송신 측에 알림.</li>
+<li>
+<p>결과: 송신 측이 작은 window를 받으면 작은 데이터만 보내 (예: 720바이트), TSO가 적용되지 않음. tcpdump에서 작은 패킷으로 보임 (TSO off처럼).</p>
+</li>
+<li>
+<p><strong>왜 GRO 활성화 시 이런 현상?</strong></p>
+</li>
+<li>GRO on 시, 드라이버가 패킷을 합쳐 raw 패킷 크기를 기반으로 MSS를 추정하지만, 이는 실제 와이어 패킷 크기와 다름. TCP 스택이 혼란스러워 window가 작아짐 (clamping to small value).</li>
+<li>비판적 검증: 이는 TSO가 실제 비활성화되는 게 아닙니다. <code>ethtool -k &lt;interface&gt;</code>로 확인하면 TSO는 여전히 on 상태. 단지 작은 window로 인해 TSO가 무의미해짐. 오해: "TSO가 꺼진 것 같다"는 착시로, 실제 원인은 GRO-induced window issue. 이 문제는 고속 링크 (10Gbps+)나 NFS 같은 애플리케이션에서 자주 발생, 성능 저하 (e.g., 1Gbps로 제한)와 함께 관찰됨.</li>
+<li>
+<p>루프백 테스트 시 더 두드러짐: lo 인터페이스에서 송/수신이 동일 스택이라 GRO 오류가 즉시 피드백되어 작은 패킷으로 보임.</p>
+</li>
+<li>
+<p><strong>ethtool 설정과 커널 동작 고려</strong>:</p>
+</li>
+<li>확인 명령: <code>ethtool -k eth0</code> (offload 상태 출력, e.g., "tcp-segmentation-offload: on", "generic-receive-offload: on").</li>
+<li>비활성화 예: <code>ethtool -K eth0 gro off</code>로 GRO 끄면 window 정상화, TSO가 큰 패킷으로 적용됨.</li>
+<li>커널: 리눅스 2.6.32+에서 GRO 도입, but 버그 픽스 (e.g., RHEL 7+ 패치) 필요. /etc/modprobe.d/에 모듈 옵션 (e.g., "options bnx2x disable_tpa=1")으로 영구 설정.</li>
+</ul>
+<h3 id="3">3. 가능한 오해 명확히 및 비판적 검증</h3>
+<ul>
+<li><strong>오해 1: TSO가 실제 비활성화됨?</strong> No. TSO는 여전히 on, but 작은 TCP window로 인해 큰 데이터 송신이 제한되어 offload가 적용되지 않음. 검증: tcpdump 중 <code>ethtool -k &lt;interface&gt;</code> 실행해 상태 확인. window clamping은 Wireshark의 "TCP Graphs" (Window Scaling Graph)에서 작은 window 값으로 증명됨.</li>
+<li><strong>오해 2: 캡처 도구 오류?</strong> No. tcpdump/Wireshark는 정확히 캡처하지만, offload 지점 (드라이버 전/후)에 따라 다르게 보임. 외부 캡처 (SPAN port나 tap device)로 wire 패킷 확인하면 small packets 보임 (TSO 적용 증거).</li>
+<li><strong>오해 3: 모든 환경에서 발생?</strong> No. 저속 링크나 GRO 호환 NIC (e.g., Intel ixgbe)에서는 덜 발생. VM (KVM/ESXi)에서 더 흔함, as offload가 hypervisor에 위임됨. 검증: Broadcom NIC (bnx2x)에서 자주 보고됨; disable GRO로 해결.</li>
+<li>비판적 관점: 이 현상은 offload의 trade-off (성능 vs. 정확성). 문서 (e.g., kernel.org)에서 offload는 "편의"지만, 분석 시 disable 권장. 주관적 소스 (포럼)는 bias될 수 있으나, Red Hat 같은 공식 자료로 교차 검증.</li>
+</ul>
+<h3 id="4">4. 예시</h3>
+<ul>
+<li><strong>테스트 시나리오</strong>: 10Gbps NIC에서 NFS 서버-클라이언트 (같은 호스트 루프백 또는 로컬 네트워크).</li>
+<li>TSO on, GRO off: tcpdump shows large packets on sender (e.g., 64KB TCP len), high throughput.</li>
+<li>TSO on, GRO on: tcpdump shows small packets (e.g., 720바이트 window clamp), throughput drop to 100MB/s. Wireshark에서 TCP ACK의 window field가 작음 (e.g., 720).</li>
+<li>로그 예 (tcpdump -i eth0 -nnvv): GRO on 시 "tcp.len=720" 반복, retransmissions 증가.</li>
+<li><strong>해결 예</strong>: <code>ethtool -K eth0 gro off</code> 후 재테스트. window 정상 (e.g., 64KB), large packets 복귀.</li>
+</ul>
+<h3 id="5">5. 참조 자료</h3>
+<ul>
+<li>Red Hat 공식 솔루션: NICs with RX acceleration (GRO/LRO) may suffer from bad TCP performance. GRO로 인한 MSS miscalculation 설명. https://access.redhat.com/solutions/20278</li>
+<li>Kernel Documentation: segmentation-offloads.txt. TSO/GSO/GRO 동작 상세. (kernel.org에서 다운로드).</li>
+<li>PacketBomb 블로그: How Can the Packet Size Be Greater than the MTU? TSO 캡처 영향 설명. </li>
+<li>Stack Overflow: Why Linux server is responding with TCP packets larger than MSS. TSO 캡처 예시. </li>
+<li>NetworkDataPedia: Analyzing TCP Segmentation Offload (TSO) with Wireshark. 캡처 비교. </li>
+</ul>
+<p>이 설명은 검색된 사실 기반 자료를 종합한 것으로, 실제 환경에서 <code>ethtool</code>과 <code>tcpdump</code>로 재현 테스트 추천합니다. 추가 질문 있으시면 말씀해주세요.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../../../..", "features": ["navigation.sections", "navigation.indexes"], "search": "../../../../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.50899def.min.js"></script>
+      
+    
+  </body>
+</html>

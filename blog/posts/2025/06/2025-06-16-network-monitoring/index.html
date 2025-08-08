@@ -1,0 +1,1016 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Grok에 물어보고 얻은 답을 정리한 블로그">
+      
+      
+      
+        <link rel="canonical" href="https://pjhwa.github.io/citec/blog/posts/2025/06/2025-06-16-network-monitoring/">
+      
+      
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
+    
+    
+      
+        <title>네트워크 패킷 유실률 분석 - Grok Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.7e37652d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="../../../../.." title="Grok Docs" class="md-header__button md-logo" aria-label="Grok Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Grok Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              네트워크 패킷 유실률 분석
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="검색">
+        
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            검색 초기화
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../.." title="Grok Docs" class="md-nav__button md-logo" aria-label="Grok Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Grok Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    홈
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    블로그
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            블로그
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../04/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    2025
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            2025
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    05월
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    아카이브
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-vm-netstat" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. VM netstat 통계값 분석
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. VM netstat 통계값 분석">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ipext-inbcastpkts" class="md-nav__link">
+    <span class="md-ellipsis">
+      IpExt InBcastPkts (수신된 브로드캐스트 패킷 수)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#udprcvbuferrors-udp" class="md-nav__link">
+    <span class="md-ellipsis">
+      UdpRcvbufErrors (UDP 수신 버퍼 에러)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ip-indiscards-ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ip InDiscards (IP 패킷 폐기 수)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#udp-inerrors-udp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Udp InErrors (UDP 수신 에러)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#udp-packets-received-udp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Udp packets received (수신된 UDP 패킷 수)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#udp-packet-receive-errors-udp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Udp packet receive errors (UDP 패킷 수신 에러)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-vm-ethtool" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. VM ethtool 통계값 분석
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. VM ethtool 통계값 분석">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#drv-dropped-rx-total" class="md-nav__link">
+    <span class="md-ellipsis">
+      drv dropped rx total (드라이버에서 드롭된 수신 패킷 총합)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rx-buf-alloc-fail" class="md-nav__link">
+    <span class="md-ellipsis">
+      rx buf alloc fail (수신 버퍼 할당 실패)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pkts-rx-err" class="md-nav__link">
+    <span class="md-ellipsis">
+      pkts rx err (수신 패킷 에러)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bcast-pkts-rx" class="md-nav__link">
+    <span class="md-ellipsis">
+      bcast pkts rx (수신된 브로드캐스트 패킷 수)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-esxi-rxsummary" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. ESXi rxSummary 통계값 분석
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. ESXi rxSummary 통계값 분석">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#broadcast-pkts-rx-ok" class="md-nav__link">
+    <span class="md-ellipsis">
+      broadcast pkts rx ok (정상 수신된 브로드캐스트 패킷 수)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#droppedrx" class="md-nav__link">
+    <span class="md-ellipsis">
+      droppedRx (드롭된 수신 패킷 수)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-esxi-stats" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. ESXi stats 통계값 분석
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. ESXi stats 통계값 분석">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pktsrxbroadcast-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      pktsRxBroadcast (VM이 수신한 브로드캐스트 패킷 수)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      종합 분석 및 인사이트 도출
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="종합 분석 및 인사이트 도출">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      단계별 비교 분석
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      패턴 분석
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      실제 시사점 예시
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      네트워크 패킷 유실률 분석을 위한 통계값 정리
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="네트워크 패킷 유실률 분석을 위한 통계값 정리">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      표 활용 방법
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      결론
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="_1">네트워크 패킷 유실률 분석 접근법 개요</h1>
+<p>패킷 유실은 네트워크 스택의 여러 계층(하드웨어, 가상화 계층, OS 네트워크 스택, 애플리케이션)에서 발생할 수 있습니다. 따라서 주어진 통계값들을 <strong>계층별로 묶어 분석</strong>하고, <strong>단계 간 비교</strong>를 통해 유실이 발생하는 지점을 특정하며, <strong>패턴과 상관관계</strong>를 찾아내는 것이 핵심입니다. 아래에서는 VM(<code>netstat</code>, <code>ethtool</code>), ESXi(<code>rxSummary</code>, <code>stats</code>)에서 제공된 통계값들을 기반으로 분석 방법을 상세히 설명합니다.</p>
+<hr />
+<h2 id="1-vm-netstat">1. VM netstat 통계값 분석</h2>
+<p><code>netstat</code>은 주로 OS의 네트워크 스택에서 패킷 처리 상태를 보여줍니다. 여기서 제공된 통계값들을 하나씩 분석하고, 이를 통해 얻을 수 있는 인사이트를 살펴보겠습니다.</p>
+<h3 id="ipext-inbcastpkts"><strong>IpExt InBcastPkts (수신된 브로드캐스트 패킷 수)</strong></h3>
+<ul>
+<li><strong>의미</strong>: 네트워크 스택이 하위 계층(NIC)에서 성공적으로 수신한 브로드캐스트 패킷의 수.</li>
+<li><strong>분석 방법</strong>: </li>
+<li>이 값이 증가하면 NIC에서 OS로 브로드캐스트 패킷이 전달되고 있음을 의미합니다. </li>
+<li>하지만 기대했던 브로드캐스트 트래픽 양(예: 네트워크 모니터링 툴로 확인한 값)보다 적다면, NIC나 그 하위 계층에서 유실이 발생했을 가능성이 있습니다.</li>
+<li><strong>인사이트</strong>: 이 값과 후술할 <code>ethtool</code>의 <code>bcast pkts rx</code>를 비교해 NIC에서 OS로 넘어오는 과정에서 유실이 있는지 확인합니다.</li>
+</ul>
+<h3 id="udprcvbuferrors-udp"><strong>UdpRcvbufErrors (UDP 수신 버퍼 에러)</strong></h3>
+<ul>
+<li><strong>의미</strong>: UDP 수신 버퍼가 가득 차서 패킷을 드롭한 횟수.</li>
+<li><strong>분석 방법</strong>: </li>
+<li>이 값이 증가하면 OS가 패킷을 수신했으나 애플리케이션이 이를 제때 처리하지 못해 버퍼가 넘친 상황입니다.</li>
+<li>CPU 사용률(<code>top</code>)이나 애플리케이션 로그를 확인해 처리 지연의 원인을 조사합니다.</li>
+<li><strong>인사이트</strong>: 브로드캐스트 패킷이 UDP로 전달되는 경우(예: DHCP, ARP), 이 값이 높으면 애플리케이션 병목현상이 유실의 원인일 수 있습니다.</li>
+</ul>
+<h3 id="ip-indiscards-ip"><strong>Ip InDiscards (IP 패킷 폐기 수)</strong></h3>
+<ul>
+<li><strong>의미</strong>: IP 계층에서 처리되지 못하고 폐기된 패킷 수(버퍼 부족, 오류 등).</li>
+<li><strong>분석 방법</strong>: </li>
+<li>이 값이 증가하면 네트워크 스택 내부에서 패킷이 드롭되고 있음을 나타냅니다.</li>
+<li><code>IpExt InBcastPkts</code>와 비교해 브로드캐스트 패킷이 포함된 전체 트래픽 중どれほど가 폐기되었는지 비율을 계산합니다.</li>
+<li><strong>인사이트</strong>: 브로드캐스트 트래픽이 많은 환경에서 이 값이 높다면, OS의 IP 스택이 과부하 상태일 가능성이 큽니다.</li>
+</ul>
+<h3 id="udp-inerrors-udp"><strong>Udp InErrors (UDP 수신 에러)</strong></h3>
+<ul>
+<li><strong>의미</strong>: UDP 패킷 수신 중 발생한 에러 수(예: 체크섬 오류, 포트 오류).</li>
+<li><strong>분석 방법</strong>: </li>
+<li>이 값이 증가하면 UDP 패킷에 문제가 있거나 스택에서 처리 중 오류가 발생했음을 의미합니다.</li>
+<li><code>Udp packets received</code>와 비교해 에러 비율을 계산합니다.</li>
+<li><strong>인사이트</strong>: 브로드캐스트 UDP 패킷(예: 네트워크 디스커버리 프로토콜)에 문제가 있다면, 네트워크 환경(노이즈, 충돌)이나 송신 측 문제를 의심할 수 있습니다.</li>
+</ul>
+<h3 id="udp-packets-received-udp"><strong>Udp packets received (수신된 UDP 패킷 수)</strong></h3>
+<ul>
+<li><strong>의미</strong>: OS가 성공적으로 수신한 UDP 패킷의 총 수.</li>
+<li><strong>분석 방법</strong>: </li>
+<li>이 값은 브로드캐스트와 유니캐스트를 모두 포함하므로, <code>IpExt InBcastPkts</code>와 함께 비교해 브로드캐스트 비중을 파악합니다.</li>
+<li><code>Udp InErrors</code>와 대조해 정상 처리된 패킷과 손실된 패킷의 비율을 분석합니다.</li>
+<li><strong>인사이트</strong>: 이 값이 낮고 에러가 높다면 UDP 계층에서 유실이 발생하고 있음을 시사합니다.</li>
+</ul>
+<h3 id="udp-packet-receive-errors-udp"><strong>Udp packet receive errors (UDP 패킷 수신 에러)</strong></h3>
+<ul>
+<li><strong>의미</strong>: UDP 수신 중 발생한 모든 에러의 총합(포함 범위는 <code>Udp InErrors</code>와 유사할 수 있음).</li>
+<li><strong>분석 방법</strong>: </li>
+<li><code>Udp InErrors</code>와 중복 여부를 확인하고, 차이가 있다면 추가 에러 유형(버퍼 오버플로우 등)을 조사합니다.</li>
+<li><strong>인사이트</strong>: 이 값이 높으면 UDP 기반 브로드캐스트 트래픽 처리에 문제가 있음을 나타냅니다.</li>
+</ul>
+<hr />
+<h2 id="2-vm-ethtool">2. VM ethtool 통계값 분석</h2>
+<p><code>ethtool</code>은 NIC 하드웨어 레벨의 통계를 제공하며, 물리적 계층에서의 유실을 파악하는 데 유용합니다.</p>
+<h3 id="drv-dropped-rx-total"><strong>drv dropped rx total (드라이버에서 드롭된 수신 패킷 총합)</strong></h3>
+<ul>
+<li><strong>의미</strong>: NIC 드라이버가 처리하지 못해 드롭한 패킷 수.</li>
+<li><strong>분석 방법</strong>: </li>
+<li>이 값이 증가하면 NIC 하드웨어 또는 드라이버가 패킷을 처리하지 못한 상황입니다.</li>
+<li><code>rx buf alloc fail</code>과 연계해 원인을 특정합니다.</li>
+<li><strong>인사이트</strong>: 브로드캐스트 패킷이 많은 경우 이 값이 높다면, NIC가 트래픽을 감당하지 못하고 있음을 의미합니다.</li>
+</ul>
+<h3 id="rx-buf-alloc-fail"><strong>rx buf alloc fail (수신 버퍼 할당 실패)</strong></h3>
+<ul>
+<li><strong>의미</strong>: NIC가 수신 버퍼를 할당하지 못해 패킷을 드롭한 횟수.</li>
+<li><strong>분석 방법</strong>: </li>
+<li>이 값이 증가하면 NIC의 메모리 부족이나 과부하가 원인입니다.</li>
+<li>시스템 메모리 상태(<code>free</code>)를 점검해 간접적인 영향을 확인합니다.</li>
+<li><strong>인사이트</strong>: 브로드캐스트 트래픽 급증 시 이 값이 높아진다면, NIC의 버퍼 크기를 늘리거나 트래픽을 분산해야 합니다.</li>
+</ul>
+<h3 id="pkts-rx-err"><strong>pkts rx err (수신 패킷 에러)</strong></h3>
+<ul>
+<li><strong>의미</strong>: NIC에서 수신 중 에러가 발생한 패킷 수(예: CRC 오류).</li>
+<li><strong>분석 방법</strong>: </li>
+<li>이 값이 증가하면 물리적 네트워크 문제(케이블, 스위치)나 간섭을 의심해야 합니다.</li>
+<li><strong>인사이트</strong>: 브로드캐스트 패킷에 특화된 문제라면 네트워크 환경을 점검해야 합니다.</li>
+</ul>
+<h3 id="bcast-pkts-rx"><strong>bcast pkts rx (수신된 브로드캐스트 패킷 수)</strong></h3>
+<ul>
+<li><strong>의미</strong>: NIC가 수신한 브로드캐스트 패킷 수.</li>
+<li><strong>분석 방법</strong>: </li>
+<li><code>netstat</code>의 <code>IpExt InBcastPkts</code>와 비교해 NIC에서 OS로 전달 과정에서 유실이 있는지 확인합니다.</li>
+<li>ESXi의 <code>broadcast pkts rx ok</code>와도 비교해 가상화 계층과의 일관성을 점검합니다.</li>
+<li><strong>인사이트</strong>: 이 값이 기대보다 낮다면 NIC 레벨에서 유실이 발생하고 있음을 시사합니다.</li>
+</ul>
+<hr />
+<h2 id="3-esxi-rxsummary">3. ESXi rxSummary 통계값 분석</h2>
+<p>ESXi의 <code>rxSummary</code>는 가상 네트워크 계층에서의 수신 상태를 보여줍니다.</p>
+<h3 id="broadcast-pkts-rx-ok"><strong>broadcast pkts rx ok (정상 수신된 브로드캐스트 패킷 수)</strong></h3>
+<ul>
+<li><strong>의미</strong>: VM으로 전달되기 전 가상 스위치가 정상적으로 수신한 브로드캐스트 패킷 수.</li>
+<li><strong>분석 방법</strong>: </li>
+<li><code>ethtool</code>의 <code>bcast pkts rx</code>와 비교해 가상 스위치에서 NIC로의 전달 과정에서 유실이 있는지 확인합니다.</li>
+<li><strong>인사이트</strong>: 이 값이 높고 NIC에서 낮다면, VM 내부에서 유실이 발생한 것입니다.</li>
+</ul>
+<h3 id="droppedrx"><strong>droppedRx (드롭된 수신 패킷 수)</strong></h3>
+<ul>
+<li><strong>의미</strong>: 가상 스위치에서 VM으로 전달되지 못하고 드롭된 패킷 수.</li>
+<li><strong>분석 방법</strong>: </li>
+<li>이 값이 증가하면 가상 네트워크 계층에서 병목현상이 있음을 의미합니다.</li>
+<li>VM의 CPU/메모리 사용량과 연계해 자원 부족 여부를 확인합니다.</li>
+<li><strong>인사이트</strong>: 브로드캐스트 패킷이 포함된 경우, 이 값이 높으면 가상 스위치 설정(예: MTU, 버퍼)을 점검해야 합니다.</li>
+</ul>
+<hr />
+<h2 id="4-esxi-stats">4. ESXi stats 통계값 분석</h2>
+<p>ESXi의 <code>stats</code>는 VM과 가상 스위치 간 상호작용을 보여줍니다.</p>
+<h3 id="pktsrxbroadcast-vm"><strong>pktsRxBroadcast (VM이 수신한 브로드캐스트 패킷 수)</strong></h3>
+<ul>
+<li><strong>의미</strong>: VM이 가상 스위치로부터 성공적으로 수신한 브로드캐스트 패킷 수.</li>
+<li><strong>분석 방법</strong>: </li>
+<li><code>rxSummary</code>의 <code>broadcast pkts rx ok</code>와 비교해 가상 스위치에서 VM으로의 전달 유실을 확인합니다.</li>
+<li><code>ethtool</code>의 <code>bcast pkts rx</code>와도 비교해 VM 내부 처리 상태를 점검합니다.</li>
+<li><strong>인사이트</strong>: 이 값이 낮고 상위 계층에서 높다면, VM의 네트워크 스택에서 문제가 발생했을 가능성이 있습니다.</li>
+</ul>
+<hr />
+<h2 id="_2">종합 분석 및 인사이트 도출</h2>
+<p>이제 각 계층의 통계값을 연결해 패킷 유실의 원인을 특정하는 방법을 정리하겠습니다.</p>
+<h3 id="_3"><strong>단계별 비교 분석</strong></h3>
+<ol>
+<li><strong>ESXi → VM NIC</strong>:</li>
+<li><code>broadcast pkts rx ok</code> (ESXi) → <code>bcast pkts rx</code> (ethtool): 가상 스위치에서 NIC로의 전달 유실 확인.</li>
+<li>
+<p><code>droppedRx</code> (ESXi)가 높으면 가상 네트워크 병목을 의심.</p>
+</li>
+<li>
+<p><strong>NIC → OS 네트워크 스택</strong>:</p>
+</li>
+<li><code>bcast pkts rx</code> (ethtool) → <code>IpExt InBcastPkts</code> (netstat): NIC에서 OS로의 전달 유실 확인.</li>
+<li>
+<p><code>drv dropped rx total</code> 또는 <code>rx buf alloc fail</code>이 높으면 NIC 하드웨어 문제를 점검.</p>
+</li>
+<li>
+<p><strong>OS → 애플리케이션</strong>:</p>
+</li>
+<li><code>IpExt InBcastPkts</code> (netstat) → 애플리케이션 로그: OS에서 애플리케이션으로의 전달 유실 확인.</li>
+<li><code>UdpRcvbufErrors</code>가 높으면 애플리케이션 처리 속도나 버퍼 크기를 조정.</li>
+</ol>
+<h3 id="_4"><strong>패턴 분석</strong></h3>
+<ul>
+<li><strong>브로드캐스트 특화 문제 여부</strong>: <code>IpExt InBcastPkts</code>와 <code>Udp packets received</code>를 비교해 브로드캐스트 패킷만 유실되는지 확인.</li>
+<li><strong>자원 병목 여부</strong>: <code>droppedRx</code>, <code>rx buf alloc fail</code>, <code>UdpRcvbufErrors</code>가 동시에 증가하면 CPU/메모리 부족을 의심.</li>
+<li><strong>하드웨어 문제 여부</strong>: <code>pkts rx err</code>나 <code>Udp InErrors</code>가 높으면 물리적 네트워크 상태를 점검.</li>
+</ul>
+<h3 id="_5"><strong>실제 시사점 예시</strong></h3>
+<ul>
+<li><strong>시나리오 1</strong>: <code>broadcast pkts rx ok</code>는 높으나 <code>bcast pkts rx</code>가 낮음 → VM NIC 설정(버퍼 크기, 드라이버) 문제.</li>
+<li><strong>시나리오 2</strong>: <code>IpExt InBcastPkts</code>는 정상인데 <code>UdpRcvbufErrors</code>가 높음 → 애플리케이션 처리 지연.</li>
+<li><strong>시나리오 3</strong>: <code>droppedRx</code>와 <code>drv dropped rx total</code>이 증가 → 가상 네트워크와 NIC 모두 과부하.</li>
+</ul>
+<hr />
+<h2 id="_6"><strong>네트워크 패킷 유실률 분석을 위한 통계값 정리</strong></h2>
+<table>
+<thead>
+<tr>
+<th><strong>계층</strong></th>
+<th><strong>통계값</strong></th>
+<th><strong>의미</strong></th>
+<th><strong>유실률 분석을 위한 비교</strong></th>
+<th><strong>패턴 분석 및 인사이트</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ESXi (가상 네트워크)</strong></td>
+<td><code>broadcast pkts rx ok</code></td>
+<td>가상 스위치가 정상적으로 수신한 브로드캐스트 패킷 수</td>
+<td><code>broadcast pkts rx ok</code> → <code>bcast pkts rx</code> (ethtool): 가상 스위치 → VM NIC 전달 유실 확인</td>
+<td><code>broadcast pkts rx ok</code> 높고 <code>bcast pkts rx</code> 낮으면 VM NIC 설정 문제 (버퍼 크기, 드라이버)</td>
+</tr>
+<tr>
+<td></td>
+<td><code>droppedRx</code></td>
+<td>가상 스위치에서 VM으로 전달되지 못하고 드롭된 패킷 수</td>
+<td><code>droppedRx</code> 높으면 가상 네트워크 병목 확인 (VM 자원 부족 점검)</td>
+<td><code>droppedRx</code>와 <code>drv dropped rx total</code> 동시 증가 시 가상 네트워크와 NIC 과부하</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pktsRxBroadcast</code></td>
+<td>VM이 가상 스위치로부터 성공적으로 수신한 브로드캐스트 패킷 수</td>
+<td><code>pktsRxBroadcast</code> → <code>bcast pkts rx</code> (ethtool): VM 내부 처리 유실 확인</td>
+<td><code>pktsRxBroadcast</code> 낮고 상위 계층 높으면 VM 네트워크 스택 문제</td>
+</tr>
+<tr>
+<td><strong>VM NIC (ethtool)</strong></td>
+<td><code>bcast pkts rx</code></td>
+<td>NIC가 수신한 브로드캐스트 패킷 수</td>
+<td><code>bcast pkts rx</code> → <code>IpExt InBcastPkts</code> (netstat): NIC → OS 전달 유실 확인</td>
+<td><code>bcast pkts rx</code> 낮으면 NIC 레벨 유실 발생</td>
+</tr>
+<tr>
+<td></td>
+<td><code>drv dropped rx total</code></td>
+<td>드라이버가 처리하지 못해 드롭한 수신 패킷 총합</td>
+<td><code>drv dropped rx total</code> 높으면 NIC 하드웨어 또는 드라이버 문제 확인</td>
+<td><code>drv dropped rx total</code> 높으면 NIC 트래픽 감당 불가 (브로드캐스트 과부하)</td>
+</tr>
+<tr>
+<td></td>
+<td><code>rx buf alloc fail</code></td>
+<td>수신 버퍼 할당 실패로 드롭된 패킷 수</td>
+<td><code>rx buf alloc fail</code> 높으면 NIC 메모리 부족 또는 과부하 확인</td>
+<td><code>rx buf alloc fail</code> 높으면 NIC 버퍼 크기 조정 또는 트래픽 분산 필요</td>
+</tr>
+<tr>
+<td></td>
+<td><code>pkts rx err</code></td>
+<td>수신 중 에러 발생 패킷 수 (예: CRC 오류)</td>
+<td><code>pkts rx err</code> 높으면 물리적 네트워크 문제 (케이블, 스위치) 확인</td>
+<td><code>pkts rx err</code> 높으면 네트워크 환경 문제 (브로드캐스트 관련 문제 여부 확인)</td>
+</tr>
+<tr>
+<td><strong>VM OS (netstat)</strong></td>
+<td><code>IpExt InBcastPkts</code></td>
+<td>네트워크 스택이 수신한 브로드캐스트 패킷 수</td>
+<td><code>bcast pkts rx</code> (ethtool) → <code>IpExt InBcastPkts</code>: NIC → OS 전달 유실 확인</td>
+<td><code>IpExt InBcastPkts</code>가 <code>bcast pkts rx</code>보다 적으면 OS 내부 유실 발생</td>
+</tr>
+<tr>
+<td></td>
+<td><code>UdpRcvbufErrors</code></td>
+<td>UDP 수신 버퍼 가득 차 드롭된 패킷 수</td>
+<td><code>UdpRcvbufErrors</code> 높으면 애플리케이션 처리 지연 확인 (CPU, 메모리 점검)</td>
+<td><code>UdpRcvbufErrors</code> 높으면 애플리케이션 병목으로 유실 발생</td>
+</tr>
+<tr>
+<td></td>
+<td><code>Ip InDiscards</code></td>
+<td>IP 계층에서 처리되지 못하고 폐기된 패킷 수</td>
+<td><code>Ip InDiscards</code> 높으면 OS의 IP 스택 과부하 확인</td>
+<td><code>Ip InDiscards</code> 높으면 브로드캐스트 트래픽 과다로 OS 과부하</td>
+</tr>
+<tr>
+<td></td>
+<td><code>Udp InErrors</code></td>
+<td>UDP 패킷 수신 중 발생한 에러 수 (예: 체크섬 오류)</td>
+<td><code>Udp InErrors</code> 높으면 네트워크 환경 또는 송신 측 문제 확인</td>
+<td><code>Udp InErrors</code> 높으면 브로드캐스트 UDP 패킷 문제 (네트워크 노이즈, 충돌 등)</td>
+</tr>
+<tr>
+<td></td>
+<td><code>Udp packets received</code></td>
+<td>OS가 성공적으로 수신한 UDP 패킷 수</td>
+<td><code>Udp packets received</code>와 <code>Udp InErrors</code> 비교: 정상 처리 vs. 손실 비율 확인</td>
+<td><code>Udp packets received</code> 낮고 에러 높으면 UDP 계층 유실 발생</td>
+</tr>
+<tr>
+<td></td>
+<td><code>Udp packet receive errors</code></td>
+<td>UDP 수신 중 발생한 모든 에러의 총합</td>
+<td><code>Udp packet receive errors</code> 높으면 UDP 처리 문제 확인</td>
+<td><code>Udp packet receive errors</code> 높으면 UDP 기반 브로드캐스트 트래픽 처리 문제</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="_7"><strong>표 활용 방법</strong></h3>
+<ol>
+<li><strong>계층별 통계값 확인</strong>: 각 통계값이 어느 계층에서 어떤 의미를 가지는지 파악하세요.</li>
+<li><strong>유실률 분석</strong>: 표의 "유실률 분석을 위한 비교" 열을 참고하여 계층 간 통계값을 비교하며 유실 지점을 특정하세요.</li>
+<li>예: <code>broadcast pkts rx ok</code> (ESXi)와 <code>bcast pkts rx</code> (ethtool)을 비교해 가상 스위치에서 VM NIC으로의 유실을 확인.</li>
+<li><strong>패턴 분석</strong>: "패턴 분석 및 인사이트" 열을 통해 특정 패턴이 나타날 때의 원인과 해결 방안을 도출하세요.</li>
+<li>예: <code>UdpRcvbufErrors</code>가 높으면 애플리케이션 처리 지연이 원인일 가능성 있음.</li>
+</ol>
+<hr />
+<h2 id="_8">결론</h2>
+<p>제공된 통계값들을 계층별로 분석하고, 단계 간 비교를 통해 유실 지점을 특정하며, 자원 상태와 연계해 패턴을 파악하면 다음과 같은 인사이트를 얻을 수 있습니다:
+- <strong>정확한 유실 위치</strong>: 하드웨어, 가상화, OS, 애플리케이션 중 어디에서 문제가 발생했는지.
+- <strong>근본 원인</strong>: 자원 부족, 설정 오류, 네트워크 환경 문제 등.
+- <strong>해결 방향</strong>: NIC 버퍼 조정, 애플리케이션 최적화, 네트워크 재구성 등.</p>
+<p>이 접근법을 통해 브로드캐스트 패킷 유실 문제를 체계적으로 진단하고, 네트워크 성능을 개선할 수 있는 실질적인 단서를 얻을 수 있습니다.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../../../..", "features": ["navigation.sections", "navigation.indexes"], "search": "../../../../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.50899def.min.js"></script>
+      
+    
+  </body>
+</html>

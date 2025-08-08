@@ -1,0 +1,1330 @@
+
+<!doctype html>
+<html lang="ko" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Grok에 물어보고 얻은 답을 정리한 블로그">
+      
+      
+      
+        <link rel="canonical" href="https://pjhwa.github.io/citec/blog/posts/2025/06/2025-06-10-openstack-helm-install2-2/">
+      
+      
+      
+      
+      <link rel="icon" href="../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.16">
+    
+    
+      
+        <title>OpenStack Helm 설치 - 2부 - Grok Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../assets/stylesheets/main.7e37652d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#openstack-helm-2-openstack" class="md-skip">
+          콘텐츠로 이동
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="상단/헤더">
+    <a href="../../../../.." title="Grok Docs" class="md-header__button md-logo" aria-label="Grok Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Grok Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              OpenStack Helm 설치 - 2부
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="검색" placeholder="검색" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="검색">
+        
+        <button type="reset" class="md-search__icon md-icon" title="지우기" aria-label="지우기" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            검색 초기화
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="네비게이션" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../.." title="Grok Docs" class="md-nav__button md-logo" aria-label="Grok Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Grok Docs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    홈
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    블로그
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            블로그
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../04/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    2025
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            2025
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    05월
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    아카이브
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="목차">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      목차
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치 개요
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="설치 개요">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치 순서
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      상세 설치 과정
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="상세 설치 과정">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rook-ceph" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rook-Ceph 스토리지 설정
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rook-Ceph 스토리지 설정">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ceph" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ceph 상태 확인
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storageclass" class="md-nav__link">
+    <span class="md-ellipsis">
+      StorageClass 및 풀 생성
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coredns-rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      CoreDNS RBAC 권한 설정
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CoreDNS RBAC 권한 설정">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      권한 설정
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      확인
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rook-ceph_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rook-Ceph 모니터 이름 변경 자동화
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rook-Ceph 모니터 이름 변경 자동화">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cronjob" class="md-nav__link">
+    <span class="md-ellipsis">
+      CronJob 설정
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mariadb" class="md-nav__link">
+    <span class="md-ellipsis">
+      MariaDB 설치
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MariaDB 설치">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      로그 확인
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rabbitmq" class="md-nav__link">
+    <span class="md-ellipsis">
+      RabbitMQ 설치
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RabbitMQ 설치">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memcached" class="md-nav__link">
+    <span class="md-ellipsis">
+      Memcached 설치
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Memcached 설치">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keystone" class="md-nav__link">
+    <span class="md-ellipsis">
+      Keystone 설치
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Keystone 설치">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      명령어 확인
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#glance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Glance 설치
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Glance 설치">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ceph_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ceph 상태 확인
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치 1단계
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치 2단계
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#placement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Placement 설치
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Placement 설치">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      확인
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openvswitch" class="md-nav__link">
+    <span class="md-ellipsis">
+      OpenVswitch 설치
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="OpenVswitch 설치">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    <span class="md-ellipsis">
+      로그 확인
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libvirt" class="md-nav__link">
+    <span class="md-ellipsis">
+      Libvirt 설치
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Libvirt 설치">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    <span class="md-ellipsis">
+      확인
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#neutron" class="md-nav__link">
+    <span class="md-ellipsis">
+      Neutron 설치
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Neutron 설치">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_18" class="md-nav__link">
+    <span class="md-ellipsis">
+      설치
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_19" class="md-nav__link">
+    <span class="md-ellipsis">
+      확인
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_20" class="md-nav__link">
+    <span class="md-ellipsis">
+      다이어그램
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="다이어그램">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#openstack" class="md-nav__link">
+    <span class="md-ellipsis">
+      OpenStack 서비스 네트워크 구성
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_21" class="md-nav__link">
+    <span class="md-ellipsis">
+      클러스터 아키텍처
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_22" class="md-nav__link">
+    <span class="md-ellipsis">
+      결론
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="openstack-helm-2-openstack">OpenStack Helm 설치 - 2부: OpenStack 서비스 설치 가이드</h1>
+<p>이 문서는 OpenStack Helm을 활용하여 Kubernetes 환경에 OpenStack 서비스를 배포하는 과정을 안내합니다. Kubernetes와 Rook-Ceph가 이미 구축된 상태에서, 이 가이드는 OpenStack의 주요 서비스들을 설치하는 단계를 초보자도 쉽게 따라 할 수 있도록 상세히 설명합니다. 명령어와 출력 예시를 그대로 유지하며, 기술적 배경과 보완이 필요한 부분을 이해하기 쉽게 풀어냈습니다. 또한, OpenStack 서비스의 네트워크 구성과 클러스터 아키텍처를 텍스트 다이어그램으로 시각화하여 전체 구조를 한눈에 파악할 수 있도록 했습니다.</p>
+<hr />
+<h2 id="_1">설치 개요</h2>
+<p>OpenStack Helm은 Helm 차트를 사용해 OpenStack 서비스를 Kubernetes 클러스터에 배포하는 도구입니다. Helm은 Kubernetes의 패키지 매니저로, 복잡한 애플리케이션 설치를 단순화합니다. OpenStack 서비스들은 서로 의존성이 있으므로 설치 순서를 지키는 것이 중요합니다.</p>
+<h3 id="_2">설치 순서</h3>
+<ol>
+<li><strong>인프라 서비스</strong>: MariaDB(데이터베이스), RabbitMQ(메시지 브로커), Memcached(캐싱)</li>
+<li><strong>코어 서비스</strong>: Keystone(인증 및 서비스 관리)</li>
+<li><strong>추가 서비스</strong>: Glance(이미지 관리), Placement(리소스 할당), OpenVswitch(네트워크 스위치), Libvirt(가상화), Neutron(네트워킹) 등</li>
+</ol>
+<p><strong>왜 순서가 중요한가요?</strong>
+- MariaDB와 RabbitMQ는 다른 서비스들이 데이터를 저장하거나 통신할 때 필요합니다.
+- Keystone은 OpenStack의 "신분증" 같은 역할을 하며, 다른 서비스가 Keystone에 등록되어야 동작합니다.
+- Neutron은 네트워크를 관리하므로, 이를 위해 OpenVswitch가 먼저 설치되어야 합니다.</p>
+<hr />
+<h2 id="_3">상세 설치 과정</h2>
+<h3 id="rook-ceph">Rook-Ceph 스토리지 설정</h3>
+<p>OpenStack은 데이터를 저장하기 위해 Rook-Ceph라는 분산 스토리지 시스템을 사용합니다. Ceph는 여러 노드에 데이터를 나눠 저장해 안정성과 확장성을 제공합니다.</p>
+<h4 id="ceph">Ceph 상태 확인</h4>
+<pre><code>citec@k1:~$ kceph ceph -s
+  cluster:
+    id:     224dbf5c-cee5-460c-b0d3-d96c76483f14
+    health: HEALTH_OK
+  services:
+    mon: 3 daemons, quorum a,b,c (age 94s)
+    mgr: a(active, since 19s)
+    osd: 6 osds: 4 up (since 7s), 6 in (since 46s)
+  data:
+    pools:   0 pools, 0 pgs
+    objects: 0 objects, 0 B
+    usage:   1.3 GiB used, 71 GiB / 72 GiB avail
+    pgs:
+</code></pre>
+<p><strong>확인 포인트</strong>: <code>health: HEALTH_OK</code>가 출력되면 Ceph가 정상입니다. <code>mon</code>은 모니터링 데몬, <code>osd</code>는 스토리지 데몬을 의미합니다.</p>
+<h4 id="storageclass">StorageClass 및 풀 생성</h4>
+<pre><code>citec@k1:~/osh$ ./O01.storageclass.sh
+&gt;&gt;&gt; Creating rook-ceph-block StorageClass...
+storageclass.storage.k8s.io/rook-ceph-block created
+&gt;&gt;&gt; Checking StorageClass...
+NAME              PROVISIONER                  RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+rook-ceph-block   rook-ceph.rbd.csi.ceph.com   Delete          Immediate           true                   141m
+&gt;&gt;&gt; Creating replicapool for rook-ceph-block StorageClass...
+pool 'replicapool' created
+&gt;&gt;&gt; Checking OSD Pool List...
+.mgr
+replicapool
+Done.
+</code></pre>
+<p><strong>기술적 배경</strong>: 
+- <code>StorageClass</code>는 Kubernetes에서 스토리지를 동적으로 할당하는 방법을 정의합니다. 예를 들어, OpenStack이 데이터를 저장할 때 자동으로 Ceph에 공간을 만듭니다.
+- <code>replicapool</code>은 Ceph에서 데이터를 저장하는 "저장소"로, 데이터 복제를 통해 안전성을 높입니다.</p>
+<hr />
+<h3 id="coredns-rbac">CoreDNS RBAC 권한 설정</h3>
+<p>CoreDNS는 Kubernetes에서 서비스 이름을 IP로 변환해주는 DNS 서버입니다. 이를 위해 클러스터 내 리소스 정보를 읽을 권한이 필요합니다.</p>
+<h4 id="_4">권한 설정</h4>
+<pre><code>citec@k1:~/osh$ ./O02.coredns-rbac.sh
+&gt;&gt;&gt; Defining RBAC for CoreDNS...
+clusterrole.rbac.authorization.k8s.io/coredns created
+clusterrolebinding.rbac.authorization.k8s.io/coredns created
+&gt;&gt;&gt; Restarting CoreDNS Deployment...
+deployment.apps/coredns restarted
+Done.
+</code></pre>
+<h4 id="_5">확인</h4>
+<pre><code>citec@k1:~/osh$ kubectl describe clusterrole coredns
+Name:         coredns
+PolicyRule:
+  Resources                        Non-Resource URLs  Resource Names  Verbs
+  ---------                        -----------------  --------------  -----
+  endpoints                        []                 []              [list watch]
+  namespaces                       []                 []              [list watch]
+  pods                             []                 []              [list watch]
+  services                         []                 []              [list watch]
+  endpointslices.discovery.k8s.io  []                 []              [list watch]
+</code></pre>
+<p><strong>기술적 배경</strong>: 
+- RBAC는 Kubernetes의 권한 관리 시스템으로, CoreDNS가 필요한 정보를 조회할 수 있도록 <code>list</code>와 <code>watch</code> 권한을 부여합니다.
+- CoreDNS가 재시작되며 새 권한을 적용받습니다.</p>
+<p><strong>확인 포인트</strong>: <code>PolicyRule</code>에 <code>endpoints</code>, <code>services</code> 등이 나열되어 있으면 설정이 잘 된 것입니다.</p>
+<hr />
+<h3 id="rook-ceph_1">Rook-Ceph 모니터 이름 변경 자동화</h3>
+<p>Ceph 모니터는 클러스터 상태를 관리합니다. 노드 장애 시 모니터 이름이 바뀔 수 있어, 이를 자동으로 업데이트하는 작업이 필요합니다.</p>
+<h4 id="cronjob">CronJob 설정</h4>
+<pre><code>citec@k1:~/osh$ ./O03.rook-ceph-mon-update.sh
+&gt;&gt;&gt; Registering for automated updates to rook-ceph monitor information...
+cronjob.batch/update-ceph-config created
+configmap/update-ceph-config-script created
+NAME                         SCHEDULE       TIMEZONE   SUSPEND   ACTIVE   LAST SCHEDULE   AGE
+keystone-credential-rotate   0 0 1 * *      &lt;none&gt;     False     0        &lt;none&gt;          29m
+keystone-fernet-rotate       0 */12 * * *   &lt;none&gt;     False     0        &lt;none&gt;          29m
+update-ceph-config           0 0 * * *      &lt;none&gt;     False     0        &lt;none&gt;          95s
+Done.
+</code></pre>
+<p><strong>기술적 배경</strong>: 
+- Kubernetes의 <code>CronJob</code>은 주기적으로 작업을 실행합니다. 여기서는 매일 자정에 모니터 정보를 업데이트합니다.
+- <code>ConfigMap</code>은 설정 데이터를 저장하는 객체로, Ceph 설정을 반영합니다.</p>
+<hr />
+<h3 id="mariadb">MariaDB 설치</h3>
+<p>MariaDB는 OpenStack의 데이터베이스로, 모든 서비스가 데이터를 저장하는 데 사용합니다.</p>
+<h4 id="_6">설치</h4>
+<pre><code>citec@k1:~/osh$ ./O04.mariadb.sh
+&gt;&gt;&gt; Initializing MariaDB install...
+&gt;&gt;&gt; Running helm dependency build...
+&gt;&gt;&gt; Configuring label of nodes...
+&gt;&gt;&gt; Installing MariaDB...
+pod/mariadb-controller-68584bd996-644vm condition met
+pod/mariadb-server-0 condition met
+NAME                                  READY   STATUS    RESTARTS   AGE
+mariadb-controller-68584bd996-644vm   1/1     Running   0          6m23s
+mariadb-server-0                      1/1     Running   0          6m23s
+Done.
+</code></pre>
+<h4 id="_7">로그 확인</h4>
+<pre><code>citec@k1:~/osh$ kubectl -n openstack logs mariadb-server-0 -c mariadb -f
+2025-05-08 09:05:12,191 - OpenStack-Helm Mariadb - INFO - This instance hostname: mariadb-server-0
+2025-05-08 09:05:12,191 - OpenStack-Helm Mariadb - INFO - This instance IP address: 10.244.105.136
+2025-05-08 09:05:12,200 - OpenStack-Helm Mariadb - INFO - Kubernetes API Version: v1.33.0
+2025-05-08 09:05:12,210 - OpenStack-Helm Mariadb - INFO - The cluster is currently in &quot;live&quot; state.
+</code></pre>
+<p><strong>기술적 배경</strong>: 
+- MariaDB는 <code>StatefulSet</code>으로 배포되어 순서가 있는 안정적인 실행을 보장합니다.
+- <code>helm dependency build</code>는 Helm 차트의 의존성을 다운로드합니다.</p>
+<p><strong>확인 포인트</strong>: 로그에서 <code>"live" state</code>가 보이면 MariaDB가 정상 작동 중입니다.</p>
+<p><strong>보완 포인트</strong>: 설치 중 파드가 <code>Pending</code> 상태라면 노드 리소스(CPU, 메모리)를 확인하거나 PVC 바인딩 문제를 점검하세요.</p>
+<hr />
+<h3 id="rabbitmq">RabbitMQ 설치</h3>
+<p>RabbitMQ는 서비스 간 메시지 전달을 담당합니다.</p>
+<h4 id="_8">설치</h4>
+<pre><code>citec@k1:~/osh$ ./O05.rabbitmq.sh
+&gt;&gt;&gt; Initializing RabbitMQ install...
+&gt;&gt;&gt; Running helm dependency build...
+&gt;&gt;&gt; Installing RabbitMQ...
+pod/rabbitmq-rabbitmq-0 condition met
+pod/rabbitmq-rabbitmq-1 condition met
+NAME                          READY   STATUS      RESTARTS   AGE
+rabbitmq-rabbitmq-0           1/1     Running     0          2m59s
+rabbitmq-rabbitmq-1           1/1     Running     0          2m59s
+Done.
+</code></pre>
+<p><strong>기술적 배경</strong>: RabbitMQ는 클러스터로 배포되어 장애 시에도 메시지 처리가 가능합니다.</p>
+<p><strong>확인 포인트</strong>: 두 파드가 <code>Running</code> 상태면 정상입니다.</p>
+<hr />
+<h3 id="memcached">Memcached 설치</h3>
+<p>Memcached는 데이터를 빠르게 읽기 위한 캐싱 서비스입니다.</p>
+<h4 id="_9">설치</h4>
+<pre><code>citec@k1:~/osh$ ./O06.memcached.sh
+&gt;&gt;&gt; Initializing Memcached install...
+&gt;&gt;&gt; Running helm dependency build...
+&gt;&gt;&gt; Installing Memcached...
+pod/memcached-memcached-0 condition met
+NAME                    READY   STATUS     RESTARTS   AGE
+memcached-memcached-0   1/1     Running   0          6m23s
+Done.
+</code></pre>
+<p><strong>기술적 배경</strong>: Keystone 같은 서비스가 자주 사용하는 데이터를 캐싱해 성능을 높입니다.</p>
+<p><strong>확인 포인트</strong>: <code>1/1 Running</code>이면 성공입니다.</p>
+<hr />
+<h3 id="keystone">Keystone 설치</h3>
+<p>Keystone은 OpenStack의 인증 서비스로, 모든 서비스의 "관리자" 역할을 합니다.</p>
+<h4 id="_10">설치</h4>
+<pre><code>citec@k1:~/osh$ ./O07.keystone.sh
+&gt;&gt;&gt; Initializing Keystone install...
+&gt;&gt;&gt; Running helm dependency build...
+&gt;&gt;&gt; Installing Keystone...
+pod/keystone-api-58b788dfcc-mcc9s condition met
+NAME                              READY   STATUS      RESTARTS   AGE
+keystone-api-58b788dfcc-mcc9s     1/1     Running     0          2m21s
+keystone-bootstrap-z5qtl          0/1     Completed   0          13s
+&gt;&gt;&gt; Enter the domain name for Keystone (e.g., keystone.citec.com): keystone.citec.com
+&gt;&gt;&gt; Creating Ingress Resource for keystone-api...
+ingress.networking.k8s.io/keystone-ingress unchanged
+&gt;&gt;&gt; Checking access to http://keystone.citec.com...
+{&quot;versions&quot;: {&quot;values&quot;: [{&quot;id&quot;: &quot;v3.14&quot;, &quot;status&quot;: &quot;stable&quot;, &quot;updated&quot;: &quot;2020-04-07T00:00:00Z&quot;, &quot;links&quot;: [{&quot;rel&quot;: &quot;self&quot;, &quot;href&quot;: &quot;http://keystone.citec.com/v3/&quot;}], &quot;media-types&quot;: [{&quot;base&quot;: &quot;application/json&quot;, &quot;type&quot;: &quot;application/vnd.openstack.identity-v3+json&quot;}]}]}}
+&gt;&gt;&gt; Creating .openstackrc file...
+&gt;&gt;&gt; Setting alias for openstack command...
+Done.
+</code></pre>
+<h4 id="_11">명령어 확인</h4>
+<pre><code>citec@k1:~/osh$ openstack service list
++----------------------------------+----------+----------+
+| ID                               | Name     | Type     |
++----------------------------------+----------+----------+
+| 3c55cedc9125431e8c21512e0a65474c | keystone | identity |
++----------------------------------+----------+----------+
+</code></pre>
+<p><strong>기술적 배경</strong>: 
+- <code>Ingress</code>는 외부에서 Keystone에 접근할 수 있게 합니다.
+- <code>.openstackrc</code> 파일은 OpenStack CLI 명령어를 쉽게 실행하도록 환경 변수를 설정합니다.</p>
+<p><strong>확인 포인트</strong>: <code>keystone</code>이 서비스 목록에 보이면 정상입니다.</p>
+<p><strong>보완 포인트</strong>: 도메인 접근이 안 되면 <code>/etc/hosts</code>에 IP와 도메인 매핑을 확인하세요.</p>
+<hr />
+<h3 id="glance">Glance 설치</h3>
+<p>Glance는 가상 머신 이미지를 관리합니다.</p>
+<h4 id="ceph_1">Ceph 상태 확인</h4>
+<pre><code>citec@k1:~/osh$ kceph ceph -s
+  cluster:
+    id:     603c8790-369b-40e8-b42e-751a1e771267
+    health: HEALTH_OK
+  services:
+    mon: 3 daemons, quorum a,b,c (age 19h)
+    mgr: a(active, since 19h)
+    osd: 8 osds: 8 up (since 19h), 8 in (since 19h)
+  data:
+    pools:   2 pools, 33 pgs
+    objects: 49 objects, 63 MiB
+    usage:   1.0 GiB used, 143 GiB / 144 GiB avail
+    pgs:     33 active+clean
+</code></pre>
+<h4 id="1">설치 1단계</h4>
+<pre><code>citec@k1:~/osh$ ./O08.glance1.sh
+&gt;&gt;&gt; Initializing Glance install...
+&gt;&gt;&gt; Creating glance.images pool for Glance...
+pool 'glance.images' created
+&gt;&gt;&gt; Registering images-rbd-keyring Secret...
+secret/images-rbd-keyring created
+&gt;&gt;&gt; Creating ceph.conf and registering ceph-etc ConfigMap...
+configmap/ceph-etc created
+Done.
+</code></pre>
+<h4 id="2">설치 2단계</h4>
+<pre><code>citec@k1:~/osh$ source O09.glance2.sh
+&gt;&gt;&gt; Creating Keystone user and service...
+&gt;&gt;&gt; Creating 'OpenStack Image Service'...
+&gt;&gt;&gt; Registering Endpoints...
+&gt;&gt;&gt; Running helm dependency build...
+&gt;&gt;&gt; Installing Glance...
+pod/glance-api-b685c446f-bhhqk condition met
+NAME                         READY   STATUS      RESTARTS   AGE
+glance-api-b685c446f-bhhqk   1/1     Running     0          2m20s
+glance-bootstrap-62gt4       0/1     Completed   0          25s
+Done.
+</code></pre>
+<p><strong>기술적 배경</strong>: Glance는 Ceph에 이미지를 저장하며, Keystone에 등록되어야 다른 서비스가 접근할 수 있습니다.</p>
+<p><strong>확인 포인트</strong>: <code>glance</code> 파드가 <code>Running</code> 상태면 성공입니다.</p>
+<hr />
+<h3 id="placement">Placement 설치</h3>
+<p>Placement는 리소스 할당을 관리합니다.</p>
+<h4 id="_12">설치</h4>
+<pre><code>citec@k1:~/osh$ ./O10.placement.sh
+&gt;&gt;&gt; Initializing Placement install...
+&gt;&gt;&gt; Running helm dependency build...
+&gt;&gt;&gt; Installing Placement...
+pod/placement-api-7db87dd987-9xr9x condition met
+NAME                             READY   STATUS      RESTARTS   AGE
+placement-api-7db87dd987-9xr9x   1/1     Running     0          3m59s
+Done.
+</code></pre>
+<h4 id="_13">확인</h4>
+<pre><code>citec@k1:~/osh$ openstack service list
++----------------------------------+-----------+-----------+
+| ID                               | Name      | Type      |
++----------------------------------+-----------+-----------+
+| 267d629600984bf9800993a444ea3a3d | glance    | image     |
+| e6f877a654ca4868b5543c2a5e4289f4 | keystone  | identity  |
+| f84da38c433a46e4bbcfcba66c7bb78f | placement | placement |
++----------------------------------+-----------+-----------+
+</code></pre>
+<p><strong>확인 포인트</strong>: <code>placement</code>가 목록에 보이면 성공입니다.</p>
+<hr />
+<h3 id="openvswitch">OpenVswitch 설치</h3>
+<p>OpenVswitch는 가상 네트워크 스위치를 제공합니다.</p>
+<h4 id="_14">설치</h4>
+<pre><code>citec@k1:~/osh$ ./O11.openvswitch.sh
+&gt;&gt;&gt; Initializing OpenVswitch install...
+&gt;&gt;&gt; Configuring label of nodes...
+&gt;&gt;&gt; Running helm dependency build...
+&gt;&gt;&gt; Installing OpenVswitch...
+pod/openvswitch-cwdct condition met
+NAME                READY   STATUS    RESTARTS   AGE
+openvswitch-cwdct   2/2     Running   0          5m33s
+Done.
+</code></pre>
+<h4 id="_15">로그 확인</h4>
+<pre><code>citec@k1:~/osh$ kubectl -n openstack logs openvswitch-cwdct -c openvswitch-db
+2025-05-16T05:13:04Z|00001|ovsdb_server|INFO|ovsdb-server (Open vSwitch) 2.13.8
+</code></pre>
+<p><strong>확인 포인트</strong>: <code>ovsdb-server</code> 메시지가 보이면 정상입니다.</p>
+<hr />
+<h3 id="libvirt">Libvirt 설치</h3>
+<p>Libvirt는 가상 머신을 실행하는 데 필요합니다.</p>
+<h4 id="_16">설치</h4>
+<pre><code>citec@k1:~/osh$ ./O12.libvirt.sh
+&gt;&gt;&gt; Initializing Libvirt install...
+&gt;&gt;&gt; Checking Ceph status...
+&gt;&gt;&gt; Creating Ceph client key for client.openstack...
+secret/ceph-client-openstack created
+&gt;&gt;&gt; Labeling nodes...
+&gt;&gt;&gt; Running helm dependency build...
+&gt;&gt;&gt; Installing Libvirt...
+pod/libvirt-libvirt-default-8rglp condition met
+NAME                            READY   STATUS    RESTARTS   AGE
+libvirt-libvirt-default-8rglp   1/1     Running   0          72s
+Done.
+</code></pre>
+<h4 id="_17">확인</h4>
+<pre><code>citec@k1:~/osh$ kubectl -n openstack exec -it libvirt-libvirt-default-8rglp -- /bin/bash
+root@k2:/# virsh connect
+root@k2:/# virsh list
+ Id   Name   State
+--------------------
+
+root@k2:/# exit
+</code></pre>
+<p><strong>확인 포인트</strong>: <code>virsh list</code>가 오류 없이 실행되면 성공입니다.</p>
+<hr />
+<h3 id="neutron">Neutron 설치</h3>
+<p>Neutron은 가상 네트워크를 관리합니다.</p>
+<h4 id="_18">설치</h4>
+<pre><code>citec@k1:~/osh$ ./O13.neutron.sh
+&gt;&gt;&gt; Initializing Neutron install...
+&gt;&gt;&gt; Running helm dependency build...
+&gt;&gt;&gt; Installing Neutron...
+pod/neutron-server-9d6c4fd97-87ptw condition met
+NAME                                       READY   STATUS      RESTARTS   AGE
+neutron-server-9d6c4fd97-87ptw             1/1     Running     0          3m58s
+Done.
+</code></pre>
+<h4 id="_19">확인</h4>
+<pre><code>citec@k1:~/osh$ openstack network agent list
++--------------------------------------+--------------------+------+-------------------+-------+-------+---------------------------+
+| ID                                   | Agent Type         | Host | Availability Zone | Alive | State | Binary                    |
++--------------------------------------+--------------------+------+-------------------+-------+-------+---------------------------+
+| 0547905c-ab16-47cc-8d23-658da32ea493 | Metadata agent     | k1   | None              | :-)   | UP    | neutron-metadata-agent    |
+| 0d4c92bb-97f7-462d-8138-71dd7528c498 | DHCP agent         | k2   | nova              | :-)   | UP    | neutron-dhcp-agent        |
+| 161949a0-03cc-4420-85bc-12d8e13efc33 | Open vSwitch agent | k2   | None              | :-)   | UP    | neutron-openvswitch-agent |
+| ...                                  | ...                | ...  | ...               | ...   | ...   | ...                       |
++--------------------------------------+--------------------+------+-------------------+-------+-------+---------------------------+
+</code></pre>
+<p><strong>확인 포인트</strong>: 모든 에이전트가 <code>UP</code> 상태면 성공입니다.</p>
+<hr />
+<h2 id="_20">다이어그램</h2>
+<h3 id="openstack">OpenStack 서비스 네트워크 구성</h3>
+<pre><code>[외부 네트워크]
+     |
+     | (Ingress: keystone.citec.com)
+     v
++-------------+
+|  Keystone   | &lt;--- 인증 및 서비스 카탈로그
++-------------+
+     |
+     | (내부 통신)
+     v
++-------------+    +-------------+    +-------------+
+|  MariaDB    |    |  RabbitMQ   |    |  Memcached  |
++-------------+    +-------------+    +-------------+
+     | 데이터         | 메시지          | 캐싱
+     v              v                v
++-------------+    +-------------+    +-------------+
+|  Glance     |    |  Placement  |    |  Neutron    |
++-------------+    +-------------+    +-------------+
+     | 이미지         | 리소스          | 네트워크
+     v              v                v
++-------------+    +-------------+    +-------------+
+|  Nova       |    |  Cinder     |    |  Horizon    |
++-------------+    +-------------+    +-------------+
+   VM 관리         볼륨 관리         대시보드
+</code></pre>
+<p><strong>설명</strong>: Keystone은 외부와 내부를 연결하며, 인프라 서비스(MariaDB 등)는 모든 서비스의 기반입니다.</p>
+<h3 id="_21">클러스터 아키텍처</h3>
+<pre><code>+------------------------------------+
+| Kubernetes 클러스터               |
+|                                    |
+|  +------------+   +------------+   |
+|  | Master 노드|   | 워커 노드  |   |
+|  | (k1,k2,k3) |   | (k2,k3,k4) |   |
+|  +------------+   +------------+   |
+|       |                 |          |
+|       v                 v          |
+|  +------------+   +------------+   |
+|  | Rook-Ceph  |   | OpenStack  |   |
+|  | 스토리지   |   | 서비스들   |   |
+|  +------------+   +------------+   |
++------------------------------------+
+</code></pre>
+<p><strong>설명</strong>: 마스터 노드는 클러스터를 관리하고, 워커 노드는 OpenStack 서비스와 Rook-Ceph를 실행합니다.</p>
+<hr />
+<h2 id="_22">결론</h2>
+<p>이 가이드를 통해 OpenStack Helm으로 주요 서비스를 성공적으로 설치했습니다. 각 단계의 명령어와 출력은 그대로 유지했으며, 초보자도 이해할 수 있도록 기술적 배경을 쉽게 설명했습니다. 다음 단계에서는 Nova, Cinder, Horizon 등을 추가해 완전한 OpenStack 환경을 구축할 수 있습니다.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../../../..", "features": ["navigation.sections", "navigation.indexes"], "search": "../../../../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "\ud074\ub9bd\ubcf4\ub4dc\uc5d0 \ubcf5\uc0ac\ub428", "clipboard.copy": "\ud074\ub9bd\ubcf4\ub4dc\ub85c \ubcf5\uc0ac", "search.result.more.one": "\uc774 \ubb38\uc11c\uc5d0\uc11c 1\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.more.other": "\uc774 \ubb38\uc11c\uc5d0\uc11c #\uac1c\uc758 \uac80\uc0c9 \uacb0\uacfc \ub354 \ubcf4\uae30", "search.result.none": "\uac80\uc0c9\uc5b4\uc640 \uc77c\uce58\ud558\ub294 \ubb38\uc11c\uac00 \uc5c6\uc2b5\ub2c8\ub2e4", "search.result.one": "1\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.other": "#\uac1c\uc758 \uc77c\uce58\ud558\ub294 \ubb38\uc11c", "search.result.placeholder": "\uac80\uc0c9\uc5b4\ub97c \uc785\ub825\ud558\uc138\uc694", "search.result.term.missing": "\ud3ec\ud568\ub418\uc9c0 \uc54a\uc740 \uac80\uc0c9\uc5b4", "select.version": "\ubc84\uc804 \uc120\ud0dd"}, "version": null}</script>
+    
+    
+      <script src="../../../../../assets/javascripts/bundle.50899def.min.js"></script>
+      
+    
+  </body>
+</html>
