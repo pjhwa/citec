@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 업무 즐겨찾기</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to bottom, #f0f4f8, #d9e2ec);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #0078d4; /* Microsoft 테마 색상 */
+            font-size: 2.5em;
+        }
+        .category {
+            width: 80%;
+            max-width: 800px;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+        }
+        .category h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #005a9e;
+        }
+        .links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .link-btn {
+            background: #0078d4;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .link-btn:hover {
+            background: #005a9e;
+        }
+        footer {
+            margin-top: auto;
+            text-align: center;
+            font-size: 0.8em;
+            color: #666;
+        }
+        @media (max-width: 600px) {
+            .category {
+                width: 95%;
+            }
+            .links {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>내 업무 즐겨찾기</h1>
+        <p>자주 방문하는 사이트를 한눈에!</p>
+    </header>
+
+    <div class="category">
+        <h2>업무 도구</h2>
+        <div class="links">
+            <a href="https://www.microsoft.com/ko-kr/microsoft-teams/group-chat-software" class="link-btn">Microsoft Teams</a>
+            <a href="https://drive.google.com" class="link-btn">Google Drive</a>
+            <a href="https://outlook.office.com" class="link-btn">Outlook</a>
+        </div>
+    </div>
+
+    <div class="category">
+        <h2>뉴스 및 정보</h2>
+        <div class="links">
+            <a href="https://news.google.com" class="link-btn">Google News</a>
+            <a href="https://www.bbc.com/news" class="link-btn">BBC News</a>
+            <a href="https://www.naver.com" class="link-btn">Naver</a>
+        </div>
+    </div>
+
+    <div class="category">
+        <h2>유틸리티</h2>
+        <div class="links">
+            <a href="https://www.google.com" class="link-btn">Google Search</a>
+            <a href="https://translate.google.com" class="link-btn">Google Translate</a>
+            <a href="https://www.calculator.net" class="link-btn">Calculator</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 My Bookmarks | 커스터마이징 자유</p>
+    </footer>
+</body>
+</html>
