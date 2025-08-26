@@ -2,6 +2,7 @@
 title: "Rook-Ceph 설치 중단 문제 분석 및 해결 방법"
 date: 2025-04-18
 tags: [ceph, rook-ceph, install, 설치, 문제, mon]
+categories: Ceph
 ---
 
 ## Rook-Ceph 설치 중단 문제 분석 및 해결 방법

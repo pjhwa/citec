@@ -2,6 +2,7 @@
 title: "Ceph 클러스터 설치 시 모니터 파드 시작 문제"
 date: 2025-04-17
 tags: [ceph, rook-ceph, mon]
+categories: [Ceph]
 ---
 
 ## Ceph 클러스터 설치 시 모니터 파드 시작 문제
