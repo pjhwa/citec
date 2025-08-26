@@ -301,7 +301,7 @@ all:
     ansible_ssh_private_key_file: /home/citec/.ssh/id_rsa
     ansible_ssh_extra_args: -o StrictHostKeyChecking=no -o ConnectTimeout=30 -o ServerAliveInterval=60 -o ServerAliveCountMax=5
     ansible_ssh_public_key_file: /home/citec/.ssh/id_rsa.pub
-    ssh_public_key: "{% raw %}{{ lookup('file', '/home/citec/.ssh/id_rsa.pub') }}{% endraw %}"
+    ssh_public_key: "lookup('file', '/home/citec/.ssh/id_rsa.pub')"
     kubectl:
       user: citec
       group: citec
