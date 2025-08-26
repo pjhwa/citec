@@ -2,7 +2,7 @@
 title: "OpenStack Helm을 활용한 Kubernetes와 Rook-Ceph 설치 가이드 - 1부"
 date: 2025-05-19
 tags: [openstack, helm, kubernetes, k8s, rook-ceph, ceph, cloud, install]
-categories: [OpenStack, Helm]
+categories: [Howtos, OpenStack]
 ---
 
 

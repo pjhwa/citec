@@ -2,7 +2,7 @@
 title: "Rook-Ceph 설치 중단 문제 분석 및 해결 방법"
 date: 2025-04-18
 tags: [ceph, rook-ceph, install, 설치, 문제, mon]
-categories: [Ceph, Mon]
+categories: [Issues, Ceph]
 ---
 
 사용자가 제공한 로그와 상태 정보를 바탕으로 Rook-Ceph 설치 과정에서 발생한 문제를 분석하고, 현재 상태, 설치가 중단된 이유, 그리고 해결 방법을 자세히 설명하겠습니다. 이 설명은 전문가의 관점에서 문제를 진단하고 해결하기 위해 필요한 단계를 포함하며, 이해하기 쉽게 단계별로 구성되었습니다.

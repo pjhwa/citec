@@ -2,7 +2,7 @@
 title: "AWS Multicast 성능 테스트 방안"
 date: 2025-08-05
 tags: [aws, multicast, performance, test, cases, iperf]
-categories: [Cloud, Network]
+categories: [Howtos, Benchmark]
 ---
 
 # SCP와 AWS의 L2 멀티캐스트 성능 비교(대역폭, 지터, 손실률 등), 한계 파악(OVN 문제 vs TGW 오버헤드), 고객 서비스 안정성 증명.

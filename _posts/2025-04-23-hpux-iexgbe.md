@@ -2,7 +2,7 @@
 title: "HP-UX 10Gbe(iexgbe) 네트워크 드라이버 이슈 분석"
 date: 2025-04-23
 tags: [hpux, network, iexgbe, superdome2, driver]
-categories: [UNIX, HP-UX]
+categories: [Issues, HP-UX]
 ---
 
 

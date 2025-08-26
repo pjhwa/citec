@@ -2,7 +2,7 @@
 title: "Kubernetes 네임스페이스 강제 삭제 방법"
 date: 2025-05-26
 tags: [kubernetes, ceph, force, delete]
-categories: [Kubernetes, Howtos]
+categories: [Howtos, Kubernetes]
 ---
 
 # `rook-ceph` 네임스페이스를 강제로 삭제하는 방법

@@ -2,7 +2,7 @@
 title: "Apache Syncope Query로 인한 Temp Disk Full"
 date: 2025-05-20
 tags: [problem, bug, mariadb, apache, syncope, query]
-categories: [Problems, MariaDB]
+categories: [Issues, MariaDB]
 ---
 
 ## 장애 개요 및 발생 과정

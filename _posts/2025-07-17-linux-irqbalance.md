@@ -2,7 +2,7 @@
 title: "Linux: irqbalance 서비스 권고"
 date: 2025-07-17
 tags: [linux, irqbalance, redhat, ubuntu, suse]
-categories: [Linux, irqbalance]
+categories: [Howtos, Linux]
 ---
 
 # irqbalance 서비스 개요

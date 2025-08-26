@@ -2,7 +2,7 @@
 title: "iperf vs. MGEN"
 date: 2025-08-22
 tags: [network, benchmark, iperf, mgen, multicast, broadcast]
-categories: [Network, Benchmark]
+categories: [Howtos, Benchmark]
 ---
 
 ### iperf와 MGEN의 기본 개요

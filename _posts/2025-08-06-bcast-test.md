@@ -2,7 +2,7 @@
 title: "Broadcast 성능 테스트 방안"
 date: 2025-08-06
 tags: [cloud, network, performance, test, broadcast, ostinato]
-categories: [Cloud, Network]
+categories: [Howtos, Benchmark]
 ---
 
 

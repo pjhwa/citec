@@ -2,7 +2,7 @@
 title: "OpenStack OVN 환경에서 OFPMMFC_INVALID_METER 오류 발생"
 date: 2025-08-25
 tags: [openstack, kubernetes, ovs, ovn, ubuntu, max_meter]
-categories: [OpenStack, OVN]
+categories: [Issues, OpenStack]
 ---
 
 ## 문제 분석 개요

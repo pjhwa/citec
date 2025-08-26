@@ -2,7 +2,7 @@
 title: "OpenStack 환경에서 vProtect 백업 솔루션의 Snapshot 볼륨 Attach 불가 에러"
 date: 2025-07-25
 tags: [openstack, cinder, vprotect, volume, snapshot, backup, netapp]
-categories: [OpenStack, Cinder]
+categories: [Issues, OpenStack]
 ---
 
 ## 질의
