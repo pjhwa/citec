@@ -2,6 +2,7 @@
 title: "네트워크 패킷 유실률 분석"
 date: 2025-06-16
 tags: [network, netstat, ethtool, rxSummary, stats]
+categories: [Network, Analysis]
 ---
 
 # 네트워크 패킷 유실률 분석 접근법 개요

@@ -1,3 +1,10 @@
+---
+title: "RHEL 7.4에서 7.9로 업그레이드 시 데이터베이스 및 고가용성 시스템에 미치는 영향 검토"
+date: 2025-05-29
+tags: [rhel, linux, upgrade, ha, database]
+categories: [Linux, Upgrade]
+---
+
 # RHEL 7.4에서 7.9로 업그레이드 시 데이터베이스 및 고가용성 시스템에 미치는 영향 검토
 
 ## 개요

@@ -2,6 +2,7 @@
 title: "CSP 네트워크 서비스 비용 및 처리량 비교"
 date: 2025-05-22
 tags: [csp, scp, network, throughput, cost, cloud, comparison]
+categories: [Cloud, CSP]
 ---
 
 # CSP 네트워크 서비스 비용 및 처리량 비교

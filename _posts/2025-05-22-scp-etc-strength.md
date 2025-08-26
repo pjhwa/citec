@@ -2,6 +2,7 @@
 title: "SCP의 다각적 경쟁 우위 분석"
 date: 2025-05-22
 tags: [scp, strength, cloud, csp, comparison]
+categories: [Cloud, SCP]
 ---
 
 # SCP의 다각적 경쟁 우위 분석  

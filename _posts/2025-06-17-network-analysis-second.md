@@ -2,6 +2,7 @@
 title: "네트워크 데이터 유실률 분석 #2"
 date: 2025-06-17
 tags: [netstat, ethtool, drop, network]
+categories: [Network, Analysis]
 ---
 
 # 네트워크 데이터 패킷 유실률 분석 (2025/06/16 ~ 2025/06/17) - Grok

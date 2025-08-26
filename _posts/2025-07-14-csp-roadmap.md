@@ -2,6 +2,7 @@
 title: "클라우드 플랫폼 비교"
 date: 2025-07-14
 tags: [cloud, comparison, scp, naver, nhn, ai, soverin, security, network]
+categories: [Cloud, CSP]
 ---
 
 # 클라우드 플랫폼 비교 개요

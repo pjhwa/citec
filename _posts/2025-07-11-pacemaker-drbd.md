@@ -2,6 +2,7 @@
 title: "Database 서비스 불가 및 OS 접속 불가 문제"
 date: 2025-07-11
 tags: [redhat, pacemaker, drbd, xfs, kernel, hang]
+categories: [Problems, Linux]
 ---
 
 # Database 서비스 불가 및 OS 접속 불가 문제에 대한 원인 분석

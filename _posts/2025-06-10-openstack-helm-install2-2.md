@@ -2,6 +2,7 @@
 title: "OpenStack Helm 설치 - 2부"
 date: 2025-06-10
 tags: [openstack, helm, kubernetes, ceph, ansible]
+categories: [OpenStack, Helm]
 ---
 
 # OpenStack Helm 설치 - 2부: OpenStack 서비스 설치 가이드

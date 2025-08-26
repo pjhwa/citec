@@ -2,6 +2,7 @@
 title: "CSP 데이터 분석 서비스 비교"
 date: 2025-05-15
 tags: [csp, analytics, service, cloud, comparison]
+categories: [Cloud, CSP]
 ---
 
 # CSP 데이터 분석 서비스 비교

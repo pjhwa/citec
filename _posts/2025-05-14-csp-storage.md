@@ -2,6 +2,7 @@
 title: "CSP 스토리지 서비스 비교"
 date: 2025-05-14
 tags: [csp, storage, service, cloud, comparison]
+categories: [Cloud, CSP]
 ---
 
 # CSP 스토리지 서비스 비교 보고서

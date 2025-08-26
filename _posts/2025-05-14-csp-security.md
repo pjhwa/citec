@@ -2,6 +2,7 @@
 title: "CSP 보안 서비스 비교"
 date: 2025-05-14
 tags: [csp, security, service, cloud, comparison]
+categories: [Cloud, CSP]
 ---
 
 # CSP 보안 서비스 비교

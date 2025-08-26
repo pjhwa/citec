@@ -2,6 +2,7 @@
 title: "SCP의 하이브리드 클라우드 및 근거리 Multi-AZ 강점 분석"
 date: 2025-05-21
 tags: [scp, hybrid, cloud, multi-az]
+categories: [Cloud, SCP]
 ---
 
 # SCP의 하이브리드 클라우드 및 근거리 Multi-AZ 강점 분석 보고서

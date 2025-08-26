@@ -2,6 +2,7 @@
 title: "CSP 데이터베이스 서비스 비교"
 date: 2025-05-14
 tags: [csp, database, service, cloud, comparison]
+categories: [Cloud, CSP]
 ---
 
 # CSP 데이터베이스 서비스 비교

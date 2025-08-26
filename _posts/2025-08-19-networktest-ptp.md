@@ -2,6 +2,7 @@
 title: "네트워크 테스트를 위한 정밀 시간 동기화"
 date: 2025-08-19
 tags: [network, test, ptp, precision, time, protocol, "1588"]
+categories: [Cloud, Network]
 ---
 
 # 네트워크 테스트를 위한 정밀 시간 동기화

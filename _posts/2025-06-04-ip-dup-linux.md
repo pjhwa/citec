@@ -2,6 +2,7 @@
 title: "IP 주소 충돌 감지 시 리눅스 서버의 동작 방식 및 대응 방법"
 date: 2025-06-04
 tags: [ip, duplication, linux, arp]
+categories: [Linux, Network]
 ---
 
 # IP 주소 충돌 감지 시 리눅스 서버의 동작 방식 및 대응 방법

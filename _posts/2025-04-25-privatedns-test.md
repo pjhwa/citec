@@ -2,6 +2,7 @@
 title: "Private DNS 내에 테스트용 DNS 레코드를 설정하고 이를 주기적으로 쿼리하는 방식"
 date: 2025-04-25
 tags: [dns, test, query, cloud, linux, windows]
+categories: [Linux, DNS]
 ---
 
 # Private DNS 내에 테스트용 DNS 레코드를 설정하고 이를 주기적으로 쿼리하는 방식

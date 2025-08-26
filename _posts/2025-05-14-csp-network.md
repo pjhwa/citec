@@ -2,6 +2,7 @@
 title: "CSP 네트워크 서비스 비교"
 date: 2025-05-14
 tags: [csp, network, service, cloud, comparision]
+categories: [Cloud, CSP]
 ---
 
 # CSP 네트워크 서비스 비교

@@ -2,6 +2,7 @@
 title: "AWS 환경에서의 Multicast 성능 테스트"
 date: 2025-08-04
 tags: [aws, network, multicast, tgw, performance, test, iperf]
+categories: [Cloud, Network]
 ---
 
 AWS 환경에서 멀티캐스트(multicast) 성능 테스트를 고려할 때, 먼저 AWS의 기본 지원 한계를 이해해야 합니다. AWS VPC(Virtual Private Cloud) 자체에서는 멀티캐스트가 직접 지원되지 않으며, 이는 IGMP(Internet Group Management Protocol)나 멀티캐스트 라우팅의 부재 때문입니다. 대신, AWS Transit Gateway를 통해 제한적으로 멀티캐스트를 구현할 수 있으며, 이는 VPC 간 또는 외부 네트워크와의 연결에서 유용합니다. 그러나 AWS 문서에 따르면, Transit Gateway의 멀티캐스트는 고대역폭(high bandwidth)이나 극저지연(very low latency) 워크로드를 위한 서비스가 아니며, 약간의 오버헤드가 발생할 수 있습니다. 이는 비판적으로 검증된 사실로, 실제 성능은 네트워크 구성, 인스턴스 유형, 존 간 트래픽 등에 따라 달라질 수 있습니다.

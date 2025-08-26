@@ -2,6 +2,7 @@
 title: "CSP 컴퓨트 서비스 비교"
 date: 2025-05-14
 tags: [csp, compute, service, comparison, cloud]
+categories: [Cloud, CSP]
 ---
 
 # CSP 컴퓨트 서비스 비교 보고서
