@@ -104,25 +104,31 @@ VM이 IP를 잃어버린 이유는 DHCP 프로세스 실패입니다. OpenStack 
 이 부분은 OVS의 dpif_netlink 모듈에서 kernel meter 지원을 테스트할 때 발생하는 에러로, 로그 메시지 "The kernel module has a broken meter implementation"가 직접적으로 나타납니다. 이는 OVS 소스 코드와 커뮤니티 토론에서 확인됩니다.
 
 - **OVS 소스 코드 관련**: OVS의 lib/dpif-netlink.c 파일에서 dpif_netlink_meter_transact 함수가 OVS_METER_CMD_SET 명령을 시도하다 실패하면 "broken meter implementation"을 로그로 기록하는 로직이 있습니다. 이는 kernel netlink 인터페이스와의 호환성 체크 과정입니다. OVS 2.17.9 버전에서 낮은 kernel (e.g., 5.15)과 QoS/rate limiting meter 호환성 문제가 발생할 수 있음을 코드가 암시합니다. 소스 코드는 GitHub OVS 리포지토리에서 공개되어 있으며, 관련 코드 스니펫은 meter transact 실패 시 에러 핸들링 부분입니다.
+- https://github.com/openvswitch/ovs/blob/main/lib/dpif-netlink.c
   - 추가 설명: 이 로직은 OVS가 kernel 모듈의 meter 기능을 프로빙(probing)하다 지원되지 않거나 버그가 있으면 비활성화(max_meter=0)로 전환합니다. 유사 로그가 OVS 메일링 리스트에서 자주 보고됩니다.
 
-- **커뮤니티 토론 및 에러 사례**: OVS discuss 메일링 리스트에서 유사 에러가 논의되었으며, kernel module이 meter를 지원하지 않거나 broken으로 판정되는 경우 dpif_netlink_meter_transact OVS_METER_CMD_SET failed가 발생한다고 설명됩니다. 이는 OVS 2.11~2.17 버전에서 kernel 호환성 문제로 자주 나타납니다. 
+- **커뮤니티 토론 및 에러 사례**: OVS discuss 메일링 리스트에서 유사 에러가 논의되었으며, kernel module이 meter를 지원하지 않거나 broken으로 판정되는 경우 dpif_netlink_meter_transact OVS_METER_CMD_SET failed가 발생한다고 설명됩니다. 이는 OVS 2.11~2.17 버전에서 kernel 호환성 문제로 자주 나타납니다.
+- https://mail.openvswitch.org/pipermail/ovs-discuss/2019-October/049403.html
   - 이해 쉽게: meter는 트래픽 속도를 측정/제한하는 기능으로, kernel이 이를 제대로 구현하지 않으면 OVS가 "broken"으로 판단하고 기능을 끕니다. 이는 DHCP 같은 서비스에 연쇄 영향을 줍니다.
 
 #### 2. 검색 결과로 언급된 bug #1832826 (OVS 버전에서 QoS/rate limiting meter kernel 호환성 문제)
 유사한 증상(OVS meter transact failed, broken meter implementation)이 Launchpad bug #1832826에서 확인되었습니다. 이는 번호 오타나 기억 오류일 가능성이 높으며, #1832826이 해당 내용과 가장 일치합니다.
 
 - **Launchpad bug #1832826**: 이 버그는 OVS에서 datapath가 많은 ofproto를 지원하지만 meter 설정 시 dpif_netlink_meter_transact get failed와 "The kernel module has a broken meter implementation" 에러가 발생하는 문제를 다룹니다. OVS 낮은 버전에서 kernel 호환성으로 QoS/rate limiting meter가 작동하지 않는 사례입니다. Ubuntu 기반 환경(예: OpenStack)에서 보고되었으며, kernel 업그레이드나 OVS 패치로 해결 제안됩니다.
+- https://bugs.launchpad.net/dragonflow/+bug/1832826
   - 이해 쉽게: 이 버그는 OVS가 kernel의 meter 기능을 테스트하다 실패하면 전체 네트워크 기능(예: rate limiting)이 중단되는 문제를 지적합니다. 당신의 로그("dpif_netlink_meter_transact OVS_METER_CMD_SET failed")와 정확히 맞습니다.
-  - 만약 #2017383이 별도의 버그라면, Launchpad 검색에서 나오지 않았으므로 Red Hat Bugzilla나 다른 트래커일 수 있으나, 증상 기반으로 #1832826이 대체 출처입니다.
 
 #### 3. OVN에서 DHCP 응답 rate limiting에 meter를 사용하고, 에러로 DHCP 기능 중단 (GitHub ovn-org #259: meter-table out of ids)
 이 부분은 OVN이 DHCP 서버에서 meter를 활용해 응답 속도를 제한(rate limiting)하다가 에러 발생 시 DHCP lease 갱신이 실패하는 메커니즘입니다.
 
 - **GitHub ovn-org/ovn 이슈 #259**: 이 이슈는 "extend_table|ERR|table meter-table: out of table ids" 에러를 다루며, OVN 컨트롤러 시작 시 발생합니다. 대규모 하이퍼바이저(수백 VM) 환경에서 DHCP 응답(DHCPOFFER)이 tap 인터페이스로 전달되지 않는 문제를 보고합니다. meter-table ID 고갈이 원인으로, datapath(kernel)가 meter를 지원하지 않거나 OVS가 이를 인식하지 못할 때 발생합니다. OpenStack kolla-ansible 배포에서 자주 보이며, OVN 버전 2024.3.2에서도 지속됩니다. 이슈 토론에서 meter 에러가 DHCP 문제와 연관됨을 암시합니다.
+- https://github.com/ovn-org/ovn/issues/259
   - 이해 쉽게: meter-table out of ids는 meter ID가 부족해 새로운 meter를 할당하지 못하는 에러로, OVN의 DHCP rate limiting이 중단되어 VM IP 할당이 실패합니다. 당신의 로그(OFPMMFC_INVALID_METER)와 유사합니다.
 
-- **OVN 문서에서 DHCP rate limiting과 meter 사용 확인**: OVN northbound DB 스키마(ovn-nb(5) man page)에서 meters 필드가 DHCPv4 relay 패킷의 rate limiting에 사용된다고 명시합니다. 예: "meters : dhcpv4-relay: optional string Rate limiting meter for DHCPv4 relay packets". 이는 OVN 내장 DHCP 서버가 과도한 요청을 방지하기 위해 meter를 활용함을 보여줍니다. 에러 시 DHCP 응답이 제한되어 IP 해제 현상이 발생합니다. 
+- **OVN 문서에서 DHCP rate limiting과 meter 사용 확인**: OVN northbound DB 스키마(ovn-nb(5) man page)에서 meters 필드가 DHCPv4 relay 패킷의 rate limiting에 사용된다고 명시합니다. 예: "meters : dhcpv4-relay: optional string Rate limiting meter for DHCPv4 relay packets". 이는 OVN 내장 DHCP 서버가 과도한 요청을 방지하기 위해 meter를 활용함을 보여줍니다. 에러 시 DHCP 응답이 제한되어 IP 해제 현상이 발생합니다.
+- https://www.ovn.org/support/dist-docs/ovn-nb.5.html
+- https://manpages.ubuntu.com/manpages/kinetic/man5/ovn-nb.5.html
   - 추가: OpenStack Neutron 문서에서도 metadata 서비스 rate limiting이 언급되지만, OVN-specific으로는 man page가 핵심입니다.
+  - https://docs.openstack.org/neutron/latest/admin/config-metadata-rate-limiting.html
 
 이 출처들은 모두 공개되어 있으며, 필요 시 직접 확인 가능합니다. 만약 더 구체적인 로그나 버전 정보가 있으면 추가 검증이 가능합니다. 
