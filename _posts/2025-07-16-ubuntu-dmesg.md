@@ -1,7 +1,7 @@
 ---
 title: "Ubuntu 22.04 LTS Linux Server dmesg 분석"
 date: 2025-07-16
-tags: [ubuntu, linux, 2204, lts, dmesg]
+tags: [ubuntu, linux, "2204", lts, dmesg]
 ---
 
 # dmesg 로그란 무엇인가?
