@@ -10,7 +10,7 @@ tags: [csp, scp, network, throughput, cost, cloud, comparison]
 삼성 클라우드 플랫폼(Samsung Cloud Platform, SCP)의 중장기 기술 로드맵(3~5년)을 지원하기 위해 주요 클라우드 서비스 제공업체(CSP)인 AWS, Azure, GCP, 네이버 클라우드, NHN 클라우드, KT 클라우드, SCP의 네트워크 서비스를 비교했습니다. 이 보고서는 가상 사설 클라우드(VPC), 트랜짓 게이트웨이(TGW), 로드 밸런서(LB), 기타 네트워크 서비스의 기능, 처리량, 비용을 분석하며, SCP의 "네트워크 비용 무료" 장점을 강조합니다. 특히 한국 시장에서의 활용성과 고객 만족도를 반영하여 2025년 5월 14일 기준 최신 정보를 기반으로 작성되었습니다.
 
 ## 조사 방법
-SCP의 네트워크 서비스는 [Samsung Cloud Platform Network Services]([invalid url, do not cite])에서 확인했습니다. AWS, Azure, GCP의 정보는 [AWS Networking Services]([invalid url, do not cite]), [Azure Networking Services]([invalid url, do not cite]), [Google Cloud Networking Services]([invalid url, do not cite])에서 수집했습니다. 네이버 클라우드, NHN 클라우드, KT 클라우드의 정보는 [Naver Cloud Networking Services]([invalid url, do not cite]), [NHN Cloud Networking Services]([invalid url, do not cite]), [KT Cloud Networking Services]([invalid url, do not cite])에서 확인했습니다. 고객 피드백과 시장 데이터는 Gartner, Forrester 보고서와 G2, TrustRadius 리뷰를 참고했습니다.
+SCP의 네트워크 서비스는 [Samsung Cloud Platform Network Services]()에서 확인했습니다. AWS, Azure, GCP의 정보는 [AWS Networking Services](), [Azure Networking Services](), [Google Cloud Networking Services]()에서 수집했습니다. 네이버 클라우드, NHN 클라우드, KT 클라우드의 정보는 [Naver Cloud Networking Services](), [NHN Cloud Networking Services](), [KT Cloud Networking Services]()에서 확인했습니다. 고객 피드백과 시장 데이터는 Gartner, Forrester 보고서와 G2, TrustRadius 리뷰를 참고했습니다.
 
 ## 각 CSP별 네트워크 서비스 개요
 
@@ -92,9 +92,9 @@ SCP의 네트워크 서비스는 [Samsung Cloud Platform Network Services]([inva
 - **SCP**: 네트워크 비용 무료 정책과 Private 5G Cloud로 저지연 애플리케이션 지원, 삼성 생태계 통합.
 
 ### 고객 피드백
-- **AWS**: G2에서 4.7/5 평점, CloudFront와 ELB의 안정성과 성능으로 호평, 요금 복잡성 비판 ([AWS Networking Reviews]([invalid url, do not cite])).
-- **Azure**: TrustRadius에서 4.6/5, 하이브리드 연결과 한국 리전 지원으로 호평, 관리 인터페이스 복잡성 지적 ([Azure Networking Reviews]([invalid url, do not cite])).
-- **GCP**: G2에서 4.5/5, 사용 편의성과 글로벌 네트워크 성능으로 호평, 엔터프라이즈 기능 부족 지적 ([GCP Networking Reviews]([invalid url, do not cite])).
+- **AWS**: G2에서 4.7/5 평점, CloudFront와 ELB의 안정성과 성능으로 호평, 요금 복잡성 비판 ([AWS Networking Reviews]()).
+- **Azure**: TrustRadius에서 4.6/5, 하이브리드 연결과 한국 리전 지원으로 호평, 관리 인터페이스 복잡성 지적 ([Azure Networking Reviews]()).
+- **GCP**: G2에서 4.5/5, 사용 편의성과 글로벌 네트워크 성능으로 호평, 엔터프라이즈 기능 부족 지적 ([GCP Networking Reviews]()).
 - **네이버 클라우드**: 한국 고객들로부터 지역 최적화와 한국어 지원으로 호평, 글로벌 문서 부족 비판.
 - **NHN 클라우드**: 게임 및 전자상거래 고객들로부터 유연성과 안정성으로 호평, 세부 정보 부족 지적.
 - **KT 클라우드**: 금융 및 공공 부문에서 통신 기반 안정성과 지역 지원으로 호평, 글로벌 확장성 제한 비판.
@@ -139,13 +139,13 @@ SCP의 네트워크 비용 무료 정책은 한국 기업의 고성능 워크로
 SCP는 네트워크 비용 무료 정책과 Private 5G Cloud로 한국 시장에서 경쟁력을 가지지만, AWS, Azure, GCP의 글로벌 스케일과 처리량 벤치마크 명시도에 비해 제한적입니다. 네이버 클라우드, NHN 클라우드, KT 클라우드는 지역 최적화로 강점을 가지며, SCP는 이들의 전략을 참고할 수 있습니다. SCP는 처리량 데이터 명시화와 글로벌 확장을 통해 경쟁력을 강화할 수 있습니다.
 
 ## Key Citations
-- [AWS Networking Services Overview]([invalid url, do not cite])
-- [Azure Networking Services Overview]([invalid url, do not cite])
-- [Google Cloud Networking Services Overview]([invalid url, do not cite])
-- [Naver Cloud Networking Services Product Page]([invalid url, do not cite])
-- [NHN Cloud Networking Services Overview]([invalid url, do not cite])
-- [KT Cloud Networking Services Product Page]([invalid url, do not cite])
-- [Samsung Cloud Platform Network Services Overview]([invalid url, do not cite])
-- [AWS Networking Customer Reviews on G2]([invalid url, do not cite])
-- [Azure Networking Customer Reviews on TrustRadius]([invalid url, do not cite])
-- [GCP Networking Customer Reviews on G2]([invalid url, do not cite])
+- [AWS Networking Services Overview]()
+- [Azure Networking Services Overview]()
+- [Google Cloud Networking Services Overview]()
+- [Naver Cloud Networking Services Product Page]()
+- [NHN Cloud Networking Services Overview]()
+- [KT Cloud Networking Services Product Page]()
+- [Samsung Cloud Platform Network Services Overview]()
+- [AWS Networking Customer Reviews on G2]()
+- [Azure Networking Customer Reviews on TrustRadius]()
+- [GCP Networking Customer Reviews on G2]()
