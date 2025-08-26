@@ -5,8 +5,6 @@ tags: [openstack, helm, kubernetes, ceph, keepalived, haproxy, ansible]
 categories: [OpenStack, Helm]
 ---
 
-# OpenStack Helm 설치 - 1부
-
 OpenStack Helm을 기반으로 Kubernetes, Rook-Ceph 기반의 OpenStack 환경을 구축하고자 한다. Kubernetes는 HA 마스터 클러스터로 구성한다. 1부에서는 사전 준비와 Kubernetes와 Rook-Ceph 설치 및 구성을 다룬다.
 
 ## 환경 

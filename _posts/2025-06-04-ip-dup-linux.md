@@ -5,8 +5,6 @@ tags: [ip, duplication, linux, arp]
 categories: [Linux, Network]
 ---
 
-# IP 주소 충돌 감지 시 리눅스 서버의 동작 방식 및 대응 방법
----
 
 ## 1. 리눅스 서버의 내부 동작 방식 (IP 주소 충돌 감지 시)
 동일 네트워크 상의 리눅스 서버에서 IP 주소 충돌이 감지되면, 서버는 **ARP(주소 해결 프로토콜, Address Resolution Protocol)**를 사용하여 이를 감지합니다. ARP는 IP 주소를 MAC 주소로 매핑하는 역할을 하며, 서버가 자신의 IP 주소를 사용하려 할 때 ARP 요청을 브로드캐스트하여 해당 IP 주소에 연결된 MAC 주소를 확인합니다. 만약 다른 장치가 동일한 IP 주소를 사용하고 있다면, 해당 장치도 ARP 응답을 보내게 되어 중복된 ARP 응답이 발생합니다.

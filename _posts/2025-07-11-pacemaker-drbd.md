@@ -5,7 +5,6 @@ tags: [redhat, pacemaker, drbd, xfs, kernel, hang]
 categories: [Problems, Linux]
 ---
 
-# Database 서비스 불가 및 OS 접속 불가 문제에 대한 원인 분석
 
 ## 문제 상황 설명
 

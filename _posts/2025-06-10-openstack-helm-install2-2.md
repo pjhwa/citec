@@ -5,8 +5,6 @@ tags: [openstack, helm, kubernetes, ceph, ansible]
 categories: [OpenStack, Helm]
 ---
 
-# OpenStack Helm 설치 - 2부: OpenStack 서비스 설치 가이드
-
 이 문서는 OpenStack Helm을 활용하여 Kubernetes 환경에 OpenStack 서비스를 배포하는 과정을 안내합니다. Kubernetes와 Rook-Ceph가 이미 구축된 상태에서, 이 가이드는 OpenStack의 주요 서비스들을 설치하는 단계를 초보자도 쉽게 따라 할 수 있도록 상세히 설명합니다. 명령어와 출력 예시를 그대로 유지하며, 기술적 배경과 보완이 필요한 부분을 이해하기 쉽게 풀어냈습니다. 또한, OpenStack 서비스의 네트워크 구성과 클러스터 아키텍처를 텍스트 다이어그램으로 시각화하여 전체 구조를 한눈에 파악할 수 있도록 했습니다.
 
 ---

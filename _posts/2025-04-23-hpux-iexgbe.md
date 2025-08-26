@@ -5,7 +5,6 @@ tags: [hpux, network, iexgbe, superdome2, driver]
 categories: [UNIX, HP-UX]
 ---
 
-## HP-UX Superdome2 네트워크 드라이버 오류 분석
 
 ### 개요  
 HP-UX Superdome2 시스템에서 네트워크 인터페이스 `lan2`가 다운되면서 `iexgbe` 드라이버가 "should never be here"라는 오류 메시지를 수십만 번 로깅하는 현상이 발생했습니다. 이는 연결된 스위치의 GBIC(광섬유 변환 모듈) 결함으로 인해 링크가 끊어진 상황에서 드라이버가 예상치 못한 상태에 빠진 것으로 보입니다. 이 보고서는 문제의 배경, 관련 사실, 불확실성, 여론, 그리고 Grok의 의견을 종합적으로 다룹니다.

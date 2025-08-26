@@ -5,7 +5,6 @@ tags: [openstack, helm, kubernetes, k8s, rook-ceph, ceph, cloud, install]
 categories: [OpenStack, Helm]
 ---
 
-# OpenStack Helm을 활용한 Kubernetes와 Rook-Ceph 설치 가이드 - 1부
 
 이 문서는 OpenStack Helm을 기반으로 Kubernetes와 Rook-Ceph를 설치하여 OpenStack 환경을 구축하는 과정을 안내합니다. Kubernetes는 컨테이너 오케스트레이션 플랫폼으로, 애플리케이션 배포와 관리를 자동화하며, Rook-Ceph는 Kubernetes에서 분산 스토리지 시스템인 Ceph를 쉽게 관리할 수 있도록 돕는 도구입니다. 이 가이드의 1부에서는 사전 준비와 Kubernetes, Rook-Ceph 설치 및 구성을 다룹니다. 단계별 설명과 함께 명령어, 출력 예시, 그리고 시각적 다이어그램을 제공하여 설치 과정이 직관적이고 명확하게 전달되도록 하였습니다.
 

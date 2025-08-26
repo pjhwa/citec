@@ -5,8 +5,6 @@ tags: [ceph, rook-ceph, mon]
 categories: [Ceph, Mon]
 ---
 
-## Ceph 클러스터 설치 시 모니터 파드 시작 문제
-
 초기 설치 시 모니터 파드(mon a, mon b, mon c)가 제때 실행되지 않는 경우가 있습니다. 아래는 그 예이며, 어떤 경우의 수가 있는지를 설명합니다.
 
 ### rook-ceph-operator 로그

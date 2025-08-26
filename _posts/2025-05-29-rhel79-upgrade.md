@@ -5,7 +5,6 @@ tags: [rhel, linux, upgrade, ha, database]
 categories: [Linux, Upgrade]
 ---
 
-# RHEL 7.4에서 7.9로 업그레이드 시 데이터베이스 및 고가용성 시스템에 미치는 영향 검토
 
 ## 개요
 RHEL 7.4에서 7.9로의 업그레이드가 필요하다는 요구사항이 있으며, Extended Life Cycle Support(ELS)를 유지하기 위한 필수 조치입니다. 이에 따라 데이터베이스(PostgreSQL)와 고가용성 구성(Pacemaker 및 DRBD)이 포함된 시스템에 부정적인 영향을 미치지 않도록 신중한 검토와 준비가 필요합니다. 아래에서는 업그레이드의 영향을 평가하고, 우려 사항에 대한 통찰 및 권장 사항을 제공합니다.

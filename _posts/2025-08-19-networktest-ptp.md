@@ -5,7 +5,6 @@ tags: [network, test, ptp, precision, time, protocol, "1588"]
 categories: [Cloud, Network]
 ---
 
-# 네트워크 테스트를 위한 정밀 시간 동기화
 
 PTP(Precision Time Protocol, IEEE 1588)는 네트워크에서 높은 정밀도로 시간 동기화를 제공하는 프로토콜로, NTP(Network Time Protocol)보다 훨씬 정밀한 시간 동기화(마이크로초 또는 나노초 수준)를 필요로 하는 환경에서 사용됩니다. MGEN 테스트와 같은 네트워크 성능 측정에서 음수 latency 문제나 타임스탬프 불일치를 해결하기 위해 PTP를 설정하면 효과적일 수 있습니다. 아래는 RHEL 8.4 환경에서 PTP를 설정하는 방법을 단계별로 자세히 설명합니다. 현재 날짜와 시간(2025년 8월 19일 오전 11:27 KST)을 기준으로 최신 정보를 반영하며, OpenStack 환경(k1~k10 VM)과 MGEN multicast/broadcast 테스트 맥락을 고려합니다.
 

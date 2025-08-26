@@ -5,7 +5,6 @@ tags: [cloud, network, performance, test, broadcast, ostinato]
 categories: [Cloud, Network]
 ---
 
-# Broadcast 성능 테스트 방안
 
 ## MGEN을 사용한 Broadcast 성능 테스트 가능성
 

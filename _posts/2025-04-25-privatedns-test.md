@@ -5,7 +5,6 @@ tags: [dns, test, query, cloud, linux, windows]
 categories: [Linux, DNS]
 ---
 
-# Private DNS 내에 테스트용 DNS 레코드를 설정하고 이를 주기적으로 쿼리하는 방식
 클라우드 플랫폼에서 OS와 DNS 간의 연결 상태를 모니터링하기 위해, "**Private DNS 내에 테스트용 DNS 레코드를 설정하고 이를 주기적으로 쿼리하는 방식**"에 대해 자세히 설명드리겠습니다.
 
 --- 

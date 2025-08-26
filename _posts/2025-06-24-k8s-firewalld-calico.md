@@ -5,7 +5,6 @@ tags: [k8s, kubernetes, firewalld, calico, iptables]
 categories: [Kubernetes, calico]
 ---
 
-# Kubernetes 클러스터 환경에서 firewalld 서비스와 calico plugin 통합 운영
 
 ## 이슈 개요
 

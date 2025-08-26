@@ -5,7 +5,6 @@ tags: [openstack, helm, kubernetes, ceph, ansible]
 categories: [OpenStack, Helm]
 ---
 
-# OpenStack-Helm 설치 - 2부
 
 OpenStack-Helm은 Helm 차트를 사용하여 OpenStack 서비스를 Kubernetes에 배포한다. 각 서비스는 의존성을 가지므로, 설치 순서를 준수하고 `helm dependency build`를 통해 의존성을 해결해야 한다. 기본 설치 순서는 다음과 같다.
 
