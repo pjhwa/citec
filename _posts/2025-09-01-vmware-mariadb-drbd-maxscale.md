@@ -9,8 +9,8 @@ categories: [Issues, Network]
 
 | 시간 (2025-08-26) | 주요 이벤트 | 상세 설명 | 영향 및 결과 |
 |--------------------|-------------|-----------|--------------|
-| 이전 (Aug 24~25) | NTP 서버 주기적 재선택 | db01 chronyd 로그: 198.19.1.53(ntp1.scp-in.com) → 198.19.1.54(ntp2.scp-in.com) 등 반복. slew 모드로 설정됨. | chrony의 정상 동작으로 보임. 서버 품질(지연, 안정성)에 따라 자동 선택. 직접적 문제 아님. |
-| 08:31:33 | NTP 서버 재선택 | chronyd가 198.19.1.53으로 재선택. | 네트워크 지연 초기 증상. slew 모드로 클럭 점진적 조정, 큰 영향 없음. |
+| 이전 (Aug 24~25) | NTP 서버 주기적 재선택 | db01 chronyd 로그: xxx.xx.xx.1(ntp1.xxx.com) → xxx.xx.xx.2(ntp2.xxx.com) 등 반복. slew 모드로 설정됨. | chrony의 정상 동작으로 보임. 서버 품질(지연, 안정성)에 따라 자동 선택. 직접적 문제 아님. |
+| 08:31:33 | NTP 서버 재선택 | chronyd가 xxx.xx.xx.2로 재선택. | 네트워크 지연 초기 증상. slew 모드로 클럭 점진적 조정, 큰 영향 없음. |
 | 08:31:36 | DRBD/MaxScale 연결 이상 시작 | DRBD: db01-db02 통신 지연 (42,147ms 후 단절). MaxScale: 연결 이상. | Heartbeat 네트워크 플랩(flap, 순간 불안정) 의심. |
 | 08:31:39 | Application 이슈 | MariaDBmon: 'show all slaves status;' 쿼리 실패 ('lost connection'). | DB 클러스터 모니터링 오류. |
 | 08:31:49 ~ 08:32:14 | DRBD 타임아웃 | db01 kernel: "sending time expired" (ko=6 → 2). | DRBD 동기화 중단. 데이터 일관성 영향. |
