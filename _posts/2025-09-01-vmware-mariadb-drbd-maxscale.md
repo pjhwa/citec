@@ -1,5 +1,5 @@
 ---
-title: ""
+title: "VMware 기반 MariaDB VM에서 네트워크 단절 장애"
 date: 2025-09-01
 tags: [vmware, mariadb, pacemaker, maxscale, drbd]
 categories: [Issues, Network]
