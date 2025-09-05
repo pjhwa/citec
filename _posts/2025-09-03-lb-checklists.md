@@ -2,7 +2,19 @@
 title: "LB Checklists"
 date: 2025-09-03
 tags: [lb, network, checklist]
+categories: [Howtos, Network]
 ---
+
+## SCP LB의 사용자 접근 및 설정 가능성
+SCP LB는 Application Load Balancer(ALB)와 Network Load Balancer(NLB) 유형을 지원하며, SKE(SCP Kubernetes Engine) 환경에서 Service type=LoadBalancer를 통해 연동됨. 사용자는 다음과 같은 방식으로 접근:
+- **콘솔 접근**: SCP 포털(https://cloud.samsungsds.com/)에서 'All Services > Networking > Load Balancer' 메뉴를 통해 LB 서버 그룹을 선택하고 생성/수정함. 예를 들어, LB 생성 시 포트 매핑, 헬스 체크 경로, 백엔드 인스턴스 등록 등을 설정 가능함.
+- **CLI 접근**: SCP CLI 도구(https://github.com/t2yijaeho/SCP-CLI)를 통해 명령어로 LB 관리 가능함. 이는 자동화 스크립트나 CI/CD 통합에 유용함.
+- **API 접근**: SCP API를 통해 프로그래밍 방식으로 LB 구성 변경 가능함. 이는 IaC(Infrastructure as Code) 도구처럼 Terraform이나 Ansible과 연동됨.
+- **Kubernetes 연동(SKE)**: SKE에서 kubectl 명령으로 Service YAML을 수정하여 LB 어노테이션(예: sessionAffinity, externalTrafficPolicy)을 적용함. 이는 사용자 수준에서 직접 변경 가능함.
+
+가능한 주요 설정 항목(사용자 변경 가능):
+- LB 유형 선택(ALB/NLB), 포트 매핑(port/targetPort), 헬스 체크(경로, 주기, 임계값), 세션 어피니티, 외부 트래픽 정책, 보안 그룹 규칙, SSL/TLS 인증서 적용, 타임아웃 값, 로그 활성화, DNS 레코드 연동, IP 화이트리스트, 스케일링 정책 연동(HPA), 리소스 태그 등.
+- 제한 사항: 플랫폼 수준의 LB 인프라(예: 물리적 서버 배치, 글로벌 라우팅)는 매니지드되어 사용자 직접 변경 불가함. 이는 안정성과 보안을 위한 설계임. 만약 초과 사용 시 쿼터 제한이 적용될 수 있음.
 
 ## 구성
 
