@@ -1,0 +1,40 @@
+DB1 -> IF1 : loss
+DB1 -> IF2 : OK
+DB1 -> WAS1 : loss
+DB1 -> WAS2 : OK
+
+DB2 -> IF1 : loss
+DB2 -> IF2 : OK
+DB2 -> WAS1 : OK
+DB2 -> WAS2 : OK
+
+IF1 -> DB1 : loss
+IF1 -> DB2 : loss
+IF2 -> DB1 : OK
+IF2 -> DB2 : OK
+
+WAS1 -> DB1 : loss
+WAS1 -> DB2 : loss
+WAS2 -> DB1 : OK
+WAS2 -> DB2 : OK
+
+
+DB1 -> IF1 : loss
+DB1 -> IF2 : OK
+DB1 -> WAS1 : loss
+DB1 -> WAS2 : OK
+
+DB2 -> IF1 : loss
+DB2 -> IF2 : OK
+DB2 -> WAS1 : OK
+DB2 -> WAS2 : OK
+
+IF1 -> DB1 : loss
+IF1 -> DB2 : loss
+IF2 -> DB1 : OK
+IF2 -> DB2 : OK
+
+WAS1 -> DB1 : loss
+WAS1 -> DB2 : loss
+WAS2 -> DB1 : OK
+WAS2 -> DB2 : OK
