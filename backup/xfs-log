@@ -1,0 +1,22 @@
+Sep 13 00:00:19 g-krs1a-dp-mon-mtr-lsh-dlt-02 kernel: blk_update_request: I/O error, dev vdb, sector 537062976 op 0x1:(WRITE) flags 0x9800 phys_seg 1 prio class 0
+
+Sep 13 00:00:19 g-krs1a-dp-mon-mtr-lsh-dlt-02 kernel: blk_update_request: I/O error, dev vdb, sector 537062976 op 0x1:(WRITE) flags 0x9800 phys_seg 1 prio class 0
+
+Sep 13 00:00:19 g-krs1a-dp-mon-mtr-lsh-dlt-02 kernel: XFS (dm-4): log I/O error -5
+
+Sep 13 00:00:19 g-krs1a-dp-mon-mtr-lsh-dlt-02 kernel: XFS (dm-4): Log I/O error (0x2) detected at xlog_ioend_work+0x74/0x80 [xfs] (fs/xfs/xfs_log.c:1284). Shutting down filesystem
+
+Sep 13 00:00:19 g-krs1a-dp-mon-mtr-lsh-dlt-02 kernel: XFS (dm-4): Please unmount the filesystem and rectify the problem(s)
+
+...
+Sep 17 09:57:35 g-krs1a-dp-mon-mtr-lsh-dlt-02 kernel: EXT4-fs (dm-2): I/O error while writing superblock
+
+Sep 17 09:57:38 g-krs1a-dp-mon-mtr-lsh-dlt-02 kernel: Buffer I/O error on dev vdb, logical block 0, async page read
+
+Sep 17 09:57:38 g-krs1a-dp-mon-mtr-lsh-dlt-02 kernel: blk_update_request: I/O error, dev vdb, sector 128 op 0x0:(READ) flags 0x0 phys_seg 1 prio class 0
+
+Sep 17 09:57:38 g-krs1a-dp-mon-mtr-lsh-dlt-02 kernel: Buffer I/O error on dev vdb, logical block 16, async page read
+
+Sep 17 09:57:38 g-krs1a-dp-mon-mtr-lsh-dlt-02 kernel: blk_update_request: I/O error, dev vdb, sector 0 op 0x0:(READ) flags 0x0 phys_seg 1 prio class 0
+
+Sep 17 09:57:38 g-krs1a-dp-mon-mtr-lsh-dlt-02 kernel: Buffer I/O error on dev vdb, logical block 0, async page read
