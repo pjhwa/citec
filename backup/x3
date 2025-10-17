@@ -34,3 +34,7 @@ dm-31 디바이스는 mutlpathd 데몬 재기동 전에 fault running 상태(mul
 
 (8) 10/13(월) 21:27
 libvirtd defunct 좀비 프로세스 발생
+
+10/14(화) 19:00
+DCN 37노드 Host Rebooting 후 libvirt Pod 정상	
+device mapper  관련 리스트 (dmsetup ls, dmsetup info <4f2f>)에는 남아있었던 정보가 Host rebooting 후 자동 삭제됨
