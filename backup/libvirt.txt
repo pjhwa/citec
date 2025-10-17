@@ -91,3 +91,9 @@ Major:Minor  Name
 65:64             /dev/sdu
 65:80             /dev/sdv
 
+(2) 10/13(월) 19:46	
+s-dcn37-com604-krw1a 노드 nova-compute pod 재시작 (epoxy 업데이트)	
+Epoxy 업그레이드
+
+Q.  nova-compute pod 재시작 시 혹시 libvirt Pod 내 libvirt Container도 재시작하게 되나요?
+      A)  nova-compute pod 재시작하더라도 libvirt Container 재시작은 없음
