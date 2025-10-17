@@ -48,3 +48,28 @@ dm-21 Device Path Fail
 [Mon Oct 13 19:55:58 2025] device-mapper: multipath: 253:21: Failing path 65:48.     ### dm-21 Device Path #1
 [Mon Oct 13 19:55:58 2025] device-mapper: multipath: 253:21: Failing path 65:32.     ### dm-21 Device Path #2
 
+(6) 10/13(월)19:56:18
+s-dcn37-com604-krw1a 노드 libvirt pod 내 libvirt container Restart 발생 시작
+
+
+
+Oct 13 19:56:18 s-dcn37-com604-krw1a containerd[21409]: time="2025-10-13T19:56:18.470310596+09:00" level=error msg="ExecSync for \"753ac7cfab3c1e4f01028d09c52c4535d4ac87b88bf5f14992853f0d7feadbca\" failed" error="rpc error: code = DeadlineExceeded desc = failed to exec in container: timeout 5s exceeded: context deadline exceeded"
+
+
+Oct 13 19:56:18 s-dcn37-com604-krw1a kubelet[2803609]: E1013 19:56:18.470564 2803609 remote_runtime.go:496] "ExecSync cmd from runtime service failed" err="rpc error: code = DeadlineExceeded desc = failed to exec in container: timeout 5s exceeded: context deadline exceeded" containerID="753ac7cfab3c1e4f01028d09c52c4535d4ac87b88bf5f14992853f0d7feadbca" cmd=["bash","-c","/usr/bin/virsh list"]
+
+syslog
+
+container id  753ac7cfab3c1e4f01028d09c52c4535d4ac87b88bf5f14992853f0d7feadbca   이
+libvirt Pod 내 libvirt container로 추정되며, 19:58:18에 libvirt container가 Restart 되기 시작한 것으로 보임
+
+
+
+libvirt pod probe 설정
+    Liveness:       exec [bash -c /usr/bin/virsh list] delay=30s timeout=5s period=60s #success=1 #failure=3
+    Readiness:      exec [bash -c /usr/bin/virsh list] delay=15s timeout=5s period=60s #success=1 #failure=3
+
+
+libvirt Pod에 변경사항 없었음 (libvirt 8.0)
+
+Pod 내 Container가 Restart 발생     (Pod 재시작은 아니었음)
