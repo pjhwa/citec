@@ -30,3 +30,21 @@ Oct 13 19:53:30 s-dcn37-com604-krw1a kernel: [23511264.578377] blk_update_reques
 
 Oct 13 19:53:35 s-dcn37-com604-krw1a multipathd[1552]: 3600a09803831515a752b594c51344f61: sdv - tur checker reports path is down
 Oct 13 19:53:35 s-dcn37-com604-krw1a multipathd[1552]: 3600a09803831515a752b594c51344f61: sdu - tur checker reports path is down
+
+(4) 10/13(월) 19:55
+nova component 배포 완료
+Oct 13 19:46:47 s-dcn37-com604-krw1a containerd[21409]: time="2025-10-13T19:46:47.928583550+09:00" level=info msg="PullImage \"scp-repo.samsungsdscloud.com/osscp-lcm-os/nova-compute:31.1.1.dev23.g67fcf88\""
+
+Oct 13 19:51:12 s-dcn37-com604-krw1a containerd[21409]: time="2025-10-13T19:51:12.833916308+09:00" level=info msg="PullImage \"scp-repo.samsungsdscloud.com/osscp-lcm-os/nova-compute:31.1.1.dev23.g67fcf88\" returns image reference \"sha256:69f5e222b9ebcbdb67dc70a7260d382a0861521eaad6bb987ba1ba5e515c9eb9\""
+
+Oct 13 19:51:18 s-dcn37-com604-krw1a containerd[21409]: time="2025-10-13T19:51:18.619804410+09:00" level=info msg="PullImage \"scp-repo.samsungsdscloud.com/osscp-lcm-os/nova-ssh:31.1.1.dev23.g67fcf88\""
+
+Oct 13 19:53:14 s-dcn37-com604-krw1a containerd[21409]: time="2025-10-13T19:53:14.847692878+09:00" level=info msg="PullImage \"scp-repo.samsungsdscloud.com/osscp-lcm-os/nova-ssh:31.1.1.dev23.g67fcf88\" returns image reference \"sha256:d29ff4e1ab3ccbf887e572d0457ba39e86393bc91f1f869b5dd88bee0306fde5\""
+
+
+(5) 10/13(월) 19:55:58
+dm-21 Device Path Fail
+
+[Mon Oct 13 19:55:58 2025] device-mapper: multipath: 253:21: Failing path 65:48.     ### dm-21 Device Path #1
+[Mon Oct 13 19:55:58 2025] device-mapper: multipath: 253:21: Failing path 65:32.     ### dm-21 Device Path #2
+
