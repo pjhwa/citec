@@ -1,0 +1,36 @@
+10/13(월)19:58:01
+4f61 볼륨으로의 Path(dm-31) 제거됨
+
+Oct 13 19:58:00 s-dcn37-com604-krw1a multipathd[1552]: 65:80: path removed from map 3600a09803831515a752b594c51344f61
+Oct 13 19:58:01 s-dcn37-com604-krw1a multipathd[1552]: sdu: path already removed
+Oct 13 19:58:01 s-dcn37-com604-krw1a multipathd[1552]: sdv: path already removed
+
+10/13(월) 19:58:29
+Oct 13, 2025 @ 19:58:29.061    message:3210921 INFO nova.virt.libvirt.driver Connection event '0' reason 'Connection to libvirt lost: 1' kubernetes.host:s-dcn37-com604-krw1a hostname:s-dcn37-com604-krw1a application_log_time:Oct 13, 2025 @ 19:58:28.843 level:INFO global_req_id:None req_id:req-3ebb92f3-d2a2-4349-a51e-c1da88c5aed1 user_id:- project_id:- user_identity:- - - -
+(opensearch log)
+
+(7) 10/13(월) 20:02:16
+qemu-system-x86 Process Hang 발생 (pid: 3166952)
+
+
+
+Oct 13 20:02:16 s-dcn37-com604-krw1a kernel: [23511789.906416] INFO: task qemu-system-x86:3166952 blocked for more than 120 seconds.
+Oct 13 20:02:16 s-dcn37-com604-krw1a kernel: [23511789.906946]       Tainted: P           OE     5.15.0-130-generic #140-Ubuntu
+Oct 13 20:02:16 s-dcn37-com604-krw1a kernel: [23511789.907406] "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+Oct 13 20:02:16 s-dcn37-com604-krw1a kernel: [23511789.907779] task:qemu-system-x86 state:D stack:    0 pid:3166952 ppid:1536351 flags:0x00004226
+
+
+
+~
+
+[Mon Oct 13 20:25:10 2025]  </TASK>
+
+10/13(월) 20:37
+s-dcn37-com604-krw1a 노드 libvirt pod 이상 감지 및 공유
+
+10/13(월) 21:01
+multipathd restart
+dm-31 디바이스는 mutlpathd 데몬 재기동 전에 fault running 상태(multipath -ll)였으며, 재기동 이후에 해당 dm-31 multipath 사라짐.
+
+(8) 10/13(월) 21:27
+libvirtd defunct 좀비 프로세스 발생
