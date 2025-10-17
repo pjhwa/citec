@@ -55,3 +55,39 @@ Running scope as unit: run-r8d6e4d2ed8df4e3f849f84dc835444bc.scope
 ++ cleanup
 ++ rm -f /tmp/tmp.6VNk06qsbH.xml
 ++ '[' -n '' ']'
+
+---
+10/13(월) 19:00 	Caracal → Epoxy 업그레이드 시작
+(1) 10/13(월) 19:40 ~ 19:43
+4f2f  볼륨이 DCN #37 노드 Device Mapper (dm-21)에 추가됨
+
+
+
+Oct 13 19:40:00 s-dcn37-com604-krw1a multipathd[1552]: 3600a09803831515a752b594c51344f2f: addmap [0 33554432 multipath 3 pg_init_retries 50 queue_if_no_path 1 alua 1 1 service-time 0 2 1 65:48 1 65:32 1]
+Oct 13 19:40:00 s-dcn37-com604-krw1a multipathd[1552]: sds [65:32]: path added to devmap 3600a09803831515a752b594c51344f2f
+
+multipathd log
+
+
+
+4f2f 볼륨은 10/14(화) 확인 시 lsblk로 Host 에 연결된 Block Device는 없었음
+
+device mapper  관련 리스트 (dmsetup ls, dmsetup info <4f2f>)에는 남아있어
+DCN37 Host에 비정상적으로 존재하는 것으로 보임
+
+
+Major:Minor  Name
+65:32             /dev/sds
+65:48             /dev/sdt
+
+4f61  볼륨이 DCN #37 노드 Device Mapper (dm-31)에 추가됨
+
+
+
+Oct 13 19:43:15 s-dcn37-com604-krw1a multipathd[1552]: 3600a09803831515a752b594c51344f61: addmap [0 33554432 multipath 3 pg_init_retries 50 queue_if_no_path 1 alua 1 1 service-time 0 2 1 65:80 1 65:64 1]
+Oct 13 19:43:15 s-dcn37-com604-krw1a multipathd[1552]: sdu [65:64]: path added to devmap 3600a09803831515a752b594c51344f61
+
+Major:Minor  Name
+65:64             /dev/sdu
+65:80             /dev/sdv
+
