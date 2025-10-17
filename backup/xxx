@@ -1,0 +1,32 @@
+(3) 10/13(월) 19:51:11 ~ 19:53:35
+
+4f2f  볼륨에 대한 Multi-path 2개 모두 Down (다른 디바이스 multipath는 이상 없음)
+
+Oct 13 19:51:11 s-dcn37-com604-krw1a multipathd[1552]: 3600a09803831515a752b594c51344f2f: sdt - tur checker reports path is down
+Oct 13 19:51:11 s-dcn37-com604-krw1a multipathd[1552]: checker failed path 65:48 in map 3600a09803831515a752b594c51344f2f
+Oct 13 19:51:11 s-dcn37-com604-krw1a multipathd[1552]: 3600a09803831515a752b594c51344f2f: remaining active paths: 1
+Oct 13 19:51:11 s-dcn37-com604-krw1a multipathd[1552]: 3600a09803831515a752b594c51344f2f: sds - tur checker reports path is down
+Oct 13 19:51:11 s-dcn37-com604-krw1a multipathd[1552]: checker failed path 65:32 in map 3600a09803831515a752b594c51344f2f
+Oct 13 19:51:11 s-dcn37-com604-krw1a multipathd[1552]: 3600a09803831515a752b594c51344f2f: remaining active paths: 0
+Oct 13 19:51:16 s-dcn37-com604-krw1a multipathd[1552]: 3600a09803831515a752b594c51344f2f: sdt - tur checker reports path is down
+Oct 13 19:51:16 s-dcn37-com604-krw1a multipathd[1552]: 3600a09803831515a752b594c51344f2f: sds - tur checker reports path is down
+
+~~~
+
+10/13(월) 21:27에 볼륨 삭제 전까지 계속 발생
+
+Oct 13 21:27:48 s-dcn37-com604-krw1a multipathd[3433274]: 3600a09803831515a752b594c51344f2f: sdt - tur checker reports path is down
+Oct 13 21:27:52 s-dcn37-com604-krw1a multipathd[3433274]: 3600a09803831515a752b594c51344f2f: remove map (operator)
+
+21:27에 libvirtd 좀비 프로세스 발생함 (4f2f 볼륨이 삭제되는 시점이며, 이때 Block device 파일(sdu, sdv)는 삭제되나 Device Mapper file (dm-21)은 삭제되지 않고 남아있었음
+
+4f61  볼륨에 대한 Block Storage로 Write I/O 에러 발생
+
+Oct 13 19:53:30 s-dcn37-com604-krw1a kernel: [23511264.578377] blk_update_request: I/O error, dev sdv, sector 2410496 op 0x1:(WRITE) flags 0xca00 phys_seg 1 prio class 0
+
+
+
+4f61  볼륨에 대한 Multi-path 2개 모두 Down
+
+Oct 13 19:53:35 s-dcn37-com604-krw1a multipathd[1552]: 3600a09803831515a752b594c51344f61: sdv - tur checker reports path is down
+Oct 13 19:53:35 s-dcn37-com604-krw1a multipathd[1552]: 3600a09803831515a752b594c51344f61: sdu - tur checker reports path is down
