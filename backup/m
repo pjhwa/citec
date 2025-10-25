@@ -1,0 +1,26 @@
+
+3600a098038314f4f302b594f31372d31 dm-16 NETAPP,LUN C-Mode
+size=1.0G features='3 queue_if_no_path pg_init_retries 50' hwhandler='1 alua' wp=rw
+`-+- policy='service-time 0' prio=50 status=active
+  |- 1:0:0:3   sdj 8:144 active ready running
+  `- 2:0:0:3   sdi 8:128 active ready running
+3600a098038314f4f302b594f31372d32 dm-17 NETAPP,LUN C-Mode
+size=1.0G features='3 queue_if_no_path pg_init_retries 50' hwhandler='1 alua' wp=rw
+`-+- policy='service-time 0' prio=50 status=active
+  |- 1:0:0:4   sdk 8:160 active ready running
+  `- 2:0:0:4   sdl 8:176 active ready running
+3600a098038314f4f302b594f31373975 dm-18 NETAPP,LUN C-Mode
+size=2.0T features='3 queue_if_no_path pg_init_retries 50' hwhandler='1 alua' wp=rw
+`-+- policy='service-time 0' prio=50 status=active
+  |- 2:0:0:1   sdf 8:80  active ready running
+  `- 1:0:0:1   sde 8:64  active ready running
+3600a098038314f4f302b594f3137397a dm-15 NETAPP,LUN C-Mode
+size=1.0G features='3 queue_if_no_path pg_init_retries 50' hwhandler='1 alua' wp=rw
+`-+- policy='service-time 0' prio=50 status=active
+  |- 1:0:0:2   sdg 8:96  active ready running
+  `- 2:0:0:2   sdh 8:112 active ready running
+3600a098038314f515724593972334473 dm-14 NETAPP,LUN C-Mode
+size=16T features='3 queue_if_no_path pg_init_retries 50' hwhandler='1 alua' wp=rw
+`-+- policy='service-time 0' prio=50 status=active
+  |- 2:0:0:0   sdd 8:48  active ready running
+  `- 1:0:0:0   sdc 8:32  active ready running
