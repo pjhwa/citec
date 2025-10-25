@@ -1,0 +1,215 @@
+Oct 24 13:10:16 phemvps4pdb01 corosync[33305]:  [KNET  ] link: host: 2 link: 1 is down
+Oct 24 13:10:16 phemvps4pdb01 corosync[33305]:  [KNET  ] host: host: 2 (passive) best link: 0 (pri: 1)
+Oct 24 13:10:21 phemvps4pdb01 corosync[33305]:  [KNET  ] rx: host: 2 link: 1 is up
+Oct 24 13:10:21 phemvps4pdb01 corosync[33305]:  [KNET  ] link: Resetting MTU for link 1 because host 2 joined
+Oct 24 13:10:21 phemvps4pdb01 corosync[33305]:  [KNET  ] host: host: 2 (passive) best link: 0 (pri: 1)
+Oct 24 13:10:21 phemvps4pdb01 corosync[33305]:  [KNET  ] pmtud: Global data MTU changed to: 8885
+Oct 24 13:11:27 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU348: hpet retried 2 times before success
+Oct 24 13:11:59 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 13:17:51 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 13:20:00 phemvps4pdb01 systemd[1]: Starting system activity accounting tool...
+Oct 24 13:20:00 phemvps4pdb01 systemd[1]: sysstat-collect.service: Deactivated successfully.
+Oct 24 13:20:00 phemvps4pdb01 systemd[1]: Finished system activity accounting tool.
+Oct 24 13:22:43 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 13:23:47 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 13:28:19 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU133: hpet wd-wd read-back delay of 85840ns
+Oct 24 13:28:19 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 198680ns, clock-skew test skipped!
+Oct 24 13:30:00 phemvps4pdb01 systemd[1]: Starting system activity accounting tool...
+Oct 24 13:30:00 phemvps4pdb01 systemd[1]: sysstat-collect.service: Deactivated successfully.
+Oct 24 13:30:00 phemvps4pdb01 systemd[1]: Finished system activity accounting tool.
+Oct 24 13:30:04 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 13:31:09 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU25: hpet retried 2 times before success
+Oct 24 13:32:27 phemvps4pdb01 systemd[1]: Starting dnf makecache...
+Oct 24 13:32:27 phemvps4pdb01 dnf[590468]: Updating Subscription Management repositories.
+Oct 24 13:32:27 phemvps4pdb01 dnf[590468]: Unable to read consumer identity
+Oct 24 13:32:27 phemvps4pdb01 dnf[590468]: This system is not registered with an entitlement server. You can use "rhc" or "subscription-manager" to register.
+Oct 24 13:32:27 phemvps4pdb01 dnf[590468]: Metadata cache refreshed recently.
+Oct 24 13:32:27 phemvps4pdb01 systemd[1]: dnf-makecache.service: Deactivated successfully.
+Oct 24 13:32:27 phemvps4pdb01 systemd[1]: Finished dnf makecache.
+Oct 24 13:36:17 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 13:40:00 phemvps4pdb01 systemd[1]: Starting system activity accounting tool...
+Oct 24 13:40:00 phemvps4pdb01 systemd[1]: sysstat-collect.service: Deactivated successfully.
+Oct 24 13:40:00 phemvps4pdb01 systemd[1]: Finished system activity accounting tool.
+Oct 24 13:40:56 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU302: hpet wd-wd read-back delay of 139240ns
+Oct 24 13:40:56 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 100680ns, clock-skew test skipped!
+Oct 24 13:42:27 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU37: hpet wd-wd read-back delay of 88280ns
+Oct 24 13:42:27 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 255520ns, clock-skew test skipped!
+Oct 24 13:42:28 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU38: hpet wd-wd read-back delay of 71440ns
+Oct 24 13:42:28 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 280280ns, clock-skew test skipped!
+Oct 24 13:42:31 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU45: hpet wd-wd read-back delay of 78440ns
+Oct 24 13:42:31 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 236280ns, clock-skew test skipped!
+Oct 24 13:42:53 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 13:44:18 phemvps4pdb01 kernel: perf: interrupt took too long (67564 > 67092), lowering kernel.perf_event_max_sample_rate to 2000
+Oct 24 13:46:52 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU119: hpet wd-wd read-back delay of 110280ns
+Oct 24 13:46:52 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 100280ns, clock-skew test skipped!
+Oct 24 13:46:56 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU126: hpet wd-wd read-back delay of 268000ns
+Oct 24 13:46:56 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 112680ns, clock-skew test skipped!
+Oct 24 13:49:03 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 13:50:00 phemvps4pdb01 systemd[1]: Starting system activity accounting tool...
+Oct 24 13:50:00 phemvps4pdb01 systemd[1]: sysstat-collect.service: Deactivated successfully.
+Oct 24 13:50:00 phemvps4pdb01 systemd[1]: Finished system activity accounting tool.
+Oct 24 13:52:02 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU291: hpet wd-wd read-back delay of 61280ns
+Oct 24 13:52:02 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 190160ns, clock-skew test skipped!
+Oct 24 13:54:56 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 13:57:44 phemvps4pdb01 systemd[1]: Starting User Runtime Directory /run/user/3005...
+Oct 24 13:57:44 phemvps4pdb01 systemd[1]: Finished User Runtime Directory /run/user/3005.
+Oct 24 13:57:44 phemvps4pdb01 systemd[1]: Starting User Manager for UID 3005...
+Oct 24 13:57:44 phemvps4pdb01 systemd[744407]: Queued start job for default target Main User Target.
+Oct 24 13:57:44 phemvps4pdb01 systemd[744407]: Started Mark boot as successful after the user session has run 2 minutes.
+Oct 24 13:57:44 phemvps4pdb01 systemd[744407]: Started Daily Cleanup of User's Temporary Directories.
+Oct 24 13:57:44 phemvps4pdb01 systemd[744407]: Reached target Paths.
+Oct 24 13:57:44 phemvps4pdb01 systemd[744407]: Reached target Timers.
+Oct 24 13:57:44 phemvps4pdb01 systemd[744407]: Starting D-Bus User Message Bus Socket...
+Oct 24 13:57:44 phemvps4pdb01 systemd[744407]: Listening on PipeWire PulseAudio.
+Oct 24 13:57:44 phemvps4pdb01 systemd[744407]: Listening on PipeWire Multimedia System Sockets.
+Oct 24 13:57:44 phemvps4pdb01 systemd[744407]: Starting Create User's Volatile Files and Directories...
+Oct 24 13:57:44 phemvps4pdb01 systemd[744407]: Listening on D-Bus User Message Bus Socket.
+Oct 24 13:57:44 phemvps4pdb01 systemd[744407]: Reached target Sockets.
+Oct 24 13:57:44 phemvps4pdb01 systemd[744407]: Finished Create User's Volatile Files and Directories.
+Oct 24 13:57:44 phemvps4pdb01 systemd[744407]: Reached target Basic System.
+Oct 24 13:57:44 phemvps4pdb01 systemd[744407]: Reached target Main User Target.
+Oct 24 13:57:44 phemvps4pdb01 systemd[744407]: Startup finished in 243ms.
+Oct 24 13:57:44 phemvps4pdb01 systemd[1]: Started User Manager for UID 3005.
+Oct 24 13:57:44 phemvps4pdb01 systemd[1]: Starting Hostname Service...
+Oct 24 13:57:44 phemvps4pdb01 kernel: ens6f2 speed is unknown, defaulting to 1000
+Oct 24 13:57:44 phemvps4pdb01 kernel: ens6f3 speed is unknown, defaulting to 1000
+Oct 24 13:57:44 phemvps4pdb01 kernel: ens8f2 speed is unknown, defaulting to 1000
+Oct 24 13:57:44 phemvps4pdb01 kernel: ens8f3 speed is unknown, defaulting to 1000
+Oct 24 13:57:44 phemvps4pdb01 kernel: enP1s7f2 speed is unknown, defaulting to 1000
+Oct 24 13:57:44 phemvps4pdb01 kernel: enP1s7f3 speed is unknown, defaulting to 1000
+Oct 24 13:57:45 phemvps4pdb01 systemd[1]: Started Hostname Service.
+Oct 24 13:58:15 phemvps4pdb01 systemd[1]: systemd-hostnamed.service: Deactivated successfully.
+Oct 24 13:58:16 phemvps4pdb01 systemd[1]: Starting Hostname Service...
+Oct 24 13:58:16 phemvps4pdb01 kernel: ens6f2 speed is unknown, defaulting to 1000
+Oct 24 13:58:16 phemvps4pdb01 kernel: ens6f3 speed is unknown, defaulting to 1000
+Oct 24 13:58:16 phemvps4pdb01 kernel: ens8f2 speed is unknown, defaulting to 1000
+Oct 24 13:58:16 phemvps4pdb01 kernel: ens8f3 speed is unknown, defaulting to 1000
+Oct 24 13:58:16 phemvps4pdb01 kernel: enP1s7f2 speed is unknown, defaulting to 1000
+Oct 24 13:58:16 phemvps4pdb01 kernel: enP1s7f3 speed is unknown, defaulting to 1000
+Oct 24 13:58:16 phemvps4pdb01 systemd[1]: Started Hostname Service.
+Oct 24 13:58:18 phemvps4pdb01 nfsidmap[748517]: nss_getpwnam: name 'root@defaultv4iddomain.com' does not map into domain 'sap.samsungsem.com'
+Oct 24 13:58:18 phemvps4pdb01 nfsidmap[748518]: nss_name_to_gid: name 'root@defaultv4iddomain.com' does not map into domain 'sap.samsungsem.com'
+Oct 24 13:58:46 phemvps4pdb01 systemd[1]: systemd-hostnamed.service: Deactivated successfully.
+Oct 24 13:59:35 phemvps4pdb01 systemd[1]: session-18962.scope: Deactivated successfully.
+Oct 24 13:59:35 phemvps4pdb01 systemd-logind[7668]: Session 18962 logged out. Waiting for processes to exit.
+Oct 24 13:59:45 phemvps4pdb01 systemd[1]: Stopping User Manager for UID 3005...
+Oct 24 13:59:45 phemvps4pdb01 systemd[744407]: Activating special unit Exit the Session...
+Oct 24 13:59:45 phemvps4pdb01 systemd[744407]: Stopped target Main User Target.
+Oct 24 13:59:45 phemvps4pdb01 systemd[744407]: Stopped target Basic System.
+Oct 24 13:59:45 phemvps4pdb01 systemd[744407]: Stopped target Paths.
+Oct 24 13:59:45 phemvps4pdb01 systemd[744407]: Stopped target Sockets.
+Oct 24 13:59:45 phemvps4pdb01 systemd[744407]: Stopped target Timers.
+Oct 24 13:59:45 phemvps4pdb01 systemd[744407]: Stopped Mark boot as successful after the user session has run 2 minutes.
+Oct 24 13:59:45 phemvps4pdb01 systemd[744407]: Stopped Daily Cleanup of User's Temporary Directories.
+Oct 24 13:59:45 phemvps4pdb01 systemd[744407]: Closed D-Bus User Message Bus Socket.
+Oct 24 13:59:45 phemvps4pdb01 systemd[744407]: Closed PipeWire PulseAudio.
+Oct 24 13:59:45 phemvps4pdb01 systemd[744407]: Closed PipeWire Multimedia System Sockets.
+Oct 24 13:59:45 phemvps4pdb01 systemd[744407]: Stopped Create User's Volatile Files and Directories.
+Oct 24 13:59:45 phemvps4pdb01 systemd[744407]: Removed slice User Application Slice.
+Oct 24 13:59:45 phemvps4pdb01 systemd[744407]: Reached target Shutdown.
+Oct 24 13:59:45 phemvps4pdb01 systemd[744407]: Finished Exit the Session.
+Oct 24 13:59:45 phemvps4pdb01 systemd[744407]: Reached target Exit the Session.
+Oct 24 13:59:45 phemvps4pdb01 systemd[1]: user@3005.service: Deactivated successfully.
+Oct 24 13:59:45 phemvps4pdb01 systemd[1]: Stopped User Manager for UID 3005.
+Oct 24 13:59:45 phemvps4pdb01 systemd[1]: Stopping User Runtime Directory /run/user/3005...
+Oct 24 13:59:45 phemvps4pdb01 systemd[1]: run-user-3005.mount: Deactivated successfully.
+Oct 24 13:59:45 phemvps4pdb01 systemd[1]: user-runtime-dir@3005.service: Deactivated successfully.
+Oct 24 13:59:45 phemvps4pdb01 systemd[1]: Stopped User Runtime Directory /run/user/3005.
+Oct 24 14:00:00 phemvps4pdb01 systemd[1]: Starting system activity accounting tool...
+Oct 24 14:00:00 phemvps4pdb01 systemd[1]: sysstat-collect.service: Deactivated successfully.
+Oct 24 14:00:00 phemvps4pdb01 systemd[1]: Finished system activity accounting tool.
+Oct 24 14:00:42 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 14:02:12 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU167: hpet wd-wd read-back delay of 62000ns
+Oct 24 14:02:12 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 172000ns, clock-skew test skipped!
+Oct 24 14:02:18 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU178: hpet wd-wd read-back delay of 185920ns
+Oct 24 14:02:18 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 164960ns, clock-skew test skipped!
+Oct 24 14:02:21 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU185: hpet wd-wd read-back delay of 105240ns
+Oct 24 14:02:21 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 138000ns, clock-skew test skipped!
+Oct 24 14:02:27 phemvps4pdb01 kernel: INFO: NMI handler (perf_event_nmi_handler) took too long to run: 2.354 msecs
+Oct 24 14:06:50 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 14:07:11 phemvps4pdb01 systemd[1]: Starting Hostname Service...
+Oct 24 14:07:11 phemvps4pdb01 kernel: ens6f2 speed is unknown, defaulting to 1000
+Oct 24 14:07:11 phemvps4pdb01 kernel: ens6f3 speed is unknown, defaulting to 1000
+Oct 24 14:07:11 phemvps4pdb01 kernel: ens8f2 speed is unknown, defaulting to 1000
+Oct 24 14:07:11 phemvps4pdb01 kernel: ens8f3 speed is unknown, defaulting to 1000
+Oct 24 14:07:11 phemvps4pdb01 kernel: enP1s7f2 speed is unknown, defaulting to 1000
+Oct 24 14:07:11 phemvps4pdb01 kernel: enP1s7f3 speed is unknown, defaulting to 1000
+Oct 24 14:07:11 phemvps4pdb01 systemd[1]: Started Hostname Service.
+Oct 24 14:07:44 phemvps4pdb01 systemd[1]: systemd-hostnamed.service: Deactivated successfully.
+Oct 24 14:10:00 phemvps4pdb01 systemd[1]: Starting system activity accounting tool...
+Oct 24 14:10:00 phemvps4pdb01 systemd[1]: sysstat-collect.service: Deactivated successfully.
+Oct 24 14:10:00 phemvps4pdb01 systemd[1]: Finished system activity accounting tool.
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: sh: which: line 1: syntax error: unexpected end of file
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: sh: error importing function definition for `which'
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Command line used to start sldreg:
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: /usr/sap/S4P/HDB02/exe/sldreg pf=/usr/sap/S4P/SYS/profile/S4P_HDB02_vhemvps4pdb01 -connectfile /usr/sap/S4P/SYS/global/slddest.cfg -file /usr/sap/S4P/HDB02/vhemvps4pdb01/trace/sapstartsrv_sld.xml -logfile /usr/sap/S4P/HDB02/vhemvps4pdb01/trace/dev_sldregs
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Profile is explicitly specified on cmd line using pf=<profile>
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 SLD Registration Program [7.53.4]  (Dec 20 2024) [Non-Unicode]
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 Using destination file '/usr/sap/S4P/SYS/global/slddest.cfg'.
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 Use binary key file '/usr/sap/S4P/SYS/global/slddest.cfg.key' for data decryption
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 Use encryted destination file '/usr/sap/S4P/SYS/global/slddest.cfg' as data source
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Impromptu CCC initialization by 'rscpCInit'.
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]:  See SAP note 1266393.
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 Parsing XML document.
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 Supplier Name: BCControlInstance
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 Supplier Version: 1.0
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 Supplier Vendor:
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 CIM Model Version: 1.5.29
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 HTTP trace: false
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 Data trace: false
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 ******************************
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 *** Start SLD Registration ***
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 ******************************
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Timeout '-1' means infinite. But '0' must be on cmd line.
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: HTTP open timeout     = 420 sec
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: HTTP send timeout     = 420 sec
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: HTTP response timeout = 420 sec
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 Used URL: http://phemvpcmsmt.sap.samsungsem.com:8080/sld/ds
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 Proxy is not configured.
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Found in Profile 'is/local_addr' :
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 HTTP open status: true - NI RC=0
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 HTTP send successful.
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 Return code: 200 --- Return message: (OK)
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 HTTP response: HTTP status code: 200
+Oct 24 14:10:44 phemvps4pdb01 SAPS4P_02[837260]: Fri Oct 24 14:10:44 2025 Data send status: true
+Oct 24 14:12:29 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 14:13:17 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU153: hpet wd-wd read-back delay of 115880ns
+Oct 24 14:13:17 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 215560ns, clock-skew test skipped!
+Oct 24 14:15:16 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU390: hpet wd-wd read-back delay of 102760ns
+Oct 24 14:15:16 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 139920ns, clock-skew test skipped!
+Oct 24 14:17:01 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 14:20:00 phemvps4pdb01 systemd[1]: Starting system activity accounting tool...
+Oct 24 14:20:00 phemvps4pdb01 systemd[1]: sysstat-collect.service: Deactivated successfully.
+Oct 24 14:20:00 phemvps4pdb01 systemd[1]: Finished system activity accounting tool.
+Oct 24 14:23:40 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 14:23:58 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU90: hpet wd-wd read-back delay of 58720ns
+Oct 24 14:23:58 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 141080ns, clock-skew test skipped!
+Oct 24 14:26:37 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU409: hpet wd-wd read-back delay of 91040ns
+Oct 24 14:26:37 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 114880ns, clock-skew test skipped!
+Oct 24 14:29:55 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 14:30:00 phemvps4pdb01 systemd[1]: Starting system activity accounting tool...
+Oct 24 14:30:00 phemvps4pdb01 systemd[1]: sysstat-collect.service: Deactivated successfully.
+Oct 24 14:30:00 phemvps4pdb01 systemd[1]: Finished system activity accounting tool.
+Oct 24 14:35:55 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 14:38:07 phemvps4pdb01 systemd[1]: session-18964.scope: Deactivated successfully.
+Oct 24 14:38:07 phemvps4pdb01 systemd-logind[7668]: Session 18964 logged out. Waiting for processes to exit.
+Oct 24 14:38:26 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU34: hpet wd-wd read-back delay of 129200ns
+Oct 24 14:38:26 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 130760ns, clock-skew test skipped!
+Oct 24 14:39:15 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU133: hpet wd-wd read-back delay of 294600ns
+Oct 24 14:39:15 phemvps4pdb01 kernel: clocksource: wd-tsc-wd read-back delay of 118200ns, clock-skew test skipped!
+Oct 24 14:40:00 phemvps4pdb01 systemd[1]: Starting system activity accounting tool...
+Oct 24 14:40:00 phemvps4pdb01 systemd[1]: sysstat-collect.service: Deactivated successfully.
+Oct 24 14:40:00 phemvps4pdb01 systemd[1]: Finished system activity accounting tool.
+Oct 24 14:42:10 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 14:45:09 phemvps4pdb01 kernel: clocksource: timekeeping watchdog on CPU392: wd-tsc-wd read-back delay of 113640ns, attempt 3, marking unstable
+Oct 24 14:45:09 phemvps4pdb01 kernel: tsc: Marking TSC unstable due to clocksource watchdog
+Oct 24 14:45:09 phemvps4pdb01 kernel: TSC found unstable after boot, most likely due to broken BIOS. Use 'tsc=unstable'.
+Oct 24 14:45:09 phemvps4pdb01 kernel: sched_clock: Marking unstable (2493096820326537, -3037515873)<-(2493096593304478, -2810494808)
+Oct 24 14:45:09 phemvps4pdb01 kernel: clocksource: Checking clocksource tsc synchronization from CPU 234 to CPUs 0,61,88,127,156,271,280,322.
+Oct 24 14:45:09 phemvps4pdb01 kernel: clocksource: Switched to clocksource hpet
+Oct 24 14:48:46 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 14:50:01 phemvps4pdb01 systemd[1]: Starting system activity accounting tool...
+Oct 24 14:50:01 phemvps4pdb01 systemd[1]: sysstat-collect.service: Deactivated successfully.
+Oct 24 14:50:01 phemvps4pdb01 systemd[1]: Finished system activity accounting tool.
+Oct 24 14:55:42 phemvps4pdb01 auditd[7622]: Audit daemon rotating log files
+Oct 24 15:00:00 phemvps4pdb01 systemd[1]: Starting system activity accounting tool...
