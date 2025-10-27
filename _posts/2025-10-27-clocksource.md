@@ -9,7 +9,7 @@ categories: [Howtos, Linux]
 
 ### 1. sar -d 데이터 분석
 ```
-TIMESTMAP    	DEV	tps	rkB/s	wkB/s	dkB/s	areq-sz	aqu-sz	await	%util
+TIMESTMAP        	DEV	tps	rkB/s	wkB/s	dkB/s	areq-sz	aqu-sz	await	%util
 2025-10-24 PM 01:00	dm-3	550.79	0	102850.82	0	186.73	0.75	1.36	18.69
 2025-10-24 PM 01:10	dm-3	591.04	0	111322.29	0	188.35	4.67	7.9	29.5
 2025-10-24 PM 01:20	dm-3	610.97	0	114695.42	0	187.73	2.55	4.17	24.24
