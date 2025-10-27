@@ -64,10 +64,10 @@ TSC는 CPU 내장 고정밀 타이머(CPU 클럭 기반, ns 단위 해상도)로
 - **타이밍 오버헤드 증가**: I/O 작업(예: dd, RAID 쓰기)은 gettimeofday()나 sched_clock() 같은 타이밍 함수를 빈번히 호출. TSC는 레지스터 읽기(빠름)지만, HPET은 I/O 포트 접근(느림) → 각 I/O 요청 처리 지연 누적.
 - **throughput 저하**: 고부하 쓰기에서 초당 수천 요청 시, 오버헤드가 쌓여 wkB/s 감소. 사용자 경우처럼 sequential write(1M block)에서 두드러짐.
 - **검증 근거 및 출처**:
-  - SUSE KB: High I/O load 중 TSC unstable로 HPET 전환 시 성능 영향. "A clocksource watchdog failure will result in the current clocksource being marked as unstable, forcing a switch to an alternative clocksource." (URL: https://support.scc.suse.com/s/kb/TSC-Clocksource-Switching-to-HPET-During-High-I-O-Load)
-  - Vinted Engineering 블로그: 동일 서버에서 TSC vs. HPET 시 "high-throughput workloads" 성능 저하. HPET 오버헤드로 인해 시스템 성능 drop. (URL: https://vinted.engineering/2025/07/15/clocksource-performance/)
-  - DeeperF 블로그: TSC 대신 HPET 사용 시 "low performance" 발생, 특히 최신 Intel CPU에서. (URL: https://deeperf.com/2019/04/30/tsc-clock-missing-caused-performance-issues/)
-  - Red Hat KB: RHEL 8/9에서 TSC unstable 마킹 시, CPU 온라인 추가나 skew로 발생. I/O 영향 암시. (URL: https://access.redhat.com/solutions/6989115)
+  - SUSE KB: High I/O load 중 TSC unstable로 HPET 전환 시 성능 영향. "A clocksource watchdog failure will result in the current clocksource being marked as unstable, forcing a switch to an alternative clocksource." (URL: https://support.scc.suse.com/s/kb/TSC-Clocksource-Switching-to-HPET-During-High-I-O-Load )
+  - Vinted Engineering 블로그: 동일 서버에서 TSC vs. HPET 시 "high-throughput workloads" 성능 저하. HPET 오버헤드로 인해 시스템 성능 drop. (URL: https://vinted.engineering/2025/07/15/clocksource-performance/ )
+  - DeeperF 블로그: TSC 대신 HPET 사용 시 "low performance" 발생, 특히 최신 Intel CPU에서. (URL: https://deeperf.com/2019/04/30/tsc-clock-missing-caused-performance-issues/ )
+  - Red Hat KB: RHEL 8/9에서 TSC unstable 마킹 시, CPU 온라인 추가나 skew로 발생. I/O 영향 암시. (URL: https://access.redhat.com/solutions/6989115 )
   - 추가: Reddit/Nvidia 포럼에서 HPET 시 게임/시스템 FPS 70% 저하 사례, 유사 메커니즘. 이는 kernel 문서(Documentation/timers/timekeeping.txt)와 일치: HPET은 "slower but more reliable"로, 성능 트레이드오프.
 
 Lenovo SR950(멀티소켓 Intel Xeon)에서 BIOS 결함("broken BIOS" 로그)으로 skew 발생 빈번. 재부팅 후 TSC 복귀로 성능 회복 예상되지만, BIOS 업데이트 필요.
@@ -75,7 +75,7 @@ Lenovo SR950(멀티소켓 Intel Xeon)에서 BIOS 결함("broken BIOS" 로그)으
 ### 4. 정확한 원인 분석을 위한 추가 확인 방법
 - **Clocksource 상태**: `cat /sys/devices/system/clocksource/clocksource0/current_clocksource`. `cat /sys/devices/system/clocksource/clocksource0/available_clocksource`로 대안 목록.
 - **TSC 안정성 테스트**: 부팅 시 GRUB에 `clocksource=tsc tsc=reliable` 추가 (GRUB_CMDLINE_LINUX_DEFAULT 수정 후 `grub2-mkconfig -o /boot/grub2/grub.cfg` 및 재부팅). 또는 `tsc=unstable`로 강제 테스트.
-- **BIOS 확인**: Lenovo Vantage나 웹 콘솔로 BIOS 버전 확인. TSC 관련 패치 다운로드 (Lenovo 지원: https://pcsupport.lenovo.com/us/en/products/servers/thinksystem/sr950/downloads).
+- **BIOS 확인**: Lenovo Vantage나 웹 콘솔로 BIOS 버전 확인. TSC 관련 패치 다운로드 (Lenovo 지원: https://pcsupport.lenovo.com/us/en/products/servers/thinksystem/sr950/downloads ).
 - **I/O 및 하드웨어 확인**:
   - RAID 상태: `cat /proc/mdstat` 또는 컨트롤러 툴(`storcli /c0 show` if LSI).
   - SSD 건강: `smartctl -a /dev/sdX` (X=a~e, wear level/error 확인).
