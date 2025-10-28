@@ -188,3 +188,47 @@ TSC는 각 CPU의 내부 사이클 카운터를 기반으로 시간을 측정하
 - **Clocksource 선택 과정**: 커널의 clocksource_select가 안정성과 성능 기준으로 선택. TSC 우선, 실패 시 HPET.
 - **HPET 특징**: 높은 해상도지만 CPU 오버헤드 큼. I/O-heavy workload에서 비효율적.
 - **관련 파라미터**: `notsc` (TSC 완전 비활성화), `hpet_mmap` (HPET 메모리 매핑).
+
+---
+## RHEL 9.4 TSC Unstable 이슈 확인 결과
+
+"RHEL 9.4의 버그로, 8소켓 이상 서버에서 발생하며, 스트레스 부하시 5분 만에 재현됨"을 사실 기반으로 검증했습니다. 웹 검색과 Red Hat 공식 문서, upstream kernel 패치 사이트를 통해 확인한 결과, 이는 실제로 존재하는 문제로 보입니다. 다만, 정확히 "RHEL 9.4"로 명시된 버그는 아니지만, RHEL 9 시리즈(kernel 5.14 기반)에서 영향을 받는 upstream kernel 이슈로, multi-socket(8소켓 이상) 시스템에서 clocksource watchdog가 TSC를 unstable로 marking하여 HPET으로 전환하는 현상입니다. 아래에서 검색 결과를 바탕으로 자세히 설명하겠습니다. 이해하기 쉽게 단계적으로 풀어서 설명하며, 각 부분에 출처를 명시했습니다.
+
+### 1. 이슈 개요
+- **문제 설명**: Linux kernel에서 TSC(Time Stamp Counter)가 clocksource watchdog에 의해 unstable로 표시되어 HPET(High Precision Event Timer)으로 전환되는 문제. 이는 시스템 시간 관리에 영향을 주며, I/O 성능 저하(예: 쓰기 속도 감소), soft lockup, 또는 kernel panic을 유발할 수 있습니다. 이전 대화에서 논의된 SSD 성능 저하(TSC → HPET 전환)가 이와 유사합니다.
+- **왜 발생하나?**: Watchdog가 TSC와 다른 clocksource(예: kvm-clock 또는 HPET) 간 skew(시차)를 감지하면 TSC를 불신뢰하게 됩니다. skew가 100ppm(parts per million) 초과 시 발생. 이는 multi-socket 시스템에서 CPU 간 동기화 실패로 흔합니다.
+- **사용자 주장과의 일치**: 8소켓 이상 서버에서 스트레스 부하 시 빠르게 재현된다는 점이 맞습니다. 다만, "5분 만에 재현"은 정확히 문서화되지 않았으나, "stress tests에서 time to manifest(발생까지 시간 소요)"로 유사합니다.
+
+### 2. Red Hat 공식 KB 확인 (RHEL 8/9 관련)
+Red Hat의 Knowledge Base에서 TSC unstable 문제를 다루는 문서를 확인했습니다. 이는 RHEL 8과 9에서 CPU hot-add(온라인 추가) 후 발생하는 이슈로 설명됩니다.
+
+- **상세 내용**:
+  - 로그 예시: CPU hot-add 후 "clocksource: timekeeping watchdog on CPUx: Marking clocksource 'tsc' as unstable because the skew is too large" 메시지 등장. 이어 soft lockup 발생 (e.g., "watchdog: BUG: soft lockup - CPU#4 stuck for 23s!").
+  - 영향을 받는 버전: RHEL 9 (kernel 5.14.0-70.13.1.el9), RHEL 8 (kernel 4.18.0-305.25.1.el8_4). RHEL 9.4는 kernel 5.14 기반이므로 포함됩니다.
+  - 재현 조건: 가상화 환경(oVirt 등)에서 CPU hot-add 시. 스트레스 부하나 multi-socket(명시되지 않음)과 관련될 수 있음. 8소켓 이상이나 5분 재현은 명시되지 않으나, CPU 추가 과정에서 즉시 발생 가능.
+  - 루트 원인: CPU hot-add 후 TSC와 kvm-clock 간 skew. multi-CPU 환경에서 동기화 실패.
+  - 해결: 문서에 구체적 해결책 명시되지 않음 (subscriber exclusive content). 일반적으로 kernel 파라미터(tsc=reliable)나 BIOS 업데이트 추천.
+
+이 KB는 사용자 주장과 부분 일치하지만, "8소켓 이상"이나 "스트레스 부하 5분 재현"은 명시되지 않습니다. 대신 CPU hot-add가 트리거로 보입니다.
+
+### 3. Upstream Kernel 패치 확인 (Many-Socket Systems 관련)
+upstream kernel(리눅스 커널 개발 커뮤니티)에서 이 문제를 다루는 패치가 있습니다. 이는 RHEL 9.4(kernel 5.14+)에 영향을 줄 수 있는 버그로, many-socket(다중 소켓) 시스템에서 TSC to HPET fallback을 방지합니다.
+
+- **상세 내용**:
+  - 패치 제목: "Prevent unexpected TSC to HPET clocksource fallback on many-socket systems".
+  - 문제: many-socket 시스템(8소켓 이상)에서 kernel timekeeping이 TSC에서 HPET으로 quietly fallback. watchdog가 TSC를 unstable로 marking하며, skew가 100ppm 초과 시 발생.
+  - 영향을 받는 시스템: 8소켓 이상 서버. TSC가 core-level(코어 수준)에서 저비용이지만, legacy HPET으로 전환되면 성능 저하.
+  - 재현 조건: 스트레스 테스트(stress tests) 시. "time to manifest(발생까지 시간 소요)"로 설명되며, 5분과 유사할 수 있음. 고부하 환경에서 재현.
+  - 관련 버전: upstream kernel, RHEL 9.4 (kernel 5.14+)와 연계 가능. 패치는 2025-06-02 제안됨 (현재 날짜 2025-10-28 기준 최근).
+  - 해결: 패치 적용으로 watchdog 기준 조정 또는 fallback 방지. 
+
+이 패치는 사용자 주장과 가장 잘 맞습니다: 8소켓 이상, 스트레스 부하 시 빠른 재현, TSC unstable 버그.
+
+### 4. 추가 검증 및 종합 판단
+- **사용자 주장 검증 결과**:
+  - **RHEL 9.4 버그**: 예, RHEL 9 시리즈에 영향을 줌. kernel 5.14 기반으로 TSC unstable 발생.
+  - **8소켓 이상 서버**: 예, many-socket(8+ sockets) 시스템에서 특화된 문제.
+  - **스트레스 부하시 5분 재현**: "스트레스 테스트 시 발생"으로 유사하나, 정확히 5분은 문서화되지 않음. "time to manifest"로 빠른 재현 가능성 있음.
+- **기타 관련 출처**: SUSE KB(이전 대화)도 high I/O load 시 유사 문제 언급, Red Hat과 유사. 다른 결과(예:  "Why error 'tsc: Marking TSC unstable due to check_tsc_sync_source failed' on RHEL running on HP?")도 TSC unstable을 다루지만, 8소켓이나 5분 재현은 없음.
+- **권장 조치**: Red Hat 지원 문의 또는 kernel 패치 적용. GRUB에 `tsc=reliable` 추가로 임시 대응. BIOS 업데이트 확인 (Lenovo SR950 경우).
+
