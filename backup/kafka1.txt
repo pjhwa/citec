@@ -66,3 +66,18 @@ VM Stun: pfipmc13
     줄 1756364: 2025-10-22T19:01:34.731Z In(05) vcpu-0 - CPT: vm was stunned for 3863944 us
     줄 1756411: 2025-10-22T19:01:38.678Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 2853352 us
     줄 1756467: 2025-10-22T19:01:38.862Z In(05) vcpu-0 - CPT: vm was stunned for 3037659 us
+
+haproxy healthcheck:
+Oct 21, 2025 @ 02:09:41.450        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3002ms, status: 0/2 DOWN.
+
+...
+
+Oct 21, 2025 @ 02:09:44.843        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 14ms, status: 1/2 DOWN.
+
+HAProxy log
+헬스체크 실패 시점에 최소 9초 동안 tcp ping check에 응답할 수 없는 상태였던 것으로 보입니다. 
+- 0/2 DOWN : healthcheck에 연속 2회 실패 
+   헬스체크 주기가 3초 일때 (fail 설정 default: 3s), 
+   -> 1회 헬스체크 fail 3초 + inter 3초 + 2회 헬스체크 fail 3초 = 9초
+- 1/2 DOWN : 헬스체크 1회 성공,  2회쨰 성공이후 UP 상태로 전환 예상
+
