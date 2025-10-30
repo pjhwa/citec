@@ -1,0 +1,52 @@
+haproxy:
+줄 109: Oct 21, 2025 @ 02:09:47.151        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 1044ms, status: 1/2 DOWN.
+    줄 111: Oct 21, 2025 @ 02:09:47.151        Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 1044ms, status: 1/2 DOWN.
+    줄 113: Oct 21, 2025 @ 02:09:46.933        Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 1009ms, status: 1/2 DOWN.
+    줄 115: Oct 21, 2025 @ 02:09:46.933        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 1009ms, status: 1/2 DOWN.
+    줄 117: Oct 21, 2025 @ 02:09:46.624        Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 0ms, status: 1/2 DOWN.
+    줄 119: Oct 21, 2025 @ 02:09:46.624        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 0ms, status: 1/2 DOWN.
+    줄 121: Oct 21, 2025 @ 02:09:45.614        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 1008ms, status: 1/2 DOWN.
+    줄 123: Oct 21, 2025 @ 02:09:45.614        Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 1008ms, status: 1/2 DOWN.
+    줄 125: Oct 21, 2025 @ 02:09:45.484        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 1032ms, status: 1/2 DOWN.
+    줄 127: Oct 21, 2025 @ 02:09:45.484        Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 1032ms, status: 1/2 DOWN.
+    줄 129: Oct 21, 2025 @ 02:09:44.981        Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 1ms, status: 1/2 DOWN.
+    줄 131: Oct 21, 2025 @ 02:09:44.981        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 1ms, status: 1/2 DOWN.
+    줄 133: Oct 21, 2025 @ 02:09:44.921        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 1ms, status: 1/2 DOWN.
+    줄 135: Oct 21, 2025 @ 02:09:44.921        Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 1ms, status: 1/2 DOWN.
+    줄 137: Oct 21, 2025 @ 02:09:44.843        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 14ms, status: 1/2 DOWN.
+    줄 139: Oct 21, 2025 @ 02:09:44.843        Health check for server kafka_cluster/az1.kafka.mg1 succeeded, reason: Layer4 check passed, info: "(tcp-check)", check duration: 14ms, status: 1/2 DOWN.
+    줄 141: Oct 21, 2025 @ 02:09:43.621        Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3003ms, status: 0/2 DOWN.
+    줄 143: Oct 21, 2025 @ 02:09:43.621        Server kafka_cluster/az1.kafka.mg1 is DOWN. 2 active and 0 backup servers left. 1 sessions active, 0 requeued, 0 remaining in queue.
+    줄 145: Oct 21, 2025 @ 02:09:43.621        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3003ms, status: 0/2 DOWN.
+    줄 147: Oct 21, 2025 @ 02:09:43.621        [WARNING]  (8) : Server kafka_cluster/az1.kafka.mg1 is DOWN. 2 active and 0 backup servers left. 1 sessions active, 0 requeued, 0 remaining in queue.
+    줄 149: Oct 21, 2025 @ 02:09:43.103        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3003ms, status: 0/2 DOWN.
+    줄 151: Oct 21, 2025 @ 02:09:43.103        [WARNING]  (8) : Server kafka_cluster/az1.kafka.mg1 is DOWN. 2 active and 0 backup servers left. 3 sessions active, 0 requeued, 0 remaining in queue.
+    줄 153: Oct 21, 2025 @ 02:09:43.103        Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3003ms, status: 0/2 DOWN.
+    줄 155: Oct 21, 2025 @ 02:09:43.103        Server kafka_cluster/az1.kafka.mg1 is DOWN. 2 active and 0 backup servers left. 3 sessions active, 0 requeued, 0 remaining in queue.
+    줄 157: Oct 21, 2025 @ 02:09:42.920        Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3002ms, status: 0/2 DOWN.
+    줄 159: Oct 21, 2025 @ 02:09:42.920        Server kafka_cluster/az1.kafka.mg1 is DOWN. 2 active and 0 backup servers left. 1 sessions active, 0 requeued, 0 remaining in queue.
+    줄 161: Oct 21, 2025 @ 02:09:42.920        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3002ms, status: 0/2 DOWN.
+    줄 163: Oct 21, 2025 @ 02:09:42.920        [WARNING]  (8) : Server kafka_cluster/az1.kafka.mg1 is DOWN. 2 active and 0 backup servers left. 1 sessions active, 0 requeued, 0 remaining in queue.
+    줄 165: Oct 21, 2025 @ 02:09:41.976        Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3000ms, status: 0/2 DOWN.
+    줄 167: Oct 21, 2025 @ 02:09:41.976        Server kafka_cluster/az1.kafka.mg1 is DOWN. 2 active and 0 backup servers left. 0 sessions active, 0 requeued, 0 remaining in queue.
+    줄 169: Oct 21, 2025 @ 02:09:41.976        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3000ms, status: 0/2 DOWN.
+    줄 171: Oct 21, 2025 @ 02:09:41.976        [WARNING]  (8) : Server kafka_cluster/az1.kafka.mg1 is DOWN. 2 active and 0 backup servers left. 0 sessions active, 0 requeued, 0 remaining in queue.
+    줄 173: Oct 21, 2025 @ 02:09:41.918        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3002ms, status: 0/2 DOWN.
+    줄 175: Oct 21, 2025 @ 02:09:41.918        [WARNING]  (8) : Server kafka_cluster/az1.kafka.mg1 is DOWN. 2 active and 0 backup servers left. 1 sessions active, 0 requeued, 0 remaining in queue.
+    줄 177: Oct 21, 2025 @ 02:09:41.918        Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3002ms, status: 0/2 DOWN.
+    줄 179: Oct 21, 2025 @ 02:09:41.918        Server kafka_cluster/az1.kafka.mg1 is DOWN. 2 active and 0 backup servers left. 1 sessions active, 0 requeued, 0 remaining in queue.
+    줄 181: Oct 21, 2025 @ 02:09:41.826        Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3002ms, status: 0/2 DOWN.
+    줄 183: Oct 21, 2025 @ 02:09:41.826        Server kafka_cluster/az1.kafka.mg1 is DOWN. 2 active and 0 backup servers left. 1 sessions active, 0 requeued, 0 remaining in queue.
+    줄 185: Oct 21, 2025 @ 02:09:41.826        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3002ms, status: 0/2 DOWN.
+    줄 187: Oct 21, 2025 @ 02:09:41.826        [WARNING]  (8) : Server kafka_cluster/az1.kafka.mg1 is DOWN. 2 active and 0 backup servers left. 1 sessions active, 0 requeued, 0 remaining in queue.
+    줄 189: Oct 21, 2025 @ 02:09:41.601        Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3001ms, status: 0/2 DOWN.
+    줄 191: Oct 21, 2025 @ 02:09:41.601        Server kafka_cluster/az1.kafka.mg1 is DOWN. 2 active and 0 backup servers left. 0 sessions active, 0 requeued, 0 remaining in queue.
+    줄 193: Oct 21, 2025 @ 02:09:41.601        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3001ms, status: 0/2 DOWN.
+    줄 195: Oct 21, 2025 @ 02:09:41.601        [WARNING]  (8) : Server kafka_cluster/az1.kafka.mg1 is DOWN. 2 active and 0 backup servers left. 0 sessions active, 0 requeued, 0 remaining in queue.
+    줄 197: Oct 21, 2025 @ 02:09:41.450        Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3002ms, status: 0/2 DOWN.
+    줄 199: Oct 21, 2025 @ 02:09:41.450        [WARNING]  (8) : Health check for server kafka_cluster/az1.kafka.mg1 failed, reason: Layer4 timeout, info: " at step 1 of tcp-check (connect)", check duration: 3002ms, status: 0/2 DOWN.
+    줄 201: Oct 21, 2025 @ 02:09:41.450        [WARNING]  (8) : Server kafka_cluster/az1.kafka.mg1 is DOWN. 2 active and 0 backup servers left. 1 sessions active, 0 requeued, 0 remaining in queue.
+
+    줄 203: Oct 21, 2025 @ 02:09:41.450        Server kafka_cluster/az1.kafka.mg1 is DOWN. 2 active and 0 backup servers left. 1 sessions active, 0 requeued, 0 remaining in queue.
+
+pifpmc11:
