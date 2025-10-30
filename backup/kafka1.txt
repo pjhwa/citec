@@ -4,7 +4,7 @@ pifpmc12
 pifpmc13
 [2025-10-23 02:01:35,817] INFO [ControllerServer id=9993] failAll(NotControllerException): failing writeNoOpRecord(1231574427). (org.apache.kafka.deferred.DeferredEventQueue)
 
-
+VM Stun: pifpmc11
 줄 1738080: 2025-10-20T17:01:23.553Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 3603123 us
     줄 1738162: 2025-10-20T17:01:24.646Z In(05) vcpu-0 - CPT: vm was stunned for 4695999 us
     줄 1738207: 2025-10-20T17:01:29.525Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 3805123 us
@@ -26,3 +26,43 @@ pifpmc13
     줄 1756910: 2025-10-22T17:01:40.404Z In(05) vcpu-0 - CPT: vm was stunned for 4313941 us
     줄 1756964: 2025-10-22T17:01:45.887Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 3484855 us
     줄 1757020: 2025-10-22T17:01:46.224Z In(05) vcpu-0 - CPT: vm was stunned for 3822169 us
+
+VM Stun: pifpmc12
+   줄 1735224: 2025-10-20T18:01:11.509Z In(05) vcpu-0 - CPT: vm was stunned for 4298978 us
+    줄 1735267: 2025-10-20T18:01:13.773Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 1476376 us
+    줄 1735349: 2025-10-20T18:01:14.342Z In(05) vcpu-0 - CPT: vm was stunned for 2045767 us
+    줄 1735388: 2025-10-20T18:01:16.796Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 1767316 us
+    줄 1735470: 2025-10-20T18:01:17.645Z In(05) vcpu-0 - CPT: vm was stunned for 2616710 us
+    줄 1735519: 2025-10-20T18:01:21.694Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 2833536 us
+    줄 1735601: 2025-10-20T18:01:21.885Z In(05) vcpu-0 - CPT: vm was stunned for 3023702 us
+    줄 1735650: 2025-10-20T18:01:26.585Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 3200777 us
+    줄 1735706: 2025-10-20T18:01:26.825Z In(05) vcpu-0 - CPT: vm was stunned for 3440670 us
+    줄 1744509: 2025-10-21T18:01:17.409Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 3404465 us
+    줄 1744591: 2025-10-21T18:01:17.949Z In(05) vcpu-0 - CPT: vm was stunned for 3943999 us
+    줄 1744636: 2025-10-21T18:01:21.928Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 2796134 us
+    줄 1744692: 2025-10-21T18:01:21.967Z In(05) vcpu-0 - CPT: vm was stunned for 2835032 us
+    줄 1753558: 2025-10-22T18:01:15.610Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 3044360 us
+    줄 1753640: 2025-10-22T18:01:16.203Z In(05) vcpu-0 - CPT: vm was stunned for 3637534 us
+    줄 1753687: 2025-10-22T18:01:20.323Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 2841349 us
+    줄 1753743: 2025-10-22T18:01:20.351Z In(05) vcpu-0 - CPT: vm was stunned for 2868877 us
+
+VM Stun: pfipmc13
+줄 1737729: 2025-10-20T19:00:31.652Z In(05) vcpu-0 427753d2-b2-ab8b Checkpoint_Unstun: vm stopped for 3920995 us
+    줄 1737804: 2025-10-20T19:01:32.373Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 2583128 us
+    줄 1737886: 2025-10-20T19:01:33.109Z In(05) vcpu-0 - CPT: vm was stunned for 3318699 us
+    줄 1737929: 2025-10-20T19:01:36.661Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 2362726 us
+    줄 1737985: 2025-10-20T19:01:36.774Z In(05) vcpu-0 - CPT: vm was stunned for 2476215 us
+    줄 1746840: 2025-10-21T19:01:25.635Z In(05) vcpu-0 aa832e7-6f-dff3 Checkpoint_Unstun: vm stopped for 90180 us
+    줄 1746913: 2025-10-21T19:01:26.118Z In(05) vcpu-0 aa832e7-6f-dff3 CPT: vm was stunned for 573290 us
+    줄 1746977: 2025-10-21T19:01:31.520Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 2704829 us
+    줄 1747059: 2025-10-21T19:01:32.017Z In(05) vcpu-0 - CPT: vm was stunned for 3202022 us
+    줄 1747102: 2025-10-21T19:01:34.773Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 1963030 us
+    줄 1747184: 2025-10-21T19:01:35.117Z In(05) vcpu-0 - CPT: vm was stunned for 2306770 us
+    줄 1747229: 2025-10-21T19:01:42.248Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 3038323 us
+    줄 1747311: 2025-10-21T19:01:42.992Z In(05) vcpu-0 - CPT: vm was stunned for 3781404 us
+    줄 1747355: 2025-10-21T19:01:46.460Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 2395664 us
+    줄 1747411: 2025-10-21T19:01:46.779Z In(05) vcpu-0 - CPT: vm was stunned for 2715321 us
+    줄 1756282: 2025-10-22T19:01:33.841Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 2973707 us
+    줄 1756364: 2025-10-22T19:01:34.731Z In(05) vcpu-0 - CPT: vm was stunned for 3863944 us
+    줄 1756411: 2025-10-22T19:01:38.678Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 2853352 us
+    줄 1756467: 2025-10-22T19:01:38.862Z In(05) vcpu-0 - CPT: vm was stunned for 3037659 us
