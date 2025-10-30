@@ -122,3 +122,20 @@ server.log:[2025-10-24 02:00:26,911] INFO [ControllerServer id=9991] failAll(Not
 
 server.log:[2025-10-24 02:00:26,911] INFO [ControllerServer id=9991] failAll(NotControllerException): failing writeNoOpRecord(1759951786). (org.apache.kafka.deferred.DeferredEventQueue)
 
+
+VMware Log:
+    줄 1570413: 2025-10-02T17:00:19.852Z In(05) vcpu-0 594a48eb-5b-0e3c Checkpoint_Unstun: vm stopped for 1818153 us 
+    줄 1570520: 2025-10-02T17:00:20.307Z In(05) vcpu-0 594a48eb-5b-0e3c CPT: vm was stunned for 2272453 us    <---------   해당시점 로그
+    줄 1570628: 2025-10-02T17:01:37.766Z In(05) vcpu-0 66e6e918-7c-0ff6 Checkpoint_Unstun: vm stopped for 130460 us
+    줄 1570701: 2025-10-02T17:01:38.165Z In(05) vcpu-0 66e6e918-7c-0ff6 CPT: vm was stunned for 530136 us
+    줄 1570754: 2025-10-02T17:01:57.834Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 3874816 us
+    줄 1570836: 2025-10-02T17:01:58.568Z In(05) vcpu-0 - CPT: vm was stunned for 4608391 us
+    줄 1570882: 2025-10-02T17:02:03.319Z In(05) vcpu-0 - Checkpoint_Unstun: vm stopped for 3565525 us
+    줄 1570938: 2025-10-02T17:02:03.667Z In(05) vcpu-0 - CPT: vm was stunned for 3913211 us
+
+
+
+
+
+
+
