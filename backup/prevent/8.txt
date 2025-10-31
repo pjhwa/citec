@@ -1,0 +1,80 @@
+R&D SW그룹(디지털PLM)-A
+DS IT플랫폼 Observability 기반 장애 예방 고도화 (2025년)
+
+1) Observability(o11y) 개요
+o11y는 DS IT플랫폼 내 모니터링/조치 자동화 영역을 담당
+
+o11y 소개
+- DS IT플랫폼
+  . 설명: IT 시스템, 제품 SW개발, 운영에 필요한 인프라, 개발/검증 환경, 공통 기능/기술 등을 서비스화하여 "플랫폼 서비스"로 제공
+  . 구성도 (DevOps platform + o11y)
+    DevOps Platform
+    - 개발환경, Product 생성, Build 환경구성, Build 실행, 취약점 점검, 배포 실행, 애플리케이션 현황, 모니터링 설정, 알람/동보
+    o11y (observability & chatops): 애플리케이션 모니터링, 서비스 환경 분석, 장애/이벤트 대응 등 통합 Ops 환경 제공
+    - 지표관리(활요률/응답속도/알람)
+    - 비용관리(자원사용률/운영비용)
+    - 모니터링/지표 데이터수집(프로메테우스, splunk, ELK stack) -> 시스템 이용 KPI (응답속도/사용률(RUM))
+                                                             -> 시스템 모니터링 (APM/Health check, Metrics/Log)
+    - 로그수집->모니터링->분석/감지->알람->조치->로그수집... (체계화 -> 자동화 -> 지능화)
+    - 모니터링 자동구성
+    - ChatOps 기반 알람/동보
+    - 장애사전 감지 및 영향도 파악/원인분석
+    - Legacy System(베어메탈, VM, k8s, ...)
+
+- o11y
+  . Observability = Observable + ability = 관측가능성, 관찰가능성
+  Observability의 사전적 정의를 종합해보면 "시스템의 Output인 데이터와 지표를 이용해서 시스템의 현재 상태를 파악하고 추론하는 능력"이라고 정의
+
+  o11y를 사용하면 좋아지는 것?
+  간단한 설치, 설정만으로 약 10분만에 application 운영 환경을 구성할 수 있다.
+  Metric/health check / log/transaction(APM, RUM) 등 전문 모니터링 툴과 표준 센서를 제공하며, Chatops를 통해 알람을 받고 실시간 상태를 check 할 수 있다.
+
+  이전 방식: 개별 모니터링 환경, 최소 구축2개월, 운영인력 최소 1명 필요
+  P-DEP o11y (Pro DevOps Observability): Observability 활용, 구축 10분, 무료 운영
+
+  어떤 종류의 모니터링을 할 수 있나?
+  Metric/health check / log/ transaction(APM, RUM)에 대한 모니터링을 설정하면 이상 감지 시 ChatOps 봇을 통해 알람을 받을 수 있다.
+  Observability 서비스는 5가지 기능:
+  - Metric(prometheus)
+    . 배포된 애플리케이션 종류별로 수집가능한 Metric에 대해 모니터링하는 기능으로 Prometheus를 기반으로 서비스 제공
+    . My System 화면에서 Grafana 대시보드를 조회할 수 있으며, 임계치 설정을 통해 이상감지 알림을 받을 수 있음
+  - Log (ELK)
+    . Log 파일에 대한 모니터링 기능으로 Elasticsearch를 기반으로 서비스를 제공
+    . 특정 키워드의 발생시 알람을 받도록 설정하고 Elastic UI(kibana)를 통해 수집된 로그를 검색할 수 있다.
+  - APM/RUM (ELK)
+    . Elasticsearch를 기반으로 제공되는 APM, RUM(Real User Monitoring) 기능
+    . 이상감지시 알람을 받도록 설정할 수 있고, Elastic UI(kibana)를 통해 수집된 상세 정보를 검색/조회할 수 있다.
+  - Health Check
+    . 사용자 애플리케이션의 URL 또는 IP/Port 정보를 활용하여 서비스의 정상여부에 대해 주기적으로 체크한다.
+    . ChatOps를 통해 실시간 상태를 점검할 수 있는 서비스
+  - Custom Sensor
+    . DS Catalog를 통해 제공하는 알람발송 API 서비스
+    . 사전에 App DevOps 포탈에 기준정보를 등록하고, 알람 발생시 메시지 및 부가 정보를 담아 API를 호출하면 메신저/문자/메일이 발송된다.
+
+2) o11y 장애 예측/분석/복구 기능 고도화
+장애 예측/원인분석
+- 알람 분석 대시보드
+  . 알람 발생 패턴 분석을 통한 장애 징후 파악
+  . 동일장비(VM/k8s) 사용 서비스들의 이벤트 분석을 통하여 인프라에 의한 영향 판단
+- 모니터링 통합 대시보드 (구축중)
+  . 장애 발생시, 장애 원인 분석 파악을위한 도구
+- 변경점(배포) 전후 비교 분석 대시보드 (구축중)
+  . 변경점 이후 이상 유무 판단을 위한 도구
+- AI 분석 도구 제공
+  . 빌드/배포/모니터링 수행 중 비정상 이벤트에 대해 LLM 분석 결과 제공
+  . 이벤트를 선택하면 LLM 분석 결과(심각도, 근본원인분석(현상요약, 원인카테고리(네트워크장애, Elasticsearch오류, CI/CD 배포충돌, 리소스제한 등), CPU 사용률, JVM힙사용량... 등의 분석 내용)
+
+장애 복구 자동화
+- Knox Teams(사내메신저)를 활용한 ChatOps 기능 제공
+  . Exporter Chart 조회: 모바일 환경에서 각종 Metric/Log 차트 분석 기능 제공 -> 신속한 장애 근본 원인 분석 및 대응책 판단 지원
+  . Pod 재시작: 긴급상황시 서버 재시작을 위한 기능 제공
+  . 장애 Action: 사전 정의한 장애 조치 프로세스 수행 
+
+3) o11y 적용 현황
+시스템 적용 현황
+- 시스템/서비스 수: 1728개/5118개
+- 모니터링 중인 장비수(Container/VM): 15313대
+- 모니터링을 위해 등록한 센서수: 62154개
+
+알람발생현황
+- 일평균 알람 발생수: 22042회
