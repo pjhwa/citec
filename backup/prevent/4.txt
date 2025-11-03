@@ -1,5 +1,5 @@
-SCP Compute개발그룹(SCP개발)
-SCP 통합로그 관리 및 이상로그 Alert 자동화를 통한 Storage 상품 패턴기반 모니터링 - 운영 안정성 확보 및 장애 최소화 사례
+부서: SCP Compute개발그룹(SCP개발)
+내용: SCP 통합로그 관리 및 이상로그 Alert 자동화를 통한 Storage 상품 패턴기반 모니터링 - 운영 안정성 확보 및 장애 최소화 사례
 
 1. 추진 배경 및 문제 정의
 - SCP Storage 상품 구조: PP/PS/PG 등 다양한 오퍼링 제공, 리전별  Storage 인프라와 프로비저닝 애플리케이션이 역할별로 나누어져 있음.
