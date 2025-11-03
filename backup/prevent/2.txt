@@ -1,5 +1,5 @@
-화재IT그룹(금융IT)
-STEM (삼성화재 통합 모니터링 시스템, Samsungfire Transaction End to End Monitoring System)
+부서: 화재IT그룹(금융IT)
+내용: STEM (삼성화재 통합 모니터링 시스템, Samsungfire Transaction End to End Monitoring System)
 
 삼성화재는 손해보험업 국내 1위 금융업계 선두주자
 대규모: 9개 보험비즈니스영역, 30만 삼성화재 RC 이용자수, 12682억 영업이익
