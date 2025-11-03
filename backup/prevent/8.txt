@@ -1,5 +1,5 @@
-R&D SW그룹(디지털PLM)-A
-DS IT플랫폼 Observability 기반 장애 예방 고도화 (2025년)
+부서: R&D SW그룹(디지털PLM)-A
+내용: DS IT플랫폼 Observability 기반 장애 예방 고도화 (2025년)
 
 1) Observability(o11y) 개요
 o11y는 DS IT플랫폼 내 모니터링/조치 자동화 영역을 담당
