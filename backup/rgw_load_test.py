@@ -22,7 +22,7 @@ def parse_arguments():
     parser.add_argument('--endpoint', required=True, help='RGW endpoint URL (e.g., http://172.27.84.57:8088)')
     parser.add_argument('--access_key', required=True, help='S3 access key')
     parser.add_argument('--secret_key', required=True, help='S3 secret key')
-    parser.add_argument('--bucket', required=True, help='Bucket name (e.g., os-bd-prdp-ofs-01)')
+    parser.add_argument('--bucket', required=True, help='Bucket name (e.g., abc-def-ghi-01)')
     parser.add_argument('--object_count', type=int, default=150000, help='Number of objects to create (default: 150000)')
     parser.add_argument('--tps', type=int, default=25, help='Transactions per second (default: 25)')
     parser.add_argument('--object_size', type=int, default=1024 * 1024, help='Object size in bytes (default: 1MB for network load)')
