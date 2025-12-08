@@ -14,35 +14,18 @@
     <!-- Plotly.js -->
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
-    <!-- Google Fonts (Noto Sans KR 추가) -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-
-    <!-- 
-        선택된 팔레트: Electric Professional (Vibrant Indigo, Cyan, Amber, Rose)
-        한글 폰트 적용: Noto Sans KR
-    -->
-
-    <!-- 
-        내러티브 플랜 (한글):
-        1. 요약: 1,000만 객체 vs 시스템 한계의 충돌.
-        2. 규모 불일치: 예상(8만) vs 실제(1,000만) 차이 시각화.
-        3. 장애 메커니즘: 요청 폭증이 시스템을 마비시키는 과정 (플로우차트).
-        4. 캐시 분석: 20% RAM 기본값이 실패하는 이유에 대한 수학적 모델링.
-        5. 압축(Compaction) 폭풍: 백그라운드 작업의 영향 시각화.
-        6. 완화 전략: 권장 조치에 따른 개선 효과.
-    -->
-
-    <!-- HTML/CSS 다이어그램 사용 (SVG/Mermaid 없음) -->
 
     <style>
         body {
             font-family: 'Inter', 'Noto Sans KR', sans-serif;
             background-color: #F1F5F9;
             color: #1E293B;
-            word-break: keep-all; /* 한글 가독성 향상 */
+            word-break: keep-all;
         }
 
-        /* 차트 컨테이너 스타일 */
+        /* --- 차트 컨테이너 수정 (Flex 제거, Block 사용) --- */
         .chart-container {
             position: relative;
             width: 100%;
@@ -53,17 +36,24 @@
             height: 300px;
             max-height: 400px;
             max-width: 100%; 
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: block; /* Plotly 호환성을 위해 block으로 변경 */
+            overflow: hidden; /* 차트가 튀어나가는 것 방지 */
         }
 
+        /* Plotly 전용 높이 설정 */
         .chart-container.tall {
             height: 400px;
             max-height: 500px;
         }
 
-        /* 다이어그램 스타일 (CSS 전용) */
+        /* 캔버스 및 Plotly div가 컨테이너를 가득 채우도록 설정 */
+        canvas, .js-plotly-plot {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+        }
+
+        /* 다이어그램 스타일 */
         .flow-box {
             border: 2px solid #E2E8F0;
             border-radius: 8px;
@@ -245,7 +235,7 @@
             </div>
         </div>
 
-        <!-- 섹션 4: 캐시 분석 (Plotly) -->
+        <!-- 섹션 4: 캐시 분석 (Plotly 수정됨) -->
         <div class="col-span-1 md:col-span-12">
             <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
                 <div class="flex flex-col md:flex-row justify-between items-start mb-6">
@@ -262,8 +252,8 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="col-span-1 md:col-span-2">
-                        <!-- 차트 컨테이너: Plotly -->
-                        <div id="cachePlot" class="chart-container tall w-full"></div>
+                        <!-- 차트 컨테이너: Plotly (Flex 제거됨, Block 적용) -->
+                        <div id="cachePlot" class="chart-container tall"></div>
                     </div>
                     <div class="col-span-1 flex flex-col justify-center space-y-6">
                         <div class="bg-slate-50 p-4 rounded border-l-4 border-indigo-500">
@@ -478,6 +468,7 @@
                 paper_bgcolor: 'rgba(0,0,0,0)',
                 plot_bgcolor: 'rgba(0,0,0,0)',
                 margin: { l: 50, r: 20, t: 40, b: 40 },
+                autosize: true, // 반응형 크기 자동 조절
                 xaxis: { 
                     title: 'ObjectiveFS 할당 시스템 RAM (%)', 
                     ticksuffix: '%',
@@ -506,6 +497,7 @@
                 ]
             };
             
+            // Plotly 그래프 생성
             Plotly.newPlot('cachePlot', [trace1], layoutCache, {responsive: true, renderer: 'canvas'});
 
 
