@@ -402,3 +402,260 @@ Steve
 > > >  > Thank you & Best Regards,
 
 > > > Yeo-jung Kim
+> > > > -----Original Message-----
+
+> > > From: 김재희 <jay@tangunsoft.com> > Sent: Thursday, November 27, 2025 3:37 PM
+
+> > > To: ObjectiveFS <support@objectivefs.com>
+
+> > > Cc: CS <cs@tangunsoft.com>
+
+> > > Subject: RE: [Tangunsoft] Inquiry Regarding License Usage and Instance Counting for SamsungSDS - ObjectiveFS > > Hi, Sam
+
+> > > > I wrote about the items they can answer.
+
+> > > > > 1. What type of object store is the customer using (e.g. AWS govcloud, Azure, on-premise, etc)?
+
+> > > Other S3-compatible object stores
+
+> > > > > 2. Is the server mounting the filesystem in the same region as the object store?
+
+> > > Yes, they are in the same region.
+
+> > > > > 3. What is the latency from the server to the object store? If possible, please provide provide the ping time from the server to the object store (by running "ping <object store endpoint>" from the server).
+
+> > > HTTP/1.1 200 OK
+
+> > > date: Wed, 26 Nov 2025 10:16:58 GMT
+
+> > > content-type: application/xml
+
+> > > transfer-encoding: chunked
+
+> > > > > [225 bytes data]
+
+> > > 214 .....
+
+> > > Connection #0 to host object-store.private.kr-south2.g.samsungsdscloud.com left intact <? xml version="1.0" encoding="UTF-8"?><ListAllMyBucketsResult xmlns="https://protect2.fireeye.com/v1/url?k=54bb6736-3530720f-54baec79-000babffae10-2279d5d767be9913&q=1&e=b63ae42f-606a-437e-a926-d47a2107ff19&u=http%3A%2F%2Fs3.amazonaws.com%2F
+
+> > > BucketsResult>DNS:0.000777s TCP:0.001403s TTFB:0.004475s Total:0.004594s
+
+> > > > > 4. What is the performance of the object store (if possible to provide):
+
+> > > a) approximate latency for PUT requests
+
+> > > b) approximate latency for GET requests
+
+> > > c) approximate latency for LIST requests [Attach a Picture]
+
+> > > > > > 5. Are there are firewall/proxy/scanner between the server and the object store?
+
+> > > > > 6. How much RAM is on the server?
+
+> > > 64GB
+
+> > > > > 7. What is the memory cache size (usually specified in /etc/objectivefs.env/CACHESIZE) [if set]?
+
+> > > Don't set it up separately
+
+> > > Default
+
+> > > > > 8. Is TLS enabled (i.e. is the endpoint specified with "https://" or /etc/objectivefs.env/TLS set to 1)?
+
+> > > Using TLS
+
+> > > > > 9. Is this filesystem mounted on one server or multiple servers?
+
+> > > a) If multiple servers, is the file creation done from one server or multiple servers?
+
+> > > multiple servers, multiple creation
+
+> > > > > 10. Can you provide the following information for this filesystem:
+
+> > > a) Size of the filesystem: Output in the "Size" column of "df -h"
+
+> > > Total 1EB Use 21G
+
+> > > > > b) Number of objects in the bucket: Output of the "IUsed" column of "df -i"
+
+> > > About 80,000 of them
+
+> > > > > 11. Version of ObjectiveFS
+
+> > > 7.2.1
+
+> > > > > 12. Which ObjectiveFS license is the customer using? They currently have two licenses: one Enterprise and one Corporate.
+
+> > > Enterprise
+
+> > > > > > > Best regard,
+
+> > > > > > Tangunsoft Co., Ltd. / Customer Innovation Team / Manager Jay Kim Direct 82.2.6206.2542 / Mobile 010.3967.6206 / Fax 82.2.538.1153 E-mail jay@tangunsoft.com / Web https://protect2.fireeye.com/v1/url?k=893581d9-e8be94e0-89340a96-000babffae10-2093443f540fcd80&q=1&e=b63ae42f-606a-437e-a926-d47a2107ff19&u=http%3A%2F%2Fwww.tangunsoft.com%2F A (06571) 2F, 67, Seocho-daero, Seocho-gu, Seoul, Republic of Korea
+
+> > > > -----Original Message-----
+
+> > > From: ObjectiveFS <support@objectivefs.com>
+
+> > > Sent: Tuesday, November 25, 2025 2:33 AM
+
+> > > To: 김재희 <jay@tangunsoft.com>
+
+> > > Cc: CS <cs@tangunsoft.com>
+
+> > > Subject: Re: [Tangunsoft] Inquiry Regarding License Usage and Instance Counting for SamsungSDS - ObjectiveFS > > Hi Jay,
+
+> > > > Thank you for your email. We are happy to help the customer on this issue.
+
+> > > > The performance the customer is seeing (10 seconds to create a file) is unusually slow and our engineers are happy to investigate. Could you please provide the following information to help our engineers investigate:
+
+> > > > 1. What type of object store is the customer using (e.g. AWS govcloud, Azure, on-premise, etc)?
+
+> > > > 2. Is the server mounting the filesystem in the same region as the object store?
+
+> > > > 3. What is the latency from the server to the object store? If possible, please provide provide the ping time from the server to the object store (by running "ping <object store endpoint>" from the server).
+
+> > > > 4. What is the performance of the object store (if possible to provide):
+
+> > > a) approximate latency for PUT requests
+
+> > > b) approximate latency for GET requests
+
+> > > c) approximate latency for LIST requests
+
+> > > > 5. Are there are firewall/proxy/scanner between the server and the object store?
+
+> > > > 6. How much RAM is on the server?
+
+> > > > 7. What is the memory cache size (usually specified in /etc/objectivefs.env/CACHESIZE) [if set]?
+
+> > > > 8. Is TLS enabled (i.e. is the endpoint specified with "https://" or /etc/objectivefs.env/TLS set to 1)?
+
+> > > > 9. Is this filesystem mounted on one server or multiple servers?
+
+> > > a) If multiple servers, is the file creation done from one server or multiple servers?
+
+> > > > 10. Can you provide the following information for this filesystem:
+
+> > > a) Size of the filesystem: Output in the "Size" column of "df -h"
+
+> > > b) Number of objects in the bucket: Output of the "IUsed" column of "df -i"
+
+> > > > 11. Version of ObjectiveFS
+
+> > > > 12. Which ObjectiveFS license is the customer using? They currently have two licenses: one Enterprise and one Corporate.
+
+> > > > Other
+
+> > > -----
+
+> > > We understand that the customer cannot share the log file due to the security restrictions.
+
+> > > i) If possible, would it be possible to provide a sample test case so our engineers can try to reproduce this case on our side?
+
+> > > ii) Our engineers are also happy to have a call and screenshare with the customer to investigate case. I have included some suggested times below:
+
+> > > * Nov 25, 2025: 11:30am KST
+
+> > > * Nov 26, 2025: 8am-12pm KST
+
+> > > * Nov 27, 2025: 8am-12pm KST
+
+> > > > > Sincerely,
+
+> > > Sam
+
+> > > > > > >> On Nov 24, 2025, at 1:34 AM, 김재희 <jay@tangunsoft.com> wrote:
+
+> > >> >> Hi, Sam
+
+> > >> >> I hope you are doing well.
+
+> > >> >> We received additional feedback from our customer regarding their new deployment environment, and we would like to ask for your guidance on the matter below.
+
+> > >> >> Our customer is setting up a new environment (not AWS-based), and they are experiencing significant performance issues related to ObjectiveFS. The bottleneck occurs during the “file handler acquisition” step when creating files of various sizes (100K / 200K / 300K / 2MB).
+
+> > >> According to the customer, this process sometimes takes up to 10 seconds or more, which is causing operational concerns.
+
+> > >> >> At the moment, the only information they can access is the /var/log/messages file from the mounted VM. However, the logs only show periodic PUT / GET / CACHE operations, making it very difficult for them to identify the root cause.
+
+> > >> Due to strict security restrictions (the service is related to a government agency), external data transfer is completely prohibited by national policy. Therefore, they are unable to provide additional logs or diagnostic files to you.
+
+> > >> >> Given these limitations, the customer is asking whether there is any possible method to debug or investigate the issue without exporting logs externally.
+
+> > >> >> The currently applied ObjectiveFS mount options are as follows:
+
+> > >> >> auto,_netdev,mtplus,noatime,nodiratime,oob,noratelimit,autofreebw
+
+> > >> >> >> Additionally, DISKCACHE is currently disabled for the purpose of isolating the latency source.
+
+> > >> >> The customer is particularly concerned because ObjectiveFS is being suspected as the cause of the delays, and they would like to rule this out with certainty.
+
+> > >> Any guidance, recommended checks, or internal debugging procedures you can share would be greatly appreciated.
+
+> > >> >> Thank you in advance for your prompt assistance.
+
+> > >> >> >> Best regard,
+
+> > >> >> >> >> Tangunsoft Co., Ltd. / Customer Innovation Team / Manager Jay Kim >> Direct 82.2.6206.2542 / Mobile 010.3967.6206 / Fax 82.2.538.1153 >> E-mail jay@tangunsoft.com / Web https://protect2.fireeye.com/v1/url?k=501c18bf-31970d8f-501d93f0-000babffaa23-8560d43fbd30363b&q=1&e=dc022eaf-cdc1-41b6-9251-e6ec506aee2d&u=http%3A%2F%2Fwww.tangunsoft.com%2F A (06571) >> 2F, 67, Seocho-daero, Seocho-gu, Seoul, Republic of Korea
+
+> > >> >> -----Original Message-----
+
+> > >> From: ObjectiveFS <support@objectivefs.com>
+
+> > >> Sent: Friday, November 21, 2025 12:57 PM
+
+> > >> To: 김재희 <jay@tangunsoft.com>
+
+> > >> Cc: CS <cs@tangunsoft.com>
+
+> > >> Subject: Re: [Tangunsoft] Inquiry Regarding License Usage and Instance >> Counting for SamsungSDS - ObjectiveFS
+
+> > >> >> Hi Jay,
+
+> > >> >> Thank you for your email. I have included the answers to your questions below:
+
+> > >> >> 1. Yes, if four K8S nodes concurrently mount bucket A, it would count as 4 instances.
+
+> > >> >> 2. If bucket B is mounted by the same 4 nodes as the same time as bucket A, it would count as 8 instances.
+
+> > >> >> 3. Yes, the example above (where 4 nodes mount both bucket A and bucket B concurrently) would count as 8 instances.
+
+> > >> >> 4. No, all our plans are based on the number of instances. However, we offer volume discounts for larger deployments.
+
+> > >> >> We offer larger plans with volume discounts (50 instances, 100 instances, 250 instances, etc). Please let us know the approximate number of instances the customer is planning and we are happy to provide a quote for your review.
+
+> > >> >> Sincerely,
+
+> > >> Sam
+
+> > >> >> >> >>> On Nov 20, 2025, at 9:49 PM, 김재희 <jay@tangunsoft.com> wrote:
+
+> > >>> >>> Hi, Team.
+
+> > >>> I hope this message finds you well.
+
+> > >>> This is Jay from Tangunsoft, writing on behalf of our customer SamsungSDS.
+
+> > >>> Based on last year’s quotation, they are currently using the following ObjectiveFS licenses:
+
+> > >>>  • ObjectiveFS Corporate Plan for 1 year (includes 15 instances) — valid from Jan 1, 2025 to Dec 31, 2025
+
+> > >>>  • Additional usage over 15 instances — valid from Jan 1, 2024 to >>> Dec 31, 2024  We would like to clarify the following points regarding their usage environment:
+
+> > >>>  • SamsungSDS uses ObjectiveFS mounted file systems on K8S nodes after creating AWS buckets.
+
+> > >>> For example, if four K8S nodes concurrently mount bucket A, we understand this would consume 4 licenses. Is this correct?
+
+> > >>>  • If an additional bucket (bucket B) is created and mounted by the same 4 nodes, would the license usage remain at 4 instances, or would it increase to 8 instances?
+
+> > >>>  • According to your official documentation (see the screenshot below), it appears that instance counting is based on file systems — which would suggest that in the above example, it may count as 8 licenses. Could you please confirm?
+
+> > >>> <image003.png>
+
+> > >>>  • Lastly, is there any license plan that counts usage based solely on nodes (not the number of file systems mounted)?
+
+> > >>> In other words, if 4 nodes mount both A and B buckets simultaneously, would there be an option to count this scenario as 4 instances only?
+
+> > >>> We would appreciate your clarification on the above points to assist our customer in reviewing their upcoming renewal and potential expansion plans.
+
+> > >>> Thank you in advance for your support.
