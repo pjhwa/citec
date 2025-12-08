@@ -289,3 +289,116 @@ Steve
 > > > The situation is urgent, so we kindly request a prompt response.
 
 > > Thank you,
+> > Kang, Yujin
+
+> > SCP Compute Architecture Group / Group Leader
+
+> > M +82-10-6799-6748
+
+> > E yj6.kang@samsung.com<Mail Attachment.jpeg>
+
+> > --------- Original Message ---------
+
+> > Sender : 박성일 <s-park.park@samsung.com>/Drive개발그룹(IW개발)/삼성SDS
+
+> > Date : 2025-11-28 11:48 (GMT+9)
+
+> > Title : (Objectivefs컨택포인트)FW: FW: Re: [Tangunsoft] Inquiry Regarding License Usage and Instance Counting for SamsungSDS - ObjectiveFS
+
+> > > 본 메일은 저희가 최근 며칠간 Objectivefs 측과 문의 및 답변받은 내용들을 참고차 보내드립니다.
+
+> > > -------------------
+
+> > > 저희는 공급사 통해서 연락하거나, 급할때는 objectivefs에 직접 메일로 연락하기도 합니다.
+
+> > 본사는 미국 노스캐롤라이나로 추정됩니다.
+
+> > > - 단군 소프트/김여중<yjkim@tangunsoft.com>/010-2407-6206
+
+> > - objectivefs/support@objectivefs.com
+
+> > > 아래는 제가 공홈에서 찾아본 전화번호입니다.
+
+> > > Contact Us
+
+> > Email: info@objectivefs.com
+
+> > Phone: +1-415-997-9967
+
+> > Location:
+
+> > 4801 Glenwood Ave Ste 200
+
+> > Raleigh, NC 27612
+
+> > U.S.A.
+
+> > > --------- Original Message --------- > Sender : ObjectiveFS <support@objectivefs.com> > Date : 2025-11-27 23:18 (GMT+9) > Title : Re: [Tangunsoft] Inquiry Regarding License Usage and Instance Counting for SamsungSDS - ObjectiveFS > To : 김여중<yjkim@tangunsoft.com>
+
+> > > Hi Yeo-jung,
+
+> > > Thank you for the information. Based on the information provided, our engineers believe the cause of these issues are because requests did not succeed and have to be retried. The requests timeouts are in the 10 seconds range, matching the slow file creation that the customer saw.
+
+> > > I have included some items to check, diagnostic steps and answers to the customer’s questions below.
+
+> > > A. Items to Check
+
+> > -----------------
+
+> > ObjectiveFS can open many parallel connections to the object store. ObjectiveFS uses connection pooling and connections are reused. Here are a couple of items to check to make sure the requests succeed quickly:
+
+> > 1. Check that the object store is configured to handle hundreds of parallel requests 2. Check that the proxy and/or firewall between the server and object store (if any) are not limiting the connections to the object store.
+
+> > > B. Diagnostic steps -------------------
+
+> > Please request the customer to run the following steps to help us diagnose this issue:
+
+> > 1. Unmount and remount the filesystem on “/ofs"
+
+> > - If possible, please provide the starting line of the objecivefs mount from the log.
+
+> > > 2. Run a single “ls /ofs” on the mount. - Question: Do you see any retry messages in the log?
+
+> > > 3. Run "find /ofs”
+
+> > - Question: Do you see any retry messages in the log?
+
+> > > 4. Run “touch /ofs/test.txt”
+
+> > - Question: Do you see any retry messages in the log?
+
+> > > > C. Answers to the customer’s questions
+
+> > ---------------------------------------
+
+> > > > Is there a way to check the queues that Objectivesfs sends to AWS S3 or other objectstore?
+
+> > > > Yes, by checking the number of open connections to the object store endpoint using for example “netstat”.
+
+> > > > And I want to know what the retry logic is for requests or connections. If we put the load in, the retry log keeps happening, but I want to check it because it feels overlapping.
+
+> > > > A request is retried if the object store didn’t return a successful/valid response. Unsuccessful requests are then retried based on an exponential backoff schedule. Sincerely,
+
+> > Steve
+
+> > > > On Nov 27, 2025, at 4:04 AM, 김여중 <yjkim@tangunsoft.com> wrote:
+
+> > > > Hello Team,
+
+> > > I'm Yeo-jung from Tangunsoft.
+
+> > > > I was contacted very urgently by the client.
+
+> > > I would appreciate it if you could quickly check and reply to the previous inquiries and inquiries below.
+
+> > > ==
+
+> > > Is there a way to check the queues that Objectivesfs sends to AWS S3 or other objectstore?
+
+> > > > And I want to know what the retry logic is for requests or connections. If we put the load in, the retry log keeps happening, but I want to check it because it feels overlapping.
+
+> > > ==
+
+> > >  > Thank you & Best Regards,
+
+> > > Yeo-jung Kim
