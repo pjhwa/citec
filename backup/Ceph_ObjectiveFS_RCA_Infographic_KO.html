@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RCA: Ceph & ObjectiveFS 성능 분석</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+    <!-- Google Fonts (Noto Sans KR 추가) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- 
+        선택된 팔레트: Electric Professional (Vibrant Indigo, Cyan, Amber, Rose)
+        한글 폰트 적용: Noto Sans KR
+    -->
+
+    <!-- 
+        내러티브 플랜 (한글):
+        1. 요약: 1,000만 객체 vs 시스템 한계의 충돌.
+        2. 규모 불일치: 예상(8만) vs 실제(1,000만) 차이 시각화.
+        3. 장애 메커니즘: 요청 폭증이 시스템을 마비시키는 과정 (플로우차트).
+        4. 캐시 분석: 20% RAM 기본값이 실패하는 이유에 대한 수학적 모델링.
+        5. 압축(Compaction) 폭풍: 백그라운드 작업의 영향 시각화.
+        6. 완화 전략: 권장 조치에 따른 개선 효과.
+    -->
+
+    <!-- HTML/CSS 다이어그램 사용 (SVG/Mermaid 없음) -->
+
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+            background-color: #F1F5F9;
+            color: #1E293B;
+            word-break: keep-all; /* 한글 가독성 향상 */
+        }
+
+        /* 차트 컨테이너 스타일 */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: white;
+            border-radius: 0.5rem;
+            height: 300px;
+            max-height: 400px;
+            max-width: 100%; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chart-container.tall {
+            height: 400px;
+            max-height: 500px;
+        }
+
+        /* 다이어그램 스타일 (CSS 전용) */
+        .flow-box {
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            padding: 1rem;
+            background: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .flow-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: #4F46E5;
+        }
+        .flow-arrow-down::after {
+            content: "↓";
+            font-size: 24px;
+            color: #94A3B8;
+            display: block;
+            margin: 10px auto;
+            font-weight: bold;
+        }
+        .flow-arrow-right::after {
+            content: "→";
+            font-size: 24px;
+            color: #94A3B8;
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .flow-arrow-right::after {
+                content: "↓";
+                right: auto;
+                left: 50%;
+                top: auto;
+                bottom: -30px;
+                transform: translateX(-50%);
+            }
+            .flow-col {
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- 헤더 섹션 -->
+    <header class="max-w-7xl mx-auto mb-12 text-center md:text-left">
+        <div class="inline-block bg-indigo-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-wide">Root Cause Analysis (RCA)</div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4 leading-tight">
+            Ceph 클러스터 <span class="text-indigo-600">성능 저하 분석</span>
+        </h1>
+        <p class="text-lg md:text-xl text-slate-600 max-w-3xl">
+            <span class="font-bold text-slate-900">1,000만 개 이상의 소형 객체(Small Objects)</span>가 Ceph Reef v18.2.1 및 ObjectiveFS 통합 환경에 미치는 영향 분석
+        </p>
+    </header>
+
+    <!-- 메인 그리드 레이아웃 -->
+    <main class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8">
+
+        <!-- 섹션 1: 핵심 충돌 (규모) -->
+        <div class="col-span-1 md:col-span-12">
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 border-l-8 border-rose-500">
+                <h2 class="text-2xl font-bold mb-2">핵심 불일치 (Critical Mismatch)</h2>
+                <p class="text-slate-600 mb-6">
+                    클러스터가 정지(Hang) 상태에 가까워진 근본 원인은 <strong>예상 작업량과 실제 파일 시스템 상태 간의 심각한 불일치</strong>입니다. 초기 보고에서는 약 8만 개의 객체를 예상했으나, 시스템 분석 결과 <strong>1,000만 개 이상</strong>으로 확인되었습니다. 이러한 기하급수적인 증가는 RGW 인덱스 계층을 마비시킵니다.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                    <div class="col-span-1 md:col-span-2">
+                        <!-- 차트 컨테이너: 규모 불일치 -->
+                        <div class="chart-container">
+                            <canvas id="scaleChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-span-1 bg-slate-50 p-6 rounded-lg">
+                        <h3 class="font-bold text-slate-800 mb-2">영향 요약</h3>
+                        <ul class="space-y-3 text-sm text-slate-600">
+                            <li class="flex items-start">
+                                <span class="text-rose-500 mr-2">●</span>
+                                <span><strong>125배 부하 증가:</strong> 메타데이터 오버헤드가 예상보다 두 자릿수 이상 높습니다.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-rose-500 mr-2">●</span>
+                                <span><strong>소형 파일 패널티:</strong> 평균 크기 ~2KB로 인해 "데이터 대비 메타데이터" 비율이 극도로 높습니다.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-rose-500 mr-2">●</span>
+                                <span><strong>인덱스 경합:</strong> 샤딩 없이 1,000만 개 이상의 항목을 관리하려다 RGW 버킷 인덱스 락(Lock)이 발생합니다.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 섹션 2: 장애 메커니즘 (다이어그램) -->
+        <div class="col-span-1 md:col-span-7">
+            <div class="bg-white rounded-xl shadow-md p-6 h-full">
+                <h2 class="text-xl font-bold mb-4 text-indigo-700">"요청 폭증(Request Explosion)" 사이클</h2>
+                <p class="text-sm text-slate-500 mb-8">
+                    클라이언트 측 동작이 어떻게 서버 마비로 이어지는지 보여줍니다. 적절한 캐싱 없이는 모든 파일 시스템 작업이 다수의 S3 호출로 변환됩니다.
+                </p>
+                
+                <!-- HTML/CSS 플로우차트 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm relative">
+                    
+                    <!-- 1단계 -->
+                    <div class="flow-col relative">
+                        <div class="flow-box border-indigo-200 bg-indigo-50">
+                            <div class="font-bold text-indigo-800 text-lg mb-1">ObjectiveFS</div>
+                            <div class="text-xs text-indigo-600">클라이언트 마운트</div>
+                            <div class="mt-2 text-xs">압축(Compaction) 및<br>무결성 검사 트리거</div>
+                        </div>
+                        <div class="flow-arrow-down"></div>
+                        <div class="flow-box border-rose-200 bg-rose-50">
+                            <div class="font-bold text-rose-800 mb-1">캐시 미스 (Cache Miss)</div>
+                            <div class="text-xs">기본 RAM 20% 포화.</div>
+                            <div class="text-xs font-mono mt-1 text-rose-600">메타데이터 축출 발생</div>
+                        </div>
+                        <div class="hidden md:block flow-arrow-right"></div>
+                        <div class="md:hidden flow-arrow-down"></div>
+                    </div>
+
+                    <!-- 2단계 -->
+                    <div class="flow-col relative">
+                        <div class="flow-box border-amber-200 bg-amber-50">
+                            <div class="font-bold text-amber-800 text-lg mb-1">RGW 게이트웨이</div>
+                            <div class="text-xs text-amber-600">S3 API 엔드포인트</div>
+                            <div class="mt-2 text-xs"><span class="font-mono">ListObjects</span> 및 <span class="font-mono">Get404</span><br>요청 홍수</div>
+                        </div>
+                        <div class="flow-arrow-down"></div>
+                        <div class="flow-box border-amber-200 bg-white">
+                            <div class="font-bold text-slate-800 mb-1">스로틀링 (Throttling)</div>
+                            <div class="text-xs">Civetweb 스레드 고갈.</div>
+                            <div class="text-xs font-mono mt-1">HTTP 503 / Slow Ops</div>
+                        </div>
+                        <div class="hidden md:block flow-arrow-right"></div>
+                        <div class="md:hidden flow-arrow-down"></div>
+                    </div>
+
+                    <!-- 3단계 -->
+                    <div class="flow-col">
+                        <div class="flow-box border-slate-300 bg-slate-100">
+                            <div class="font-bold text-slate-800 text-lg mb-1">OSD 인덱스 풀</div>
+                            <div class="text-xs text-slate-600">RocksDB / LevelDB</div>
+                            <div class="mt-2 text-xs">버킷 인덱스 샤드에<br>심각한 락(Lock) 경합 발생.</div>
+                        </div>
+                        <div class="flow-arrow-down"></div>
+                        <div class="flow-box border-slate-900 bg-slate-900 text-white">
+                            <div class="font-bold mb-1">시스템 정지 (Hang)</div>
+                            <div class="text-xs opacity-80">마운트 응답 없음</div>
+                            <div class="text-xs opacity-80 mt-1">클러스터 성능 저하</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- 섹션 3: API 구성 -->
+        <div class="col-span-1 md:col-span-5">
+            <div class="bg-white rounded-xl shadow-md p-6 h-full">
+                <h2 class="text-xl font-bold mb-2 text-indigo-700">API 요청 프로필</h2>
+                <p class="text-sm text-slate-500 mb-6">
+                    스트레스를 유발하는 S3 작업 내역입니다. 실제 데이터 전송보다 메타데이터 작업(List/Get)이 압도적으로 많습니다.
+                </p>
+                <div class="chart-container" style="height: 250px;">
+                    <canvas id="apiChart"></canvas>
+                </div>
+                <div class="mt-4 text-xs text-slate-400 text-center italic">
+                    *최적화되지 않은 ObjectiveFS의 전형적인 패턴 기준
+                </div>
+            </div>
+        </div>
+
+        <!-- 섹션 4: 캐시 분석 (Plotly) -->
+        <div class="col-span-1 md:col-span-12">
+            <div class="bg-white rounded-xl shadow-md p-6 md:p-8">
+                <div class="flex flex-col md:flex-row justify-between items-start mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-indigo-700">캐시 효율성 vs 객체 규모</h2>
+                        <p class="text-slate-600 mt-2 max-w-2xl">
+                            기본 메모리 캐시(RAM 20%)는 1,000만 개 객체 환경에서 턱없이 부족합니다. 메타데이터 '작업 세트(Working Set)' 크기가 RAM을 초과하면 적중률이 급락하여, 모든 파일 작업이 RGW에 직접 액세스하게 됩니다.
+                        </p>
+                    </div>
+                    <div class="mt-4 md:mt-0 bg-amber-100 text-amber-800 px-4 py-2 rounded-lg text-sm font-semibold">
+                        현재 상태: 캐시 스래싱 (Thrashing)
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="col-span-1 md:col-span-2">
+                        <!-- 차트 컨테이너: Plotly -->
+                        <div id="cachePlot" class="chart-container tall w-full"></div>
+                    </div>
+                    <div class="col-span-1 flex flex-col justify-center space-y-6">
+                        <div class="bg-slate-50 p-4 rounded border-l-4 border-indigo-500">
+                            <h4 class="font-bold text-sm text-indigo-900 uppercase mb-1">절벽 구간 (The Cliff Edge)</h4>
+                            <p class="text-sm text-slate-600">
+                                메타데이터 크기가 캐시 크기를 초과하면 성능은 선형적으로 감소하는 것이 아니라 <strong>붕괴</strong>합니다. 1,000만 개 객체의 메타데이터는 쉽게 10GB를 초과합니다.
+                            </p>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded border-l-4 border-emerald-500">
+                            <h4 class="font-bold text-sm text-emerald-900 uppercase mb-1">권장 사항 (Recommendation)</h4>
+                            <p class="text-sm text-slate-600">
+                                <code class="bg-slate-200 px-1 rounded">CACHESIZE</code>를 RAM의 50-70%로 증설.<br>
+                                <code class="bg-slate-200 px-1 rounded">DISKCACHE</code> (NVMe)를 활성화하여 오버플로우 처리.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 섹션 5: 압축 및 백그라운드 작업 -->
+        <div class="col-span-1 md:col-span-6">
+            <div class="bg-white rounded-xl shadow-md p-6 h-full">
+                <h2 class="text-xl font-bold mb-2 text-indigo-700">압축(Compaction) "폭풍"</h2>
+                <p class="text-sm text-slate-500 mb-6">
+                    ObjectiveFS는 작은 객체들을 병합하기 위해 백그라운드 압축을 실행합니다. 최적화되지 않은 버킷을 처음 마운트할 때 활동량이 급증합니다.
+                </p>
+                <div class="chart-container">
+                    <canvas id="compactionChart"></canvas>
+                </div>
+                <div class="mt-4 p-3 bg-rose-50 rounded text-xs text-rose-800">
+                    <strong>경고:</strong> 압축 작업은 목록의 최신성을 확인하기 위해 존재하지 않는 키에 대해 <code>GetObject</code>(404)를 발행하는 "일관성 검사(Consistency Checks)"도 함께 트리거합니다.
+                </div>
+            </div>
+        </div>
+
+        <!-- 섹션 6: 즉각적인 완화 조치 -->
+        <div class="col-span-1 md:col-span-6">
+            <div class="bg-indigo-900 rounded-xl shadow-md p-6 h-full text-white">
+                <h2 class="text-xl font-bold mb-4 text-cyan-400">즉각적인 완화 조치</h2>
+                <p class="text-sm text-indigo-200 mb-6">
+                    클라이언트 소스에서 요청 볼륨을 줄여 클러스터를 즉시 안정화하기 위한 실행 계획입니다.
+                </p>
+
+                <div class="space-y-4">
+                    <!-- 1단계 -->
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 bg-cyan-500 rounded-full w-8 h-8 flex items-center justify-center font-bold text-indigo-900 mr-4">1</div>
+                        <div>
+                            <h3 class="font-bold text-cyan-200">출혈 중단 (Stop the Bleeding)</h3>
+                            <p class="text-sm text-indigo-100 mt-1">마운트 시 백그라운드 부하 생성 작업 비활성화.</p>
+                            <code class="block mt-2 bg-indigo-950 p-2 rounded text-xs font-mono text-cyan-300 border border-indigo-700">
+                                -o nocompaction,noconsistencycheck
+                            </code>
+                        </div>
+                    </div>
+
+                    <!-- 2단계 -->
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 bg-cyan-500 rounded-full w-8 h-8 flex items-center justify-center font-bold text-indigo-900 mr-4">2</div>
+                        <div>
+                            <h3 class="font-bold text-cyan-200">캐시 영역 확장</h3>
+                            <p class="text-sm text-indigo-100 mt-1">메타데이터 요청을 Ceph로 보내지 않고 RAM/NVMe에서 흡수.</p>
+                            <code class="block mt-2 bg-indigo-950 p-2 rounded text-xs font-mono text-cyan-300 border border-indigo-700">
+                                CACHESIZE=60%<br>DISKCACHE_SIZE=200G
+                            </code>
+                        </div>
+                    </div>
+
+                    <!-- 3단계 -->
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 bg-cyan-500 rounded-full w-8 h-8 flex items-center justify-center font-bold text-indigo-900 mr-4">3</div>
+                        <div>
+                            <h3 class="font-bold text-cyan-200">RGW 튜닝</h3>
+                            <p class="text-sm text-indigo-100 mt-1">버킷 인덱스 샤드 확인. 부족 시 재샤딩(Reshard) 수행.</p>
+                            <code class="block mt-2 bg-indigo-950 p-2 rounded text-xs font-mono text-cyan-300 border border-indigo-700">
+                                radosgw-admin bucket stats ...
+                            </code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 푸터 -->
+        <div class="col-span-1 md:col-span-12 text-center text-slate-400 text-sm mt-8 mb-12">
+            Ceph v18.2.1 (Reef) & ObjectiveFS 공식 문서 기반 분석. 
+            <br>CONFIDENTIAL - INTERNAL ANALYSIS
+        </div>
+
+    </main>
+
+    <script>
+        // --- 유틸리티: 라벨 줄바꿈 (16자 제한) ---
+        function wrapLabels(labels) {
+            return labels.map(label => {
+                // 한글의 경우 10자 정도로 줄이는 것이 보기 좋음
+                if (label.length <= 10) return label;
+                const words = label.split(' ');
+                const lines = [];
+                let currentLine = words[0];
+
+                for (let i = 1; i < words.length; i++) {
+                    if (currentLine.length + 1 + words[i].length <= 12) {
+                        currentLine += ' ' + words[i];
+                    } else {
+                        lines.push(currentLine);
+                        currentLine = words[i];
+                    }
+                }
+                lines.push(currentLine);
+                return lines;
+            });
+        }
+
+        // --- 전역 차트 설정 ---
+        Chart.defaults.font.family = "'Noto Sans KR', 'Inter', sans-serif";
+        Chart.defaults.color = '#64748B';
+        
+        // 툴팁 콜백
+        const tooltipPlugin = {
+            callbacks: {
+                title: function(tooltipItems) {
+                    const item = tooltipItems[0];
+                    let label = item.chart.data.labels[item.dataIndex];
+                    if (Array.isArray(label)) {
+                        return label.join(' ');
+                    } else {
+                        return label;
+                    }
+                }
+            }
+        };
+
+        window.onload = function() {
+
+            // --- 차트 1: 규모 불일치 (Bar) ---
+            const ctxScale = document.getElementById('scaleChart').getContext('2d');
+            new Chart(ctxScale, {
+                type: 'bar',
+                data: {
+                    labels: ['보고된 수치 (초기 예상)', '실제 확인된 객체 수'],
+                    datasets: [{
+                        label: '총 객체 수',
+                        data: [80000, 10000000],
+                        backgroundColor: ['#94A3B8', '#E11D48'], // 회색 vs 긴급한 빨강
+                        borderRadius: 6,
+                        barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        tooltip: tooltipPlugin,
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            type: 'logarithmic',
+                            title: { display: true, text: '객체 수 (로그 스케일)' },
+                            grid: { color: '#F1F5F9' }
+                        },
+                        y: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // --- 차트 2: API 구성 (Donut) ---
+            const ctxApi = document.getElementById('apiChart').getContext('2d');
+            new Chart(ctxApi, {
+                type: 'doughnut',
+                data: {
+                    labels: ['ListObjects (메타데이터)', 'GetObject (읽기/검사)', 'PutObject (쓰기)', 'DeleteObject (정리)'],
+                    datasets: [{
+                        data: [45, 35, 15, 5],
+                        backgroundColor: ['#4F46E5', '#06B6D4', '#F59E0B', '#F43F5E'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: tooltipPlugin,
+                        legend: { position: 'right', labels: { boxWidth: 12, font: {size: 11} } }
+                    }
+                }
+            });
+
+            // --- 차트 3: 캐시 분석 (Plotly) ---
+            const ramSize = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]; 
+            const hitRate = [5, 12, 25, 65, 92, 98, 99, 99.5, 99.8, 99.9]; 
+
+            const trace1 = {
+                x: ramSize,
+                y: hitRate,
+                mode: 'lines+markers',
+                type: 'scatter',
+                line: { shape: 'spline', color: '#06B6D4', width: 4 },
+                marker: { size: 8, color: '#4F46E5' },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(6, 182, 212, 0.1)',
+                name: '캐시 적중률'
+            };
+
+            const layoutCache = {
+                title: { text: 'RAM 할당량에 따른 캐시 적중률 추정', font: { family: 'Noto Sans KR', size: 16, color: '#1E293B' } },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                margin: { l: 50, r: 20, t: 40, b: 40 },
+                xaxis: { 
+                    title: 'ObjectiveFS 할당 시스템 RAM (%)', 
+                    ticksuffix: '%',
+                    gridcolor: '#F1F5F9'
+                },
+                yaxis: { 
+                    title: '캐시 적중 확률 (%)', 
+                    range: [0, 105],
+                    gridcolor: '#F1F5F9'
+                },
+                shapes: [
+                    { 
+                        type: 'line',
+                        x0: 20, y0: 0, x1: 20, y1: 100,
+                        line: { color: '#E11D48', width: 2, dash: 'dot' }
+                    },
+                    { 
+                        type: 'line',
+                        x0: 60, y0: 0, x1: 60, y1: 100,
+                        line: { color: '#10B981', width: 2, dash: 'dot' }
+                    }
+                ],
+                annotations: [
+                    { x: 20, y: 15, text: '현재 (20%)', showarrow: true, arrowhead: 1, ax: 40, ay: 0, font: {color: '#E11D48', family: 'Noto Sans KR'} },
+                    { x: 60, y: 90, text: '권장 (>60%)', showarrow: true, arrowhead: 1, ax: -60, ay: 0, font: {color: '#10B981', family: 'Noto Sans KR'} }
+                ]
+            };
+            
+            Plotly.newPlot('cachePlot', [trace1], layoutCache, {responsive: true, renderer: 'canvas'});
+
+
+            // --- 차트 4: 압축 폭풍 (Line) ---
+            const ctxCompact = document.getElementById('compactionChart').getContext('2d');
+            new Chart(ctxCompact, {
+                type: 'line',
+                data: {
+                    labels: ['마운트 직후', '5분', '10분', '15분', '20분', '25분', '30분'],
+                    datasets: [
+                        {
+                            label: '요청/초 (압축 진행 시)',
+                            data: [500, 2500, 4200, 3800, 1200, 800, 600],
+                            borderColor: '#F59E0B',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: '요청/초 (최적화 후)',
+                            data: [500, 600, 550, 500, 520, 500, 480],
+                            borderColor: '#10B981',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            tension: 0.4,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: tooltipPlugin,
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'S3 작업 수 / 초' },
+                            grid: { color: '#F1F5F9' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+        };
+    </script>
+</body>
+</html>
