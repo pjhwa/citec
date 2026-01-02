@@ -11,11 +11,6 @@
 ### 환경
 RHEL 7.2 기반에 Kernel만 7.9 버전으로 업데이트.
 Linux Kernel: 3.10.0-1160.132.1.el7.x86_64
-Cpuinfo: Intel® Xeon® CPU E5-2699 v4 @ 2.20GHz
-Cpuinfo: Hz=1770.000 bogomips=4399.44
-Cpuinfo: ProcessorChips=2 PhysicalCores=6
-Cpuinfo: Hyperthreads =0 VirtualCPUs =12
-Number of CPUs: 12
 
 ### 진행사항 
   - 서비스 지연 시점, CPU 노드가 분산되지 못한 병목 현상 발생 부분 확인 및 분석 진행
@@ -25,6 +20,12 @@ Number of CPUs: 12
  . 대상서버 : 트레이딩 AP서버 (tnexia01,02), 
    - ProLiant DL380 G9, 28core 64G, RHEL 7.2
    - 테스트 서버 : 검증 (tnexia51)
+테스트 서버 환경: tnexia51
+Cpuinfo: Intel® Xeon® CPU E5-2699 v4 @ 2.20GHz
+Cpuinfo: Hz=1770.000 bogomips=4399.44
+Cpuinfo: ProcessorChips=2 PhysicalCores=6
+Cpuinfo: Hyperthreads =0 VirtualCPUs =12
+Number of CPUs: 12
 
 #### 테스트 시나리오  ( 12월 30일 오전, /w 레드햇 ) 
    - 목적 
@@ -103,12 +104,12 @@ numactl --interleave=all /unify/smid/smid/smidadm/bin/ss_damer -e 0
 
        4-2) numactl --cpunodebind=0,1 --membind=0,1 <실행할_명령어>
 
-##### 테스트 케이스 5)
+##### 테스트 케이스 5) 
+LACP는 증권사 환경에서 사용할 수 없는 선택지이나, 분산이 되는지를 확인하기 위한 테스트 수행.
      5) 본딩 LACP 설정   // 설정가능한 경우 
 
      5-1) 본딩 LACP 설정 + 일반기동 +  kernel.numa_balancing=0 
      5-2) 본딩 LACP 설정 + 일반기동 +  kernel.numa_balancing=1 
-
 
      5-1) 결과 // 본딩 LACP 설정 + 일반기동 +  kernel.numa_balancing=0 
 
@@ -121,6 +122,8 @@ AC
 노드 0: 215 
 노드 1: 190
 
+nmon 수행결과, CPU Utilization에서
+CPU 1 ~ 12 까지 Usr%는 14 ~ 17%, SYS%는 51 ~ 59% 로 기록. (SYS%가 높음)
 
  5-2) 본딩 LACP 설정 + 일반기동 +  kernel.numa_balancing=1  
 AC 
@@ -130,7 +133,12 @@ AC
 노드 0 :  193
 노드1 :   207
 
+nmon 수행결과, CPU Utilization에서
+CPU 1 ~ 12 까지 Usr%는 15 ~ 23%, SYS%는 49 ~ 61% 로 기록. (SYS%가 높음)
+
 참고) saab51
+nmon 수행결과, CPU Utilization에서
+CPU 1 ~ 44 까지 Usr%는 71 ~ 90%, SYS%는 13 ~ 22% 로 기록.
 
 ##### 테스트 케이스 6)
 6) IRQ밸런싱 옵션 off (LACP와 비슷한 SW적 기능)
@@ -156,9 +164,43 @@ AC
 
 244/168
 
-20260102 오전테스트(saat,세마포어,shm 영향도)
+nmon 수행결과, CPU Utilization에서
+|CPU|User%|Sys%|Wait%|Idle|
+|---|---|---|---|---|
+|1|8.6|30.2|0.0|61.2|
+|2|8.3|27.7|0.0|64.0|
+|3|7.8|30.5|0.0|61.7|
+|4|21.6|73.5|0.0|4.9|
+|5|23.6|62.8|0.0|13.6|
+|6|22.0|62.3|0.0|15.7|
+|7|7.2|28.5|0.0|64.3|
+|8|6.1|28.2|0.0|65.6|
+|9|7.8|27.0|0.0|65.2|
+|10|21.4|61.7|0.0|16.9|
+|11|21.2|60.9|0.0|17.8|
+|12|20.5|62.6|0.0|16.9|
+|Avg|14.9|46.5|0.0|38.6|
+
+|CPU|User%|Sys%|Wait%|Idle|
+|---|---|---|---|---|
+|1|25.1|66.4|0.0|8.5|
+|2|27.5|46.7|0.0|25.8|
+|3|22.7|46.5|0.0|30.8|
+|4|2.4|10.0|0.0|87.6|
+|5|7.5|6.8|0.0|85.6|
+|6|1.7|5.5|0.0|92.8|
+|7|21.1|44.2|0.0|34.7|
+|8|18.5|41.8|0.0|39.7|
+|9|17.7|38.9|0.0|43.3|
+|10|4.4|11.9|0.0|83.6|
+|11|2.4|5.2|0.0|92.4|
+|12|4.8|13.3|0.0|81.9|
+|Avg|13.1|28.4|0.0|58.5|
+
 
 ##### 테스트 케이스 7)
+20260102 오전테스트(saat,세마포어,shm 영향도)
+
 7) tnexia51 / saab51 두개 서버간 동일 어플리케션 부하 점검
 
   - 목적 : AP서버 OS 버전에서 CPU 분배 상태 확인 
