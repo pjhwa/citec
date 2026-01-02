@@ -200,3 +200,75 @@ AC
 
 244/168
 
+20260102 오전테스트(saat,세마포어,shm 영향도)
+
+7. tnexia51 / saab51 두개 서버간 동일 어플리케션 부하 점검
+
+  - 목적 : AP서버 OS 버전에서 CPU 분배 상태 확인 
+
+   . saab51 : Red Hat Enterprise Linux Server release 7.1 (Maipo)
+
+   . tnexia51: Red Hat Enterprise Linux Server release 7.2 (Maipo)
+
+  - 설정
+
+   . irqbalance ON  + numa_balancing = 0  ( saab, tnexia 동일하게 ) 
+
+  - 부하 : 
+
+   . saab51 : 주문 + 체결 fw1호기 
+
+   . tneixa51:  체결 fw2호기
+
+
+
+▶baseline   <-- CPU 비정상
+
+ * kfep 에이전트 구동 +  anyframe f/w 구동  + AC/데몬 미구동 ( 주문체결부하) 
+
+ * 지금 tnexia51 상태  : 주문 agent 전체 on  + shm  upload + 세마포어 기동
+
+
+
+▶ "kfep 에이전트 구동 +  anyframe f/w 미구동"상태에서 1,2번 ( 주문체결부하만) 테스트 
+
+7-0. 다 내리고 지운상태    <-- CPU 정상
+
+ * 지금 tnexia51 상태  : 주문 agent 전체 off  + shm  all clear  + 세마포어 제거
+
+7-1. shm 만 지우기  <-- CPU 정상적으로 판단
+
+ * 지금 tnexia51 상태  : 주문 agent 전체 off  + shm  all clear  + 세마포어 기동중
+
+7-2. 세마포어만 지우기 <-- CPU정상 
+
+ * 지금 tnexia51 상태  : 주문 agent 전체 on  + shm  upload + 세마포어 제거
+
+7-3. sem포어가 생성 and agent 기동<-- CPU정상 
+
+ * 지금 tnexia51 상태  : 주문 agent 전체 on  + shm  제거 + 세마포어 기동
+
+7-4. sem포어가 생성 and agent 기동<-- CPU정상 
+
+ * 지금 tnexia51 상태  : 주문 agent 전체 on  + shm  upload + 세마포어 기동
+
+7-5. sem포어가 생성 and agent 기동 + anyframe f/w 기동     ( =baseline 과 동일 ) <-- CPU정상 
+
+ * 지금 tnexia51 상태  : 주문 agent 전체 on  + shm  upload + 세마포어 기동
+
+7-6. sem포어가 생성 and agent 기동 + anyframe f/w 기동    + ac/데몬 기동  ( 주문체결부하만) <-- CPU정상 
+
+ * 지금 tnexia51 상태  : 주문 agent 전체 on  + shm  upload + 세마포어 기동
+
+7-7. sem포어가 생성 and agent 기동 + anyframe f/w 기동    + ac/데몬 기동  ( 주문체결 + 영업일메모리? ) <-- CPU정상 
+
+ * 지금 tnexia51 상태  : 주문 agent 전체 on  + shm  upload + 세마포어 기동
+
+7-8. sem포어가 생성 and agent 기동 + anyframe f/w 기동    + ac/데몬 기동  ( 데몬처리만 ) <-- USER CPU 사용 늘어간듯<-- CPU정상인듯
+
+ * 지금 tnexia51 상태  : 주문 agent 전체 on  + shm  upload + 세마포어 기동
+
+7-9. sem포어가 생성 and agent 기동 + anyframe f/w 기동    + ac/데몬 기동  (주문체결 + 데몬처리 ) <-- CPU정상 
+
+ * 지금 tnexia51 상태  : 주문 agent 전체 on  + shm  upload + 세마포어 기동
+
