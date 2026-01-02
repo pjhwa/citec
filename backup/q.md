@@ -39,6 +39,7 @@ Number of CPUs: 12
 
 #### 테스트 시나리오 별 결과
 
+##### 테스트 케이스 1)
      1) numa = off    // node 구분없이 전체 CPU 다 사용하는지 확인
 
      1-1) numa = off & log level = "I"
@@ -49,6 +50,7 @@ Number of CPUs: 12
        주문시간 기준 112:58:52~12:59:32
        주문 4000, 체결 3300, 미들 2000
 
+##### 테스트 케이스 2)
      2) numactl --interleave=all > 자원을 모두 골고루 쓰겠다고 선언 // numa 켜있는 상태이서
        * Numa 상태에 따른 프로세스 CPU 할당 분포 확인
       2-1) 일반기동 : kernel.numa_balancing=1
@@ -71,7 +73,6 @@ Number of CPUs: 12
 |numactl --interleave=all <실행할_명령어>|2-3)<br>AC<br> 노드 0 : 872<br>노드1 : 49<br><br>데몬<br> 노드 0 : 389<br>노드1 : 10<br>[담당자] 2025-12-30 14:38<br>337 / 64<br>최대 노드1에 64개까지 증가했습니다|2-4)|
 
 
-
 - 메모리를 노드 0, 1에 균등하게 분산하여 실행
 numactl --interleave=all <실행할_명령어>
 
@@ -83,10 +84,12 @@ numactl --interleave=all /unify/smid/smid/smidadm/bin/ss_damer -s init
 - daemon start
 numactl --interleave=all /unify/smid/smid/smidadm/bin/ss_damer -e 0
 
+##### 테스트 케이스 3)
      3) 부하발생 
       3-1) kernel.numa_balancing=1 
       3-2) kernel.numa_balancing=0
-        
+
+##### 테스트 케이스 4)
 4) 특정 프로세스를 노드 1의 CPU와 메모리에 고정
       4-1)  numactl --cpunodebind=1 --membind=1 <실행할_명령어>
 
@@ -100,7 +103,7 @@ numactl --interleave=all /unify/smid/smid/smidadm/bin/ss_damer -e 0
 
        4-2) numactl --cpunodebind=0,1 --membind=0,1 <실행할_명령어>
 
-
+##### 테스트 케이스 5)
      5) 본딩 LACP 설정   // 설정가능한 경우 
 
      5-1) 본딩 LACP 설정 + 일반기동 +  kernel.numa_balancing=0 
@@ -129,6 +132,7 @@ AC
 
 참고) saab51
 
+##### 테스트 케이스 6)
 6) IRQ밸런싱 옵션 off (LACP와 비슷한 SW적 기능)
 
      - 일반기동 +  kernel.numa_balancing=0
@@ -154,6 +158,7 @@ AC
 
 20260102 오전테스트(saat,세마포어,shm 영향도)
 
+##### 테스트 케이스 7)
 7) tnexia51 / saab51 두개 서버간 동일 어플리케션 부하 점검
 
   - 목적 : AP서버 OS 버전에서 CPU 분배 상태 확인 
@@ -224,6 +229,7 @@ AC
 
  * 지금 tnexia51 상태  : 주문 agent 전체 on  + shm  upload + 세마포어 기동
 
+##### 테스트 케이스 8)
 8. 서버리붓 / AP구동 ( 새로운 마음으로  , cpu비정상을 재현 ) 
 
 현재 상태 irqbalance ON  + numa_balancing = 0
@@ -242,14 +248,12 @@ AC
 미들 2000
 
 
-
-20260102 재현테스트(CPU비정상)
+##### 테스트 케이스 8) 재테스트
+20260102 재현테스트(CPU비정상 상황)
 
 * tnexia51 설정 
 
 irqbalance ON  + numa_balancing = 0
-
-
 
 8. 서버리붓 / AP구동 ( 새로운 마음으로  , cpu비정상을 재현 ) 
 
@@ -263,7 +267,7 @@ irqbalance ON  + numa_balancing = 0
 
  8-1. 주문FEP,턱시도AP,데몬 기동 + tnexia51 주문체결 기동 : 주문체결 
 
- (케이스추가) 
+ (케이스추가) -> 세마포, shm 날리면 서비스 수행 불가이므로, 부적절한 테스트임. 
 
  8-2. 세마포 , shm 날리기 : Tuxedo 조회부하 + 데몬처리  
 
