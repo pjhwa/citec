@@ -1,3 +1,5 @@
+당신은 MNGC GPU 노드에대한 전문가. 아래 문제에 대해 원인을 분석하고 해결 방안을 제시하라. 
+
 vLLM (GPT-oss 20B) 모델 8개 GPU에 각각 띄운 후 병렬 inference
 
 Pytorch lightning DDP 사용해서 8B 모델 full fine-tuning SFT 학습
@@ -325,3 +327,5 @@ Jan  4 05:00:50 usr002-gpumngc-01 kernel: [308219.154899]  </TASK>
 Jan  4 05:00:50 usr002-gpumngc-01 kernel: [308219.155043] Modules linked in: nf_conntrack_netlink xt_nat xt_tcpudp veth xt_conntrack xt_MASQUERADE bridge xt_set ip_set nft_counter nft_chain_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 xt_addrtype nft_compat nf_tables nfnetlink xfrm_user xfrm_algo nfsv3 nfs_acl nfs lockd grace fscache netfs scsi_transport_iscsi nvme_fabrics 8021q garp mrp stp llc uio_pci_generic uio cuse overlay rdma_ucm(OE) rdma_cm(OE) iw_cm(OE) ib_ipoib(OE) ib_cm(OE) ib_umad(OE) bonding sunrpc binfmt_misc nls_iso8859_1 ipmi_ssif intel_rapl_msr dell_wmi ledtrig_audio sparse_keymap video intel_rapl_common i10nm_edac nfit x86_pkg_temp_thermal intel_powerclamp coretemp mlx5_ib(OE) dell_smbios dcdbas idxd isst_if_mbox_pci pmt_telemetry pmt_crashlog isst_if_mmio rapl mei_me wmi_bmof dell_wmi_descriptor switchtec isst_if_common pmt_class idxd_bus joydev input_leds ib_uverbs(OE) mei acpi_ipmi ipmi_si ipmi_devintf ipmi_msghandler acpi_power_meter mac_hid nvidia_uvm(POE) sch_fq_codel dm_multipath scsi_dh_rdac
 Jan  4 05:00:50 usr002-gpumngc-01 kernel: [308219.155089]  scsi_dh_emc scsi_dh_alua nvidia_peermem(POE) ib_core(OE) knem(OE) efi_pstore ip_tables x_tables autofs4 btrfs blake2b_generic zstd_compress raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq libcrc32c raid1 raid0 multipath linear nvidia_drm(POE) nvidia_modeset(POE) ses enclosure hid_generic usbhid hid mlx5_core(OE) mlxdevm(OE) nvidia(POE) mlxfw(OE) psample mgag200 i2c_algo_bit drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops crct10dif_pclmul cec crc32_pclmul rc_core ghash_clmulni_intel sha256_ssse3 sha1_ssse3 aesni_intel crypto_simd tls mpt3sas cryptd ahci nvme intel_pmt raid_class mlx_compat(OE) i2c_i801 xhci_pci bnxt_en drm scsi_transport_sas pci_hyperv_intf tg3 i2c_smbus libahci i2c_ismt nvme_core xhci_pci_renesas wmi pinctrl_emmitsburg
 Jan  4 05:00:50 usr002-gpumngc-01 kernel: [308219.158392] ---[ end trace 318a847c90a96792 ]---
+
+OS Hang 발생하여 강제 재부팅후 정상 접속. 이후 GPU job 정상 수행됨. 
