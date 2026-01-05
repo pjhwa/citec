@@ -1,3 +1,15 @@
+550.127.05 릴리스 노트 9에는 "드라이버 이벤트 알림에서의 레이스 컨디션 수정(Use-After-Free 해결)" 및 "UVM 드라이버가 하드웨어 응답을 무조건 기다리지 않고 상태를 체크하도록 변경"이라는 항목이 포함되어 있다. 이는 본 장애의 원인과 정확히 일치하는 수정 사항이다.
+
+Version 550.127.05(Linux)/553.24(Windows) :: NVIDIA Data Center GPU Driver Documentation, 1월 5, 2026에 액세스, https://docs.nvidia.com/datacenter/tesla/tesla-release-notes-550-127-05/index.html
+
+4.1 공식적으로 확인된 버그 (Bug ID 4435278)
+NVIDIA 535.183.06 릴리스 노트 3는 다음과 같은 "Known Issue"를 명시하고 있다:
+Issue 4435278: "UVM may fail to initialize correctly when both MIG and HMM are used on systems with a large number of GPUs containing large amounts of GPU memory."
+
+Version 535.183.06(Linux)/538.78(Windows) :: NVIDIA Data Center GPU Driver Documentation, 1월 5, 2026에 액세스, https://docs.nvidia.com/datacenter/tesla/tesla-release-notes-535-183-06/index.html
+
+
+
 당신은 MNGC GPU 노드에대한 전문가. 아래 문제에 대해 원인을 분석하고 해결 방안을 제시하라. 
 
 vLLM (GPT-oss 20B) 모델 8개 GPU에 각각 띄운 후 병렬 inference
