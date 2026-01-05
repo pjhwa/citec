@@ -6,6 +6,10 @@ verl 로 8B 모델 RL 학습 (이 부분에서 학습 시작할 때 서버 오�
 
 내부적으로 FSDP, vLLM 사용
 
+ NVIDIA-SMI 535.183.06
+ Driver Version: 535.183.06
+ CUDA Version: 12.2
+
 Jan  5 12:00:42 usr002-gpumngc-01 kernel: [    0.000000] Linux version 5.15.0-105-generic (buildd@lcy02-amd64-007) (gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0, GNU ld (GNU Binutils for Ubuntu) 2.38) #115-Ubuntu SMP Mon Apr 15 09:52:04 UTC 2024 (Ubuntu 5.15.0-105.115-generic 5.15.148)
 
 Jan  4 04:29:21 usr002-gpumngc-01 systemd[1]: docker-d1b496c8d966d65fb8784fa50c1122aec635287df466b38f0445425f9145006a.scope: Deactivated successfully.
