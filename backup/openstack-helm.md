@@ -96,34 +96,10 @@ OpenStack-Helm 운영의 승부처는 **"가시성(Visibility)"**입니다. 모�
 
 | 영역 | VMware 기술 | OpenStack 대응 기술 | 기술 전이 및 숙련도 체크 항목 (L1~L4) |
 | --- | --- | --- | --- |
-| **Compute** | **ESXi / vCenter / DRS** | **Nova / Libvirt / Placement** | **(L1)** Nova-Scheduler와 Placement API의 자원 할당 원리를 이해하는가?<br>
-
-<br>**(L2)** Flavor 및 Host Aggregate를 사용하여 특정 컴퓨트 노드에 VM을 배치할 수 있는가?<br>
-
-<br>**(L3)** `NoValidHost` 에러 발생 시 Placement DB와 Nova 로그를 연동 분석하여 해결 가능한가?<br>
-
-<br>**(L4)** **NUMA, CPU Pinning, SR-IOV** 설정을 통해 Telco급 고성능 컴퓨팅 환경을 설계할 수 있는가? |
-| **Network** | **NSX-V/T / Distributed FW** | **Neutron / OVN / Security Group** | **(L1)** Overlay(Geneve/VXLAN) 네트워킹과 OVN의 분산 라우팅 구조를 이해하는가?<br>
-
-<br>**(L2)** Floating IP, Router, Security Group을 CLI/Manifest로 구성하고 제어할 수 있는가?<br>
-
-<br>**(L3)** 패킷 드랍 발생 시 `ovn-trace`나 `tcpdump`를 사용하여 가상 네트워크 흐름을 추적(Tracing) 가능한가?<br>
-
-<br>**(L4)** 대규모 멀티테넌트 환경에서 **East-West 트래픽 병목**을 분석하고 아키텍처를 최적화할 수 있는가? |
-| **Storage** | **vSAN / vSphere Storage VM** | **Cinder / Ceph (RBD)** | **(L1)** vSAN Policy와 Cinder Volume Type/QoS 개념을 상호 매핑하여 이해하는가?<br>
-
-<br>**(L2)** Ceph RBD를 백엔드로 연동하고, Persistent Volume의 Life-cycle을 관리할 수 있는가?<br>
-
-<br>**(L3)** OSD 장애나 데이터 Rebalancing 발생 시 클러스터 성능 저하 원인을 진단하고 복구 가능한가?<br>
-
-<br>**(L4)** 데이터 보호를 위한 **Multi-backend 스토리지 전략** 및 재해 복구(DR) 솔루션을 설계할 수 있는가? |
-| **Identity** | **vCenter SSO / Roles** | **Keystone / RBAC** | **(L1)** Domain, Project, User, Role 간의 계층 구조와 토큰 인증 메커니즘을 아는가?<br>
-
-<br>**(L2)** 오픈스택 서비스 엔드포인트(Catalog)를 관리하고 CLI 환경(`openrc`)을 제어할 수 있는가?<br>
-
-<br>**(L3)** `policy.yaml` 커스터마이징을 통해 특정 API에 대한 세밀한 접근 제어(RBAC)를 구현할 수 있는가?<br>
-
-<br>**(L4)** 외부 인증 시스템(AD/LDAP/SAML)과 Keystone을 연동하는 **Federated Identity** 아키텍처를 설계할 수 있는가? |
+| **Compute** | **ESXi / vCenter / DRS** | **Nova / Libvirt / Placement** | **(L1)** Nova-Scheduler와 Placement API의 자원 할당 원리를 이해하는가?<br><br>**(L2)** Flavor 및 Host Aggregate를 사용하여 특정 컴퓨트 노드에 VM을 배치할 수 있는가?<br><br>**(L3)** `NoValidHost` 에러 발생 시 Placement DB와 Nova 로그를 연동 분석하여 해결 가능한가?<br><br>**(L4)** **NUMA, CPU Pinning, SR-IOV** 설정을 통해 Telco급 고성능 컴퓨팅 환경을 설계할 수 있는가? |
+| **Network** | **NSX-V/T / Distributed FW** | **Neutron / OVN / Security Group** | **(L1)** Overlay(Geneve/VXLAN) 네트워킹과 OVN의 분산 라우팅 구조를 이해하는가?<br><br>**(L2)** Floating IP, Router, Security Group을 CLI/Manifest로 구성하고 제어할 수 있는가?<br><br>**(L3)** 패킷 드랍 발생 시 `ovn-trace`나 `tcpdump`를 사용하여 가상 네트워크 흐름을 추적(Tracing) 가능한가?<br><br>**(L4)** 대규모 멀티테넌트 환경에서 **East-West 트래픽 병목**을 분석하고 아키텍처를 최적화할 수 있는가? |
+| **Storage** | **vSAN / vSphere Storage VM** | **Cinder / Ceph (RBD)** | **(L1)** vSAN Policy와 Cinder Volume Type/QoS 개념을 상호 매핑하여 이해하는가?<br><br>**(L2)** Ceph RBD를 백엔드로 연동하고, Persistent Volume의 Life-cycle을 관리할 수 있는가?<br><br>**(L3)** OSD 장애나 데이터 Rebalancing 발생 시 클러스터 성능 저하 원인을 진단하고 복구 가능한가?<br><br>**(L4)** 데이터 보호를 위한 **Multi-backend 스토리지 전략** 및 재해 복구(DR) 솔루션을 설계할 수 있는가? |
+| **Identity** | **vCenter SSO / Roles** | **Keystone / RBAC** | **(L1)** Domain, Project, User, Role 간의 계층 구조와 토큰 인증 메커니즘을 아는가?<br><br>**(L2)** 오픈스택 서비스 엔드포인트(Catalog)를 관리하고 CLI 환경(`openrc`)을 제어할 수 있는가?<br><br>**(L3)** `policy.yaml` 커스터마이징을 통해 특정 API에 대한 세밀한 접근 제어(RBAC)를 구현할 수 있는가?<br><br>**(L4)** 외부 인증 시스템(AD/LDAP/SAML)과 Keystone을 연동하는 **Federated Identity** 아키텍처를 설계할 수 있는가? |
 
 ---
 
