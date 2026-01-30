@@ -1,0 +1,66 @@
+아래 내용을 참고하셔서 승격 추천 내용을 오늘 중 정리 부탁드립니다.
+
+# [대외PJT 시스템 설계/개발리더로 활용]
+ - △△△△ PJT '000000 검증 모듈', □□□□ PJT '상품'업무 등 이슈PJT에 투입, 
+   가장 난이도가 높은 Back-End 개발 이슈를 성공적으로 해결하여 PJT안정화에 기여함.
+    * △△△△ PJT ('00.0~'00.0, 00억) 
+    * □□□□ PJT ('00.0~'00.0, 00억)
+ 
+ - 0000 컨설팅PJT Front-End 개발 영역에서 최신 기술 적용으로 고객의 호평을 받아 
+   본사업('25.0월 000억) 수주에 기여하였으며, OOO분야 PL로 투입예정 
+    * △△△△ 컨설팅 PJT ('00.0~'00.0, 00억) 
+    * □□□□ 본사업 PJT ('00.0~'00.0, 00억)
+ 
+ - '00년 IT석사 선발, '00년 기술사 자격 취득 등 역량 강화를 해왔으며, 향후 Compute/GPU, 
+   스토리지 등 업무 Scope을 점차 확대하여 클라우드 전체 스택을 이해하는 기술리더로 양성 예정
+   * IT석사 ('00.0~'00.0, 0000과)
+   * 기술사 ('00.0)
+   
+----------------------------
+# 대발탁 추천사유
+국내 최고 수준의 역량을 보유한 Windows 기술 엔지니어로, SCP 설계, 장애 및 이슈 해결에서 핵심적인 역할을 수행하는 인재입니다. 
+향후 CI-TEC 리더로 성장할 잠재력이 충분하며,
+성실하고 동료와의 관계가 원만하여 조직 내 신뢰를 받고 있습니다.
+
+# 보유 역량
+
+[Windows 전문가]
+1) Windows 아키텍처 설계 (Architecture Design)
+- SCP Windows 이중화 아키텍처(MS Cluster Service) 설계 수행
+- SCP SQL Server 고가용성 상품 HA + DR 아키텍쳐 개선 수행
+2) Windows 진단 및 문제해결 (Diagnostic & Troubleshooting)
+  - 전자, 서남아총괄 매장영업 지원시스템(GMCS) 서비스 지연
+- SCP NTP(Network Time Protocol) 동기화 문제 해결
+3) SQL Server 성능 개선 (Performance Tuning)
+  - 전자, 싱가폴MCS SCP 전환 후 SQL Server 성능 이슈 해결
+  - 바이오로직스, LIMS시스템 SQL Server 성능 저하 분석
+※ 주요 자격
+  - Azure Solutions Architect Expert - Microsoft
+- VMware Certified Advanced Pro. Datacenter Admin. - VMware
+- CKA(Certified Kubernetes Administrator) - CNCF
+
+# 주요 성과 
+
+□ 전자 MIS SCP전환 성공을 위한 진단 및 개선활동 ('23년) 
+- 총 8개시스템(PLM, 한국총괄, MyProject, 설계도면 관리 등) 
+- PISA점검으로 개선항목 37개를 도출하여 오픈전 적용 완료
+- 성능테스트 기반으로 서버용량을 재산정하여 자원부족을 예방
+- 시스템 오픈후에 장애 및 성능지연 이슈 발생 안함(0건)
+□ 전자 서남아총괄(인도) 영업지원시스템 서비스 지연 해결('24년)
+- 매장 판매가 중단될 정도의 시스템 성능 장애 발생
+- 튜닝 후 DISK 처리량 1.8배 증가하여 지연 이슈 해소
+- 개선점(MTU Size Up, Ring Buffer Up)을 SCP에 횡 전개 진행
+□ SCP 안정화를 활동 ('24년~)
+- SCP for Samsung Multi-AZ, SCP Nuri 가용성/성능 테스트 참여
+- SCP Nuri BM 서버 안정성 검증 및 성능개선 방안 수립
+
+# 향후 활용계획
+
+[CI-TEC 기술 리더]
+□ (단기) Windows 장애 예방, GDC 운영 수준 제고
+  - 장애 사례 공유, 진단 체크리스트(PISA) 발굴
+  - GDC 인력 기술세미나 → 원격 지원체계 수립
+□ (장기) CI-TEC 기술 리더로 활용
+  - 대외 사업에 기술 Leader로 참여하여 Door Opener로 역할
+  - 운영부서 근무경험을 활용하여 현장 밀착형 지원체계 수립
+  - Global CSP 수준의 SCP 상품 설계 및 기능 개선 참여
