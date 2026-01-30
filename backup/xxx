@@ -1,24 +1,31 @@
 아래 내용을 참고하셔서 승격 추천 내용을 오늘 중 정리 부탁드립니다.
 
-# [대외PJT 시스템 설계/개발리더로 활용]
- - △△△△ PJT '000000 검증 모듈', □□□□ PJT '상품'업무 등 이슈PJT에 투입, 
-   가장 난이도가 높은 Back-End 개발 이슈를 성공적으로 해결하여 PJT안정화에 기여함.
-    * △△△△ PJT ('00.0~'00.0, 00억) 
-    * □□□□ PJT ('00.0~'00.0, 00억)
- 
- - 0000 컨설팅PJT Front-End 개발 영역에서 최신 기술 적용으로 고객의 호평을 받아 
-   본사업('25.0월 000억) 수주에 기여하였으며, OOO분야 PL로 투입예정 
-    * △△△△ 컨설팅 PJT ('00.0~'00.0, 00억) 
-    * □□□□ 본사업 PJT ('00.0~'00.0, 00억)
- 
- - '00년 IT석사 선발, '00년 기술사 자격 취득 등 역량 강화를 해왔으며, 향후 Compute/GPU, 
-   스토리지 등 업무 Scope을 점차 확대하여 클라우드 전체 스택을 이해하는 기술리더로 양성 예정
-   * IT석사 ('00.0~'00.0, 0000과)
-   * 기술사 ('00.0)
-   
-----------------------------
+# 승격 추천 양식
+
+[대외PJT 시스템 설계/개발리더로 활용]
+
+- △△△△ PJT '000000 검증 모듈', □□□□ PJT '상품'업무 등 이슈PJT에 투입, 
+  가장 난이도가 높은 Back-End 개발 이슈를 성공적으로 해결하여 PJT안정화에 기여함.
+  
+  - △△△△ PJT ('00.0~'00.0, 00억)
+  - □□□□ PJT ('00.0~'00.0, 00억)
+- 0000 컨설팅PJT Front-End 개발 영역에서 최신 기술 적용으로 고객의 호평을 받아 
+  본사업('25.0월 000억) 수주에 기여하였으며, OOO분야 PL로 투입예정
+  
+  - △△△△ 컨설팅 PJT ('00.0~'00.0, 00억)
+  - □□□□ 본사업 PJT ('00.0~'00.0, 00억)
+- '00년 IT석사 선발, '00년 기술사 자격 취득 등 역량 강화를 해왔으며, 향후 Compute/GPU, 
+  스토리지 등 업무 Scope을 점차 확대하여 클라우드 전체 스택을 이해하는 기술리더로 양성 예정
+  
+  - IT석사 ('00.0~'00.0, 0000과)
+  - 기술사 ('00.0)
+
+---
+
 # 2024년 작성 내용
+
 ## 대발탁 추천사유
+
 국내 최고 수준의 역량을 보유한 Windows 기술 엔지니어로, SCP 설계, 장애 및 이슈 해결에서 핵심적인 역할을 수행하는 인재입니다. 
 향후 CI-TEC 리더로 성장할 잠재력이 충분하며,
 성실하고 동료와의 관계가 원만하여 조직 내 신뢰를 받고 있습니다.
@@ -26,32 +33,39 @@
 ## 보유 역량
 
 [Windows 전문가]
-1) Windows 아키텍처 설계 (Architecture Design)
+
+1. Windows 아키텍처 설계 (Architecture Design)
+
 - SCP Windows 이중화 아키텍처(MS Cluster Service) 설계 수행
 - SCP SQL Server 고가용성 상품 HA + DR 아키텍쳐 개선 수행
-2) Windows 진단 및 문제해결 (Diagnostic & Troubleshooting)
+
+2. Windows 진단 및 문제해결 (Diagnostic & Troubleshooting)
   - 전자, 서남아총괄 매장영업 지원시스템(GMCS) 서비스 지연
+
 - SCP NTP(Network Time Protocol) 동기화 문제 해결
-3) SQL Server 성능 개선 (Performance Tuning)
+
+3. SQL Server 성능 개선 (Performance Tuning)
   - 전자, 싱가폴MCS SCP 전환 후 SQL Server 성능 이슈 해결
   - 바이오로직스, LIMS시스템 SQL Server 성능 저하 분석
-※ 주요 자격
+    ※ 주요 자격
   - Azure Solutions Architect Expert - Microsoft
+
 - VMware Certified Advanced Pro. Datacenter Admin. - VMware
 - CKA(Certified Kubernetes Administrator) - CNCF
 
-## 주요 성과 
+## 주요 성과
 
-□ 전자 MIS SCP전환 성공을 위한 진단 및 개선활동 ('23년) 
-- 총 8개시스템(PLM, 한국총괄, MyProject, 설계도면 관리 등) 
+□ 전자 MIS SCP전환 성공을 위한 진단 및 개선활동 ('23년)
+
+- 총 8개시스템(PLM, 한국총괄, MyProject, 설계도면 관리 등)
 - PISA점검으로 개선항목 37개를 도출하여 오픈전 적용 완료
 - 성능테스트 기반으로 서버용량을 재산정하여 자원부족을 예방
 - 시스템 오픈후에 장애 및 성능지연 이슈 발생 안함(0건)
-□ 전자 서남아총괄(인도) 영업지원시스템 서비스 지연 해결('24년)
+  □ 전자 서남아총괄(인도) 영업지원시스템 서비스 지연 해결('24년)
 - 매장 판매가 중단될 정도의 시스템 성능 장애 발생
 - 튜닝 후 DISK 처리량 1.8배 증가하여 지연 이슈 해소
 - 개선점(MTU Size Up, Ring Buffer Up)을 SCP에 횡 전개 진행
-□ SCP 안정화를 활동 ('24년~)
+  □ SCP 안정화를 활동 ('24년~)
 - SCP for Samsung Multi-AZ, SCP Nuri 가용성/성능 테스트 참여
 - SCP Nuri BM 서버 안정성 검증 및 성능개선 방안 수립
 
@@ -59,19 +73,24 @@
 
 [CI-TEC 기술 리더]
 □ (단기) Windows 장애 예방, GDC 운영 수준 제고
-  - 장애 사례 공유, 진단 체크리스트(PISA) 발굴
-  - GDC 인력 기술세미나 → 원격 지원체계 수립
-□ (장기) CI-TEC 기술 리더로 활용
-  - 대외 사업에 기술 Leader로 참여하여 Door Opener로 역할
-  - 운영부서 근무경험을 활용하여 현장 밀착형 지원체계 수립
-  - Global CSP 수준의 SCP 상품 설계 및 기능 개선 참여
 
------------
-# 2025년 성과 (아래는 Microsoft Windows 서버와 관련한 백종탁 프로의 기술지원 및 장애대응 내용이다)
+- 장애 사례 공유, 진단 체크리스트(PISA) 발굴
+- GDC 인력 기술세미나 → 원격 지원체계 수립
+  □ (장기) CI-TEC 기술 리더로 활용
+- 대외 사업에 기술 Leader로 참여하여 Door Opener로 역할
+- 운영부서 근무경험을 활용하여 현장 밀착형 지원체계 수립
+- Global CSP 수준의 SCP 상품 설계 및 기능 개선 참여
+
+---
+
+# 2025년 성과
+
+(아래는 Microsoft Windows 서버와 관련한 백종탁 프로의 기술지원 및 장애대응 내용이다)
+
 - 삼성전자 북미 G-CIC 첨부파일 열람 불가
 - AD DC의 DR 구성 문의
 - LS예스코 Windows 진단
-- N-ERP Windows Audit 정책을 Gorup Policy에서 배포시 적용 불가 이슈 
+- N-ERP Windows Audit 정책을 Gorup Policy에서 배포시 적용 불가 이슈
 - SDI Ace 파일럿 라인 DB 지연 (SQL Server)
 - G-MES SCP의 File Storage 사용간 오류
 - AD 환경 SCP 이관 시 IP 유지 방안 문의
@@ -123,3 +142,22 @@
 - CSP OS 이미지 제공 현황 업데이트
 - Windows 서버에서 Process 의 성능 제한 검토
 - SCP v2 Dev2 DB서비스 VM -> NAS(CIFS) 통신 불가
+
+# 2025년 추천 사유
+
+[대외PJT 시스템 설계/개발리더로 활용]
+
+- SAP PS, N-ERP, SDI 등 핵심 전사 시스템의 Windows 기반 인프라 장애 대응 및 안정화 활동을 주도하여 시스템 가용성 유지와 비즈니스 연속성 확보에 핵심 기여함. 특히 [Windows 서버] 및 [SQL Server] 영역의 복잡한 트러블슈팅을 통해 다수 사업부의 운영 중단 위기를 신속히 해소함.
+  
+  - SAP PS 프로젝트 ('25.0~'25.0, 00억)
+  - N-ERP NextSalesPortal 및 관련 시스템 ('25.0~'25.0, 00억)
+  - SDI Ace 파일럿 라인 및 PAC 서버 ('25.0~'25.0, 00억)
+- SCP v2 환경의 Active Directory Domain Controller 구성 가이드 수정, Windows Hardening 적용 가이드 수립, Key Management Service 이중화 구성 가이드 제공 등을 통해 [SCP(삼성 클라우드 플랫폼)]의 Windows 인프라 표준화를 선도하였으며, 이를 기반으로 내부 운영 부서 및 대외 고객사의 신뢰를 강화하고 향후 클라우드 전환 사업 확대에 기여함.
+  
+  - SCP v2 관련 프로젝트 ('25.0~'25.0, 00억)
+  - 삼성전자 북미/SEA 법인 Exchange 및 Jira 접속 안정화 지원 ('25.0~'25.0, 00억)
+- '25년 상/하반기 Lookin 진단 항목 개정(Windows), 과학기술정보통신부 긴급 보안점검 대응, 공인망 노출 IP/Port 점검, 표준 모니터링 항목(Cpu context switch 등) 임계치 검토·반영 등 지속적인 보안 및 진단 역량 강화를 통해 Windows 인프라 전문성을 [클라우드 보안·운영] 영역으로 확장하였으며, 향후 Compute/GPU, 스토리지, 멀티 클라우드 스택을 아우르는 기술 리더로 성장 예정임.
+  
+  - Lookin 진단 항목 개정 ('25 상반기 / '25 하반기)
+  - Windows 서버 보안 Hardening 및 업데이트 이중화 가이드 제정 ('25.0)
+  - Microsoft Azure Solutions Architect Expert 자격 유지 및 관련 지식 기반 활동 지속
