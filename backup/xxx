@@ -161,3 +161,88 @@
   - Lookin 진단 항목 개정 ('25 상반기 / '25 하반기)
   - Windows 서버 보안 Hardening 및 업데이트 이중화 가이드 제정 ('25.0)
   - Microsoft Azure Solutions Architect Expert 자격 유지 및 관련 지식 기반 활동 지속
+
+---------------------------------
+
+### 1. 승격 추천 양식 (요약)
+
+[대외PJT 시스템 설계/개발리더로 활용]
+
+- SAP PS, N-ERP, SDI 등 전사 핵심 시스템에서 발생한 [Windows 서버] 및 [SQL Server] 관련 복잡 장애를 주도적으로 진단·해결하여 사업부 운영 중단을 방지하고 시스템 가용성을 확보함. 특히 AD DC, Failover Cluster, Exchange 등 핵심 컴포넌트의 안정화에 직접 기여함.
+  
+  * SAP PS 프로젝트 ('25.0~'25.0, 00억)  
+  * N-ERP NextSalesPortal 및 관련 시스템 ('25.0~'25.0, 00억)  
+  * SDI Ace 파일럿 라인 및 PAC 서버 ('25.0~'25.0, 00억)
+
+- SCP v2 환경의 Active Directory Domain Controller 구성 가이드 수정, Windows Security Hardening 가이드 수립, Key Management Service 이중화 구성 가이드 제공 등을 통해 [SCP Windows 인프라] 표준화와 보안 수준을 제고하였으며, 북미·SEA 법인 Exchange·Jira 접속 장애 신속 대응으로 글로벌 운영 신뢰도 강화에 기여함.
+  
+  * SCP v2 관련 프로젝트 ('25.0~'25.0, 00억)  
+  * 삼성전자 북미/SEA 법인 Exchange 및 Jira 안정화 지원 ('25.0~'25.0, 00억)
+
+- '25년 상·하반기 Lookin 진단 항목 개정(Windows), 과학기술정보통신부 긴급 보안점검 대응, CPU context switch 등 모니터링 임계치 검토·반영, HTTPS Cipher Suites 변경 가이드 등 지속적인 보안·운영 역량 강화를 통해 Windows 전문성을 [클라우드 보안·운영] 영역으로 확장하였으며, 향후 Compute/GPU, 스토리지, 멀티 클라우드 전체 스택을 아우르는 기술 리더로 성장 예정임.
+  
+  * Lookin 진단 항목 개정 ('25 상반기 / '25 하반기)  
+  * Windows 서버 보안 Hardening 및 업데이트 이중화 가이드 제정 ('25.0)  
+  * Microsoft Azure Solutions Architect Expert 자격 유지 및 관련 지식 기반 활동 지속
+
+### 2. 상세 추천 사유
+
+#### [대발탁 추천사유]
+
+국내 최고 수준의 [Windows 인프라 전문가]로서, 2025년에도 SAP PS, N-ERP, SCP v2 등 전사 핵심 시스템의 장애 대응과 보안 강화에서 중추적 역할을 수행한 인재입니다.  
+단순 장애 해결을 넘어 기술 가이드 제정과 표준화 활동을 통해 조직 전체의 운영 수준을 끌어올렸으며, 글로벌 사업부(북미·SEA 법인) 지원을 통해 대외 신뢰 확보에 기여하였습니다.  
+향후 CI-TEC 기술 리더로서 다년간 축적된 현장 경험을 바탕으로 Global CSP 수준의 SCP 상품 경쟁력 강화에 핵심 역할을 수행할 잠재력을 보유하고 있습니다.
+
+#### [보유 역량]
+
+[Windows & 클라우드 인프라 전문가]
+
+1) Windows 아키텍처 설계 및 고가용성 구성  
+   - SCP v2 Active Directory Domain Controller 구성 가이드 수정  
+   - Windows Key Management Service 이중화 구성 가이드 제공  
+   - Failover Cluster 서비스 재시작 및 안정화 방안 수립
+
+2) 고난도 장애 진단 및 Troubleshooting  
+   - SAP PS Sysvol 복제 실패·그룹 정책 업데이트 실패 해결  
+   - 북미 SEA 법인 MS Exchange 접속 불가 장애 대응  
+   - N-ERP CPU 과점유, SDC NMS D: 드라이브 Corruption 등 다수 심각 장애 신속 해소
+
+3) 보안 강화 및 진단·모니터링 표준화  
+   - Windows Security Hardening 적용 및 사후 이슈 대응  
+   - Lookin 진단 항목 개정(상·하반기), 공인망 노출 IP/Port 점검  
+   - CPU context switch 임계치 검토, HTTPS Cipher Suites 변경 가이드 제정
+
+※ 주요 자격 (기존 유지)  
+- Azure Solutions Architect Expert - Microsoft  
+- VMware Certified Advanced Professional – Datacenter Administration  
+- CKA (Certified Kubernetes Administrator) - CNCF
+
+#### [주요 성과]
+
+□ SAP PS 및 전사 핵심 시스템 Windows 인프라 안정화 ('25년)  
+- AD Sysvol 복제 실패, 그룹 정책 적용 실패, Windows OS 접속 불가 등 다수 이슈 해결  
+- Windows 업데이트 서버 이중화 구성 가이드 제공 및 Hardening 적용 후 발생 이슈 대응  
+- SQL Server 이중화 장애, Failover Cluster 서비스 재시작 문제 해결로 사업 연속성 확보
+
+□ 글로벌·국내 사업부 긴급 장애 대응 및 운영 신뢰 강화 ('25년)  
+- 북미 G-CIC 첨부파일 열람 불가, 북미·SEA 법인 Exchange·Jira 접속 불가 장애 신속 해소  
+- N-ERP CPU 과점유 3건, SDI PAC 서버 인터넷 접속 장애, MOSAIC 시스템 서비스 지연 해결  
+- 해외 특송 WAS 로그인 불가, Lenovo X3650 M5 OS 복구 불가 등 현장 밀착 지원
+
+□ SCP 및 클라우드 인프라 보안·운영 표준화 선도 ('25년)  
+- SCP v2 AD DC 구성 가이드 수정, Baremetal 디스크 offline 이슈 대응  
+- Lookin 진단 항목 개정(Windows 상·하반기), 과학기술정보통신부 긴급 보안점검 대응  
+- 공인망 노출 점검, Grafana 취약점 조치, 표준 모니터링 임계치(Cpu context switch) 반영
+
+#### [향후 활용계획]
+
+[CI-TEC 기술 리더]
+
+□ (단기) Windows·클라우드 인프라 장애 예방 체계 고도화 및 GDC 운영 수준 강화  
+- 장애 사례 DB 구축 및 진단 체크리스트(Lookin 기반) 지속 업데이트  
+- GDC 인력 대상 Windows·AD·보안 기술 세미나 정례화 및 원격 지원 체계 고도화  
+
+□ (장기) CI-TEC 기술 리더로서 대외 사업 확대 및 SCP 상품 경쟁력 강화  
+- 대외 클라우드 전환 PJT에 Windows·AD·보안 영역 기술 Leader로 참여  
+- 운영 현장 경험을 반영한 고객 밀착형 지원 모델 수립  
+- Compute/GPU, 스토리지, 멀티 클라우드 스택을 아우르는 Global CSP 수준 SCP 상품 설계 및 기능 개선 주도
