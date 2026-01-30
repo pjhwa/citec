@@ -17,12 +17,13 @@
    * 기술사 ('00.0)
    
 ----------------------------
-# 대발탁 추천사유
+# 2024년 작성 내용
+## 대발탁 추천사유
 국내 최고 수준의 역량을 보유한 Windows 기술 엔지니어로, SCP 설계, 장애 및 이슈 해결에서 핵심적인 역할을 수행하는 인재입니다. 
 향후 CI-TEC 리더로 성장할 잠재력이 충분하며,
 성실하고 동료와의 관계가 원만하여 조직 내 신뢰를 받고 있습니다.
 
-# 보유 역량
+## 보유 역량
 
 [Windows 전문가]
 1) Windows 아키텍처 설계 (Architecture Design)
@@ -39,7 +40,7 @@
 - VMware Certified Advanced Pro. Datacenter Admin. - VMware
 - CKA(Certified Kubernetes Administrator) - CNCF
 
-# 주요 성과 
+## 주요 성과 
 
 □ 전자 MIS SCP전환 성공을 위한 진단 및 개선활동 ('23년) 
 - 총 8개시스템(PLM, 한국총괄, MyProject, 설계도면 관리 등) 
@@ -54,7 +55,7 @@
 - SCP for Samsung Multi-AZ, SCP Nuri 가용성/성능 테스트 참여
 - SCP Nuri BM 서버 안정성 검증 및 성능개선 방안 수립
 
-# 향후 활용계획
+## 향후 활용계획
 
 [CI-TEC 기술 리더]
 □ (단기) Windows 장애 예방, GDC 운영 수준 제고
@@ -64,3 +65,61 @@
   - 대외 사업에 기술 Leader로 참여하여 Door Opener로 역할
   - 운영부서 근무경험을 활용하여 현장 밀착형 지원체계 수립
   - Global CSP 수준의 SCP 상품 설계 및 기능 개선 참여
+
+-----------
+# 2025년 성과 (아래는 Microsoft Windows 서버와 관련한 백종탁 프로의 기술지원 및 장애대응 내용이다)
+- 삼성전자 북미 G-CIC 첨부파일 열람 불가
+- AD DC의 DR 구성 문의
+- LS예스코 Windows 진단
+- N-ERP Windows Audit 정책을 Gorup Policy에서 배포시 적용 불가 이슈 
+- SDI Ace 파일럿 라인 DB 지연 (SQL Server)
+- G-MES SCP의 File Storage 사용간 오류
+- AD 환경 SCP 이관 시 IP 유지 방안 문의
+- SCP v2 Active Directory Domain Controller 구성 가이드 수정
+- N-ERP NextSalesPortal 서버 3번의 CPU 과점유 건
+- 25년 하반기 Lookin 진단 항목 개정 (Windows)
+- 과학기술정보통신부 긴급 보안점검에 따른 보안점검
+- SAP PS AD Sysvol 복제 실패 및 그룹 정책 업데이트 실패 이슈
+- SAP PS Windows OS 접속 불가
+- 통합보안센터 퍼블릭클라우드 백업 점검 관련 현황 조사
+- SAP PS - Windows Security Hardening
+- SAP PS - Windows 업데이트 서버 이중화 구성 방법 가이드
+- SAP PS Windows 그룹 정책 적용 실패
+- SDC 물류해외특송 WAS 서버 로그인 불가
+- 삼성전자, 북미 SEA 법인 일부 사용자 MS Exchange 접속 불가
+- SAP PS Windows Hardening 적용 후 이슈
+- SDC NMS(Network Management Server) 서버 D: 드라이브 Corruption
+- 전자 광주 Lenovo X3650 M5 장비 OS 복구 불가
+- 25년 클라우드 인프라 관리 플랫폼 보안 점검
+- 에스원 Windows 서버 Hang
+- SKT 해킹 이슈 관련 BPFDoor 감염여부 점검
+- 삼성전자 MOSAIC 시스템 서비스 지연
+- ESXi 6.X에서 Windows Server 2022 구동 문의
+- AD 서버 NTP 및 DNS 설정 문의
+- 시큐아이 OS 업데이트 불가
+- N-ERP Windows 서버 업데이트 불가
+- Grafana 긴급 보안취약점 조치
+- SCP 클라우드 긴급 보안점검 대응
+- 전자 북미 SEA법인 사외 Jira 접속 불가 장애
+- Windows 환경 PostgreSQL 구동 불가
+- SCP Windows Baremetal 서버 디스크 offline 발생 이슈
+- Windows 운영중인 sftp 서버가 cifs 사용불가 현상
+- Windows Server 2016 보안패치 이슈
+- 25년 상반기 Lookin 진단 항목 개정 (Windows)
+- 사이버사업장 HTTPS Cipher Suites 변경 가이드
+- 코닝 원격데스크톱 사용환경 - 패스워드 만료 계정의 셀프 패스워드 리셋 방법 가이드
+- 공인망 노출 IP/Port 확인 및 긴급 조치
+- 표준 모니터링 항목 중 Windows "CPU context switch" 이벤트 임계치 검토 및 반영
+- SCP Windows 서버 성능 이슈
+- 중공업, Windows 2016 SCP NAS 연결 불가에 의한 장애
+- Windows 업데이트 불가 이슈
+- 바이오 LIMS Failover Cluster의 서비스 재시작 이슈
+- Windows 서버 파일 실행 불가 이슈
+- SCP DBaaS 에스원 SQL Server 이중화 장애
+- Windows Key Management Service 이중화 구성 가이드
+- SDI PAC 서버 이상에 따른 인터넷 접속 장애
+- Windows 서버 시작 메뉴 표시 에러
+- IIS Site별 443번 포트 LISTEN 여부 확인 가이드
+- CSP OS 이미지 제공 현황 업데이트
+- Windows 서버에서 Process 의 성능 제한 검토
+- SCP v2 Dev2 DB서비스 VM -> NAS(CIFS) 통신 불가
