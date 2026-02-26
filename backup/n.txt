@@ -46,6 +46,22 @@
 3.1. 네이버페이 기술 아키텍처 및 장애 전파 경로
 인터넷에 공개된 아키텍처와 공식 발표한 원인을 바탕으로 재구성한 장애 전파 경로는 다음과 같습니다.
 
+사용자/앱 <-> Kubernetes Cluster (k8s) { <- API Gateway -> Microservices Layer { PG_Interface (PG_IF), 결제서비스(Pay), 주문서비스(Order), 포인트서비스(Point), 정산서비스(Settlement), 이상거래탐지(FDS)} <-> { Event & Consistency Layer (Events) { kafka / rabbitMQ, Saga Orchaetrator, Change Data Capture(CDC)} <-> {Persistence Layer (Storage) { Redis, NoSQL, MySQL, CDC(Storage), Data Lake } }
+
+연계 현황:
+- 여기서 PG_Interface(PG_IF)는 외부 PG/금융사와 통신
+- MySQL -> Change Data Capture (CDC) -> 포인트서비스(Point) -> Saga Orchestrator <-> Kafka/RabbitMQ <-> 결제서비스(Pay)
+- 포인트서비스 (Pay) <-> MySQL
+- MySQL <-> CDC(storage)
+- CDC(Storage) -> Change Data Capture (CDC)
+
+1) MySQL -> Change Data Capture(CDC) : 원본 DB 업데이트 실패
+2) Kafka//RabbitMQ <-> 결제 서비스(Pay) : 타임아웃 및 보상 트랜잭션 폭주
+3) Kafka/RabbitMQ : 컨슈머 랙(Lag) 발생 
+4) CDC -> Change Data Capture (CDC) : 복제 지연 임계치 초과
+5) Change Data Capture (CDC) -> 포인트서비스(point) : 정합성 보호를 위한 조회 차단 
+
+ 
 
 3.2. 컴포넌트별 장애 요인 상세 분석
 
