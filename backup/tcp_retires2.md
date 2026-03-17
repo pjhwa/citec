@@ -57,3 +57,26 @@
 - **확신할 수 없다**는 부분은 **워크로드별 테스트 필수** (packet loss 환경 시뮬레이션 권장)
 - 추가 조사 필요: 특정 앱(Elasticsearch, Db2 등)이나 HA 클러스터 요구사항 확인 후 적용  
 변경 전 반드시 staging에서 검증하세요. 추가 질문(예: DaemonSet 예시 YAML)이 있으시면 언제든 말씀해주세요.
+
+---
+**• 핵심 사실 (출처 번호와 함께)**  
+1. **Alibaba Cloud (ACK)**: Alibaba Cloud Linux 3 시스템 최적화 가이드에서 **net.ipv4.tcp_retries2 = 8** 명시적 권고 (ACK 워커 노드 이미지 기반 Alinux OS에 직접 적용 가능, ACK node pool kubelet customize와 연계). 이유: ACK 미수신 시 총 재전송 타임아웃을 약 51초로 단축 (기본값 15 대비 빠른 장애 감지). 출처 1: https://help.aliyun.com/zh/alinux/user-guide/alibaba-cloud-linux-3-system-configuration-optimizations  
+출처 2: https://www.alibabacloud.com/help/en/alinux/user-guide/alibaba-cloud-linux-3-system-configuration-optimizations (영문 동등).  
+2. **Oracle Cloud (OKE)**: OKE 공식 문서 전체에서 net.ipv4.tcp_retries2 언급 0건 → **명시적 권고 없음**. 출처: https://docs.oracle.com/en-us/iaas/Content/ContEng/Tasks/conteng_ipv4-and-ipv6.htm (IPv4 sysctl 관련 페이지, retries2 미포함).  
+3. **Tencent Cloud (TKE)**: TKE 베스트 프랙티스 및 node config 문서에서 **명시적 권고 없음** (developer 블로그에서 일반 Linux 튜닝으로 =5 제안하나 TKE 전용 아님). 출처: https://cloud.tencent.com/developer/article/2540320 (비공식 성격).  
+4. **Huawei Cloud (CCE/CCI)**: sysctl 지원 목록에 포함되나 **특정 권고값 없음** (default 15만 일부 명시, 다른 TCP 파라미터만 최적화 가이드 등장). 출처: https://support.huaweicloud.com/intl/en-us/bestpractice-cci2/cci_04_0022.html (2025 업데이트).  
+5. **IBM Cloud (IKS/OpenShift)**: worker node kernel tuning 지원하나 **명시적 권고 없음** (Db2 워크로드 앱 전용으로 =2 제안, K8s 일반 노드 대상 아님). 출처: https://cloud.ibm.com/docs/containers?topic=containers-kernel 및 https://www.ibm.com/docs/en/SSEPGG_12.1.0/com.ibm.db2.luw.db2u_openshift.doc/static/Jun20_openshift_12.1.0.pdf.  
+6. **DigitalOcean (DOKS), Linode/Akamai (LKE), OVHcloud, Scaleway 등 기타 CSP**: 공식 문서 검색 결과 **net.ipv4.tcp_retries2 관련 언급 0건** → 명시적 권고 없음.
+
+**• 맥락 요약**  
+AWS/GCP/Azure 제외한 주요 CSP 6개+ (Oracle, Alibaba, Tencent, Huawei, IBM, DigitalOcean 및 기타 소규모)를 전수조사한 결과, **대부분이 AWS·GCP·Azure와 동일하게 K8s 워커 노드 대상으로 net.ipv4.tcp_retries2 권고값을 제시하지 않습니다**. 유일한 예외는 Alibaba Cloud에서 Alinux OS 최적화 문서로 =8을 공식 권고한 경우이며, 이는 ACK 워커 노드에 직접 적용 가능한 수준입니다. 다른 CSP들은 keepalive, somaxconn, tcp_tw_reuse 등 다른 TCP 파라미터만 튜닝 가이드에 포함하고, tcp_retries2는 기본값(15) 유지 또는 앱별(예: Db2) 예외적으로만 언급합니다.
+
+**• 불확실성 및 한계점**  
+• **확신할 수 없다**는 부분은 **아주 소규모 CSP(예: Vultr, Hetzner, UpCloud 등) 또는 각사 내부 미공개 KB/region-specific 가이드**에서 숨겨진 권고가 있을 가능성 — 공개 문서로는 완전 배제 불가.  
+• Tencent/Huawei의 developer 블로그나 앱-specific 문서(=5 또는 =2)는 **K8s 워커 노드 공식 권고로 볼 수 없음** (벤더 지원 범위 이탈 위험).  
+• 추가 조사 필요한 부분: Alibaba ACK의 최신 Alinux 이미지 변경 여부(2026년 이후 업데이트), Huawei CCE의 sysctl whitelist 최신 버전, Oracle OKE 내부 문서 재확인.
+
+**• 결론**  
+현재까지 알려진 바에 따르면, **AWS·GCP·Azure를 제외한 나머지 CSP 중 Alibaba Cloud(ACK)만 net.ipv4.tcp_retries2 = 8을 명시적으로 권고**하며, 그 외 모든 CSP에서는 K8s 워커 노드 대상 권고값이 **없습니다**.  
+Alibaba의 =8은 클라우드 네트워크 특성(빠른 failover 필요)을 반영한 실질적 권고로, 해당 환경에서는 적극 고려할 가치가 있지만, 다른 CSP에서는 **기본값 15 유지 + DaemonSet 직접 튜닝**이 표준 접근입니다.  
+멀티 클라우드 전략 시 Alibaba 노드는 =8을 우선 적용하고, 나머지는 워크로드별 부하 테스트(패킷 로스 시뮬레이션) 후 결정하세요. 더 구체적인 CSP(예: 특정 소규모 제공자)나 DaemonSet YAML 예시가 필요하시면 즉시 추가 조사해 드리겠습니다.
