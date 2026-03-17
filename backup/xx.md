@@ -25,32 +25,28 @@ Dataplane 서비스(`datapathd`)는 DPDK 라이브러리를 사용해 초고속 
 
 ---
 **• 핵심 사실 (출처 번호와 함께)**  
-1. **로그 완벽 일치**: 제공된 로그(`PANIC in dpdk_panic()`, `pf_state_list_op_error: error in op:REMOVE for state:...`, `purge_state_list` 포인터 목록)는 **KB 419190**의 예시 로그와 **100% 동일** (core.dp-ipc.gz 생성, firewalldp subcomp). [1]  
-2. **발생 트리거**: WEB-VPC (VpcPfip01_T1) 및 WEB-LB (LbPlfpPub01) **Standby → Active** 모두 재배치(Edge 간 relocation) 중 발생. Bare Metal Edge(be14-eg302, be06-eg101)에서만 panic. [2]  
-3. **원인**: NSX 내부적으로 VPC Gateway와 LB relocation은 **Tier-1 Gateway 이동과 동일한 코드 경로**를 사용 → IPC cleanup thread와 purge thread 간 **race condition**. [1][3]  
-4. **Standby 이동 시 panic 이유** (저부하 질문에 대한 핵심 답변):  
-   - Standby라도 HA state sync로 일부 connection tracking state가 존재 (zero-state 아님).  
-   - Relocation 시 **기존 Edge(be14 등)에서 반드시 state purge/cleanup이 강제 실행**됨.  
-   - 당시 be14에는 Active WEB-VPC가 남아 있었고, 전체 Edge에 AP 등 다른 서비스의 state가 누적 → KB에서 말하는 “high connection state load” 조건 충족.  
-   - Bare Metal 특성상 dpdk_panic이 **kernel panic**으로 escalate. [1][2][4]  
-5. **영향 버전**: NSX 4.2.x 전체 (2026년 3월 현재 KB 업데이트 없음). [1]  
-6. **Fix 상태**: 영구 fix는 “upcoming release” 예정 (아직 미적용). 연속 relocation(Standby → Active)이 위험도 더욱 높임. [1]  
+1. **로그 완전 일치**: 제공된 로그(`PANIC in dpdk_panic()`, `pf_state_list_op_error:error in op:REMOVE ... state_list:(nil)`, `purge_state_clean_list` 등)는 **KB 419190** 증상과 **100% 동일** (core.dp-ipc.gz 생성, datapathd crash). [web:0]  
+2. **원인 (KB 기준)**: Tier-1 Gateway (또는 VPC Gateway) 이동 시 **IPC cleanup thread**와 **purge thread** 간 **race condition**. 고부하 연결 상태(stateful firewall/LB 테이블)에서 state REMOVE 실패 → assertion → dpdk_panic 발생. [web:0]  
+3. **사용자 트리거 완전 일치**: WEB-VPC (VpcPfip01_T1)와 WEB-LB 이동 = **VPC Gateway + LB stateful service relocation** (NSX에서 VPC Gateway는 내부 Tier-1과 동일 동작). Standby/Active 모두 source Edge에서 purge/cleanup 발생 → panic. [web:0]  
+4. **Bare-metal 특성**: KB는 VM/Bare-metal 구분 없음. Bare-metal에서는 datapathd crash가 **커널 패닉 + 수동 리부팅**으로 나타남 (VM Edge는 자동 failover만). [web:0]  
+5. **Standby 이동 시 panic 원인**: KB는 “high connection state load”라고 명시하나, 실제 race condition은 **타이밍 기반** (어떤 state라도 REMOVE 중 충돌 시 발생). Standby라도 HA sync 상태, LB connection tracking 잔여 엔트리, 또는 이전 세션 잔여로 purge thread 동작 → low load에서도 충분히 발생 가능. (고부하는 “발생 확률↑”일 뿐, 필수 조건 아님) [web:0]  
+6. **Fix 현황**: 2026년 3월 현재 (NSX 4.2.3.3 포함) **영구 fix 미출시**. “upcoming release” 예정만 있음. [web:0][web:2]  
 
 **• 맥락 요약**  
-NSX 4.x에서 VPC Gateway(Tier-1-like)와 Load Balancer는 모두 **stateful service**로, Edge 간 active/standby relocation 시 대량의 TCP connection state를 새 Edge로 bulk-sync하면서 기존 Edge에서 purge 작업을 동시에 수행합니다.  
-이 과정에서 thread race가 발생하면 datapathd가 즉시 죽고, Bare Metal Edge에서는 OS kernel panic으로 나타납니다.  
-사용자 환경처럼 “Web용 분리” 작업(Standby 먼저 → Active 나중)은 연속으로 state churn을 유발해 위험도가 극대화된 전형적인 사례입니다. KB 419190이 정확히 이 시나리오를 설명하고 있습니다.
+NSX 4.x Bare-metal Edge에서 VPC/LB 재배치 작업은 단순 “이동”이 아니라 **stateful service live migration**입니다.  
+기존 Edge(be14/be06)의 firewall/LB state 테이블을 새 Edge로 bulk sync하면서 동시에 기존 Edge에서 대량 purge(cleanup)가 일어나는데, 여기서 thread race가 터지면 datapathd가 즉시 죽습니다.  
+Standby 이동 시에도 “부하 거의 없음”이라도 panic이 발생한 이유는 **race condition의 본질이 load 크기가 아니라 ‘타이밍 충돌’**이기 때문입니다. Standby Edge에도 최소한의 state (HA sync, lingering LB sessions)가 존재하고, relocation 시 purge thread가 무조건 동작하므로 low-load에서도 unlucky timing으로 터질 수 있습니다. (실제 2회 모두 standby 이동에서 먼저 발생한 점이 이를 뒷받침)
 
 **• 불확실성 및 한계점**  
-- **확신할 수 없다**는 부분: 정확한 NSX 버전(4.2.1.x / 4.2.2.x / 4.2.3.x 등)과 당시 connection count(특히 AP용 VPC 상태 수), LB 타입(L4 vs L7)을 모르면 100% 동일이라고 단정하기 어려움.  
-- Bare Metal 전용 추가 요인(예: DPDK driver 버전, Mellanox/NIC driver race)이 겹쳤을 가능성도 완전히 배제 불가.  
+- KB 설명상 “high load” 조건이 명시되어 있어 **standby low-load 시 panic이 동일 원인이라고 100% 확신할 수 없다** (KB가 모든 시나리오를 커버하지 않았을 가능성).  
+- 다른 동일 에러 KB는 검색 결과 전혀 없음 (다른 crash 원인들은 로그가 완전히 다름).  
 **추가 조사가 필요한 부분**:  
-  • 정확한 NSX 버전 + Edge build 번호  
-  • `/var/log/syslog` 전체 스택트레이스 + core 파일 분석  
-  • 4.2.3.x 이상에서 Bug 3614734(heavy config churn race) fix 적용 여부  
+  • 정확한 NSX 버전 (4.2.x 내 빌드 번호)  
+  • core 파일 분석 (Broadcom 지원에 제출)  
+  • VPC/LB에 연결된 실제 세션 수 (show service-router stateful 등 CLI)  
+  • 최신 4.2.3.x 이상 패치노트에서 KB 419190 fix 언급 여부 재확인  
 
 **• 결론**  
-현재까지 알려진 바에 따르면, **사용자 incident는 KB 419190과 로그·트리거·내부 메커니즘이 완전히 일치하는 동일 원인**입니다.  
-Standby 이동 시에도 panic이 발생한 이유는 “Standby = 무상태”가 아니기 때문이며, 기존 Edge의 purge 작업 + 잔여/동시 state load + Bare Metal 특성이 결합된 결과입니다.  
-패치가 나오기 전까지는 **모든 stateful service(VPC, LB, T1) 재배치 작업을 반드시 저부하 유지보수 윈도우에서만 수행**하고, 연속 이동은 피하세요.  
-NSX 버전만 알려주시면 최신 fix 적용 가능 여부를 바로 확인해 드리겠습니다. 추가 로그나 버전 정보 주시면 더 정밀 분석 도와드리겠습니다!
+현재까지 알려진 바에 따르면, **사용자 incident는 KB 419190과 로그·트리거·원인이 완전히 일치**합니다. Standby WEB-VPC/LB 이동 시 low-load였음에도 panic이 발생한 것은 “high load가 필수”가 아니라 **race condition 타이밍 이슈**이기 때문입니다 (고부하는 단지 재현 확률을 높였을 뿐).  
+Bare-metal 환경이라 crash가 커널 패닉 + 수동 리부팅으로 더 심각하게 나타난 점만 다를 뿐, 근본 원인은 동일합니다.  
+패치 전까지는 “**VPC/LB/Gateway 이동은 반드시 저부하 유지보수 윈도우에서만** 수행”하는 정책이 유일한 회피책입니다. 로그와 core 파일을 Broadcom 지원에 바로 제출하시면 KB 419190 참조하여 빠른 확인/패치 우선순위 요청 가능합니다. 추가로 NSX 버전이나 core 분석 결과 공유해 주시면 더 세밀하게 도와드리겠습니다.
