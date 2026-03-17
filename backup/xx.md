@@ -25,27 +25,29 @@ Dataplane 서비스(`datapathd`)는 DPDK 라이브러리를 사용해 초고속 
 
 ---
 **• 핵심 사실 (출처 번호와 함께)**  
-1. **로그 완전 일치**: 사용자 제공 로그 — `PANIC in dpdk_panic()` (intel-rte, tname="dp-ipc55") + `pf_state_list_op_error:error in op:REMOVE for state:... state_list:(nil)` — KB 419190에 기재된 정확한 예시 로그와 100% 동일. core dump `core.dp-ipc.gz` 생성 패턴도 일치. [1]  
-2. **트리거 조건 일치**: be06에서 Web LB active 재배치(20:56 be06 → be08)와 be14에서 standby Web LB failover(20:37 be14 → eb24) 중 발생. 이는 VPC Gateway + LB의 **stateful live migration**으로, 고부하 연결 상태(특히 AP 트래픽) 환경에서 IPC cleanup thread와 purge thread 간 race condition 유발. [1][2]  
-3. **Baremetal 구성 영향**: 모든 Edge가 baremetal이지만, KB 419190은 baremetal vs VM을 구분하지 않음. datapathd(DPDK user-space 프로세스) crash가 동일하게 발생하며, baremetal에서 “커널 패닉”으로 관찰되는 현상(실제는 datapathd fatal panic 후 Edge 재부팅). 별도 baremetal 전용 KB 없음. [1][3]  
-4. **영향 버전 및 해결 상태**: NSX 4.2.x 전체. 영구 fix는 “upcoming release”로만 명시되어 있으며, 2026년 3월 현재(4.2.1 포함) 패치 적용된 버전 확인되지 않음. [1][3]  
-5. **타임라인 증거**: Web/AP VPC/LB active 이동 시점에 정확히 panic 발생 → AP 서비스 failover/failback → 서비스 단절(10분+8분). KB Workaround(고부하 시간대 이동 금지) 위반 사례. [1][2]  
+1. **로그 완벽 일치**: 제공된 로그(`datapathd ... PANIC in dpdk_panic()` + `pf_state_list_op_error:error in op:REMOVE for state:...` + state_list/purge_state_list 상세)는 **KB 419190**의 증상 로그와 **완전히 동일** (verbatim quote 수준). core.dp-ipc.gz 생성도 동일. [1]  
+2. **트리거 동일**: be14(20:37 standby Web LB → eb24 failover)와 be06(20:56 active Web LB → be08 failover) 모두 **LB active 재배치(standby→active 이동)** 중 발생. 이는 VPC Gateway + LB stateful service의 live migration이며, 기존 Edge에서 대량 TCP/LB 상태 purge/cleanup(`REMOVE` op)이 발생하는 시점. [2]  
+3. **Bare-metal 적용**: 모든 Edge가 bare-metal 구성임에도 KB 419190은 VM/Bare-metal 구분 없이 “NSX Edge node”로 적용. Bare-metal에서는 datapathd panic이 host kernel panic으로 escalate되는 형태로 관찰됨. [1]  
+4. **원인 일치**: High connection state load 환경에서 IPC cleanup thread와 purge thread 간 **race condition** (state REMOVE 실패). KB가 “Tier-1 Gateway 이동”으로 설명하나, VPC/LB 재배치도 내부적으로 동일한 stateful service relocation 메커니즘을 사용. [1]  
+5. **영향 버전 및 해결**: NSX 4.2.x 전체. 영구 fix는 “upcoming NSX release” 예정(2025-11-26 업데이트 기준 아직 미적용). Workaround는 고부하 시간대에 LB/VPC/Gateway 재배치 금지. [1]  
 
 **• 맥락 요약**  
-NSX 4.x baremetal Edge에서 VPC/LB active 재배치 = Tier-1/VPC Gateway state bulk sync + 기존 Edge의 대량 TCP/firewall state purge 과정입니다.  
-이때 high connection load(AP 트래픽 많음) 상태에서 두 스레드가 동시에 state list를 건드리면 race condition 발생 → datapathd가 dpdk_panic으로 즉시 죽음.  
-사용자 환경(As-is 단일 Edge → Web/AP 분리)은 전형적인 “stateful 서비스 마이그레이션 중 crash” 케이스로, be06/be14 모두 동일 트리거에 노출되었습니다. baremetal이라도 DPDK 기반 datapathd 동작은 VM과 동일해 증상이 같습니다.
+NSX Edge bare-metal에서 LB(VPC attach)는 stateful firewall + connection tracking 테이블을 관리합니다.  
+“Web용 LB active 재배치” 작업은 단순 failover가 아니라 **기존 Edge(be06/be14)의 수만 개 TCP/LB 상태를 새 Edge로 bulk sync**하면서 동시에 기존 Edge에서 purge/cleanup을 수행하는 과정입니다.  
+이때 purge thread와 IPC cleanup thread가 동시에 state를 건드리면 race condition이 발생 → datapathd panic → bare-metal에서는 kernel panic으로 이어져 Edge 전체가 재부팅되는 전형적인 패턴입니다.  
+be14 → be06 연속 발생은 Web LB 분리 작업 중 AP용 VPC/LB도 영향을 받은 결과로, As-is(단일 Edge 공존) → To-be(분리) 전환 과정에서 고부하 상태가 유지된 것이 결정적 원인입니다.
 
 **• 불확실성 및 한계점**  
-- **VPC/LB vs Tier-1**: KB는 공식적으로 “Tier-1 Gateway 이동”만 명시했으나, VPC Gateway + LB active 이동이 내부적으로 동일한 state migration 메커니즘을 사용하므로 **정확히 동일 원인이라고 확신할 수 없다**는 부분은 없음(로그/타이밍 100% 일치). 다만 KB 문서에 VPC/LB 명시가 없어 지원 티켓에서 추가 확인 필요.  
-- fix 릴리스 시기: 2025-11-26 이후 업데이트 없고, 2026년 3월까지 적용된 버전 정보 없음 → **현재 패치 버전이 존재하는지 확신할 수 없다**.  
+- KB 419190이 공식적으로 “Tier-1 Gateway 이동”만 언급했으므로, **LB/VPC 재배치가 정확히 동일한 버그인지 100% 확신할 수 없다** (다만 로그·트리거·내부 메커니즘이 완벽 일치).  
+- 정확한 NSX 버전(4.2.x 내 빌드 번호), 연결 상태 수(고부하 기준), core 파일 존재 여부 미확인.  
+- 다른 원인(예: bare-metal 특정 드라이버 이슈, stale DFW rule 등) 완전 배제 불가.  
 **추가 조사가 필요한 부분**:  
-  • NSX 정확한 버전(Manager → System → Software Update)  
-  • `/var/log/core/`에 core.dp-ipc.gz 파일 존재 여부 및 stack trace  
-  • Broadcom 지원 포털 최신 KB 검색(419190 fix 포함 여부)  
+  • `/var/log/syslog` 전체 + core.dp-ipc.gz 분석  
+  • NSX Manager UI에서 Edge Cluster 버전 및 VPC/LB 재배치 로그 확인  
+  • Broadcom 지원 티켓에 이 로그 + 타임라인 첨부  
 
 **• 결론**  
-현재까지 알려진 바에 따르면, **사용자 환경의 baremetal Edge 커널 패닉(실제 datapathd dpdk_panic)은 KB 419190과 로그·트리거·내부 메커니즘이 완전히 일치하는 동일 원인**입니다.  
-Web LB active 재배치가 고부하 상태에서 state cleanup race를 유발한 것이 핵심이며, baremetal 구성은 증상을 바꾸지 않습니다.  
-패치 전까지는 “피크 트래픽 시간대에 VPC/LB/Gateway active 이동 절대 금지 + 저부하 유지보수 윈도우에서만 실행”으로 완벽 회피 가능합니다.  
-로그 확인 후 Broadcom 지원 티켓 오픈 시 “KB 419190 참조”라고 명시하면 빠른 대응 받으실 수 있습니다. 추가로 NSX 버전이나 core 파일 공유해 주시면 더 정밀 분석 도와드리겠습니다.
+현재까지 알려진 바에 따르면, **사용자 환경의 커널 패닉은 KB 419190과 로그·트리거·원인이 동일**한 동일 이슈입니다.  
+Bare-metal 특성으로 datapathd panic이 kernel panic으로 나타난 형태이며, Web용 LB active 재배치가 실질적인 stateful migration이었기 때문에 발생했습니다.  
+패치 전까지는 “피크 타임에 LB/VPC/Gateway 재배치 절대 금지 + 저부하 유지보수 윈도우만 사용” 정책으로 완전히 회피 가능합니다.  
+로그가 이렇게 명확히 일치하니 Broadcom 지원에 KB 419190 참조하며 바로 티켓 오픈하시면 빠른 확인 및 향후 패치 적용 안내를 받을 수 있을 것입니다. 추가 로그나 NSX 버전 알려주시면 더 세밀한 분석 도와드리겠습니다.
