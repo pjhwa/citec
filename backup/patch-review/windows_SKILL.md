@@ -1,6 +1,6 @@
 ---
-**이름:** OS 패치 검토 헬퍼 (Windows Server)  
-**설명:** 정의된 임계값(threshold)에 따라 Windows Server 누적 업데이트(Cumulative Update)를 운영 시스템에 적용할지 여부를 결정하기 위한 가이드라인 세트입니다.
+name: OS 패치 검토 헬퍼 (Windows Server)  
+description: 정의된 임계값(threshold)에 따라 Windows Server 누적 업데이트(Cumulative Update)를 운영 시스템에 적용할지 여부를 결정하기 위한 가이드라인 세트입니다.
 ---
 
 # Windows Server 패치 검토 가이드라인
