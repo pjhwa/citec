@@ -1,3 +1,20 @@
+```
+jerry@jerrymacmini ollama-code % claude --model qwen3:14b
+ ▐▛███▜▌   Claude Code v2.1.89
+▝▜█████▛▘  qwen3:14b · API Usage Billing
+  ▘▘ ▝▝    ~/dev/ollama-code
+  ⎿  SessionStart:startup hook error
+
+❯ analysis code
+
+⏺ There's an issue with the selected model (qwen3:14b). It may not exist or you may not have access to it. Run /model
+  to pick a different model.
+```
+
+
+
+
+
 jerry@jerrymacmini ollama-code % export ANTHROPIC_BASE_URL=http://localhost:9099
 export ANTHROPIC_API_KEY=local-ollama-bridge
 claude --model qwen3:14b
