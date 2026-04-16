@@ -170,3 +170,56 @@
 
 ---
 
+## [CITECTS-2459] SDS VDI AD 로그인 불가 이슈
+> 업무구분: 기술지원 | 담당자: 백종탁 | 점검: ⚠️ | 상태: DONE
+
+## 제목 : ([기술지원] SDS VDI AD 로그인 불가 이슈)
+
+- **배경** :
+- SDS VDI (VDI 환경)
+  - 로그인 시 웹사이트는 접속 가능하지만 VDI 시작이 불가함  
+  - AD01, AD02 서버가 부팅 이후 CPU·메모리 사용률이 급증
+
+- **요청부서** : 김재현 / DaaS그룹(SCP인프라운영) / 삼성SDS
+
+- **일정** : 2026-03-30 ~
+
+- **인력** : 백종탁
+
+- **지원내용** :
+  - 증상 및 임시 조치
+    - 증상: VDI 로그인 시 웹사이트는 정상 동작하지만 VDI 세션이 시작되지 않음. 부팅 후 AD01·AD02 서버의 CPU·메모리 사용률이 상승.
+    - 임시 조치: V3 및 EPP 소프트웨어 삭제
+  - 시스템 정보 수집
+
+|
+| Type | 실행 환경 | 시스템 정보 수집 방법 |
+| --- | --- | --- |
+| System Configuration | CMD | `mkdir c:\temp`<br>`msinfo32 /nfo c:\temp\msinfo_%computername%.nfo` |
+|  | PowerShell | `$filePath = "C:\temp"`<br>`if (!(Test-Path $filePath)) { New-Item -ItemType Directory -Path $filePath | Out-Null }`<br>`$hostname = $env:computername`<br>`$fileName = "$filePath\msinfo_$hostname_$(Get-Date -Format 'yyyyMMdd_HHmm').nfo"`<br>`msinfo32 /nfo $fileName` |
+| Security Configuration | CMD | `mkdir c:\temp`<br>`secedit.exe /export /cfg C:\Temp\secpol_%computername%.inf` |
+|  | PowerShell | `mkdir c:\temp`<br>`secedit.exe /export /cfg C:\Temp\secpol_$env:computername.inf` |
+|
+  - 로그 수집
+
+|
+| 분류 | Product | Log Type | 로그 위치 및 수집 방법 |
+| --- | --- | --- | --- |
+| Clusterware | Windows cluster | Windows cluster log | `Get-ClusterLog -Destination C:\Temp -UseLocalTime` (Destination 옵션에 지정한 경로에 로그 생성) |
+| OS | Windows | System Event log | GUI: 이벤트 뷰어 → Windows 로그 → 시스템 → “다른 이름으로 저장” → CSV<br>PowerShell: `Get-EventLog -LogName System | Select-Object EntryType,TimeGenerated,Source,EventID,Category,Message | Export-CSV -Path hostname.system.csv -NoClobber -Encoding UTF8` |
+|  |  | Application Event log | GUI: 이벤트 뷰어 → Windows 로그 → 어플리케이션 → “다른 이름으로 저장” → CSV<br>PowerShell: `Get-EventLog -LogName Application | Select-Object EntryType,TimeGenerated,Source,EventID,Category,Message | Export-CSV -Path hostname.application.csv -NoClobber -Encoding UTF8` |
+|  |  | Security Event log | GUI: 이벤트 뷰어 → Windows 로그 → 보안 → “다른 이름으로 저장” → CSV<br>PowerShell: `Get-EventLog -LogName Security | Select-Object EntryType,TimeGenerated,Source,EventID,Category,Message | Export-CSV -Path hostname.security.csv -NoClobber -Encoding UTF8` |
+|
+  - 성능 데이터 수집
+
+|
+| 작업 | 명령 |
+| --- | --- |
+| 수집기 생성 | `Logman.exe create counter PerfLog-Long -o "c:\perflogs\PerfLog-Long.blg" -f bincirc -v mmddhhmm -max 1024 -c "\LogicalDisk(*)\*" "\Memory\*" "\PhysicalDisk(*)\*" "\Processor(*)\*" "\Process(*)\*" "\System\*" "\Network Interface(*)\*" "\DirectoryServices(NTDS)\*" -si 00:00:10`<br># 용량 제한: 1024 MB (≈1‑2일 데이터)<br># 수집 주기: 10 초 |
+| 수집기 시작 | `Logman.exe start PerfLog-Long` |
+| 수집기 중지 | `Logman.exe stop PerfLog-Long`<br># 중지 후 c:\perflogs\ 아래 .blg 파일 확인 |
+| 수집기 삭제 | `Logman.exe delete PerfLog-Long`<br># 불필요 시 삭제 가능 |
+|
+
+
+---
