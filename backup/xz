@@ -223,3 +223,38 @@
 
 
 ---
+
+## [CITECTS-2461] [삼성닷컴] 전자 D2C 미국 Hybris 전환 성능 테스트 지원
+> 업무구분: 기술지원 | 담당자: 박경현 | 점검: ⚠️ | 상태: DONE
+
+## 제목 : ([기술지원] 삼성닷컴 전자 D2C 미국 Hybris 전환 성능 테스트 지원)
+
+- **배경** :
+- Hybris 전환 시스템 (미국 D2C센터)
+  - 전자 고객사(D2C센터) 미국 법인 Hybris 전환 중, 4월 말 오픈 예정 → 성능 테스트 및 최적화 필요
+- **요청부서** : 이커머스실행그룹(디지털CRM) 김태근 그룹장
+- **일정** : 2026.04.02(목) ~
+- **인력** : 전력식, 박경현, 이상준
+- **지원내용** :
+  - 4/3(금) 14시 : 관련 내용 공유 미팅
+    - 참석자 : 전자 김종철 프로, 이커머스실행그룹, CI-TEC
+  - Configuration 점검 후 의견 전달
+    - Hybris 기반이므로 전자 → SAP 검토 요청
+    - GC duration 감소를 위한 옵션 4가지 전달 및 검토 요청
+      - `-XX:MaxGCPauseMillis=200`
+      - `-XX:G1HeapRegionSize=32m`
+      - `-XX:InitiatingHeapOccupancyPercent=35`
+      - `-XX:+ParallelRefProcEnabled`
+    - jgroups socket buffer size 증가 적용 옵션 전달
+      - send buffer size 증가 : 604k → 20M (양방향 통신이므로 recv도 동일)
+    - MS SQL 연결을 위한 JDBC Driver 옵션 검토 요청
+      - `sendStringParametersAsUnicode=true`
+      - 모든 DB 스키마가 `nvarchar` 타입인지 확인 요청
+    - Connection Pool 옵션 오류 전달
+      - `db.pool.closeOnRollbackAfterError = mysql` (MS‑SQL 사용 중)
+      - rollback 이후 close 여부 설정( true / false) 필요
+  - SQL 튜닝 (진행 중)
+    - 3개 SQL에 대한 분석 및 최적화 작업 진행
+  - 부하 테스트 시 SAP HAC, Dynatrace 기반 이상 패턴 분석 (진행 중)
+
+---
