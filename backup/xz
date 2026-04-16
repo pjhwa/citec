@@ -258,3 +258,59 @@
   - 부하 테스트 시 SAP HAC, Dynatrace 기반 이상 패턴 분석 (진행 중)
 
 ---
+
+## [CITECTS-2468] DRCC활용 방안
+> 업무구분: 기술지원 | 담당자: 박영철 | 점검: ⚠️ | 상태: DONE
+
+## 제목 : ([기술지원] DRCC 활용 방안 검토)
+
+- **배경** :
+  - 활용률이 낮은 DRCC를 SDS 오퍼링에 지속할지 여부 판단 필요
+  - 활용률을 높이기 위해 DRCC 워크로드 확보 방안 검토
+  - Exadata 외에 어떤 업무·상품이 DRCC와 시너지 효과를 낼 수 있을지 검토
+  - 비용·성능·운영 효율성을 고려한 후보군(예: 백업·DR, 고가용성 서비스 등)
+
+- **시스템 명** : DRCC (Distributed Replicated Cloud Cache) (미확인)
+
+- **요청부서** : SCP 담당 김은영부사장
+
+- **일정** : 03/27 ~
+
+- **인력** : 이승택, 전력식, 박영철
+
+- **지원내용** :
+  - **SCP PaaS DB 백업 저장소로의 DRCC 활용 방안 검토**
+    - 현 상황 및 문제점
+
+| 항목 | 내용 |
+| --- | --- |
+| *현재 백업 저장소* | SCP Object Storage → {} 마운트 사용<br>이유: 일부 DBMS(Native Backup) 가 Object Storage 미지원 → 예) PostgreSQL {} |
+| *문제점* | • 성능 이슈 (특히 대용량 DB 백업 시) |
+| *SCP 파일스토리지 비활용 사유* | • 초기 도입 시 *비용* 부담<br>• 현재 *개발 일정* 지연 → 구현안되어있음 |
+    - DRCC (Distributed Replicated Cloud Cache) 활용 가능성 (PoC 테스트)
+
+| 구분 | 내용 |
+| --- | --- |
+| *목표* | SCP PaaS DB에 대한 백업 저장소를 DRCC ZFS/Object Storage 기반으로의 성능 검증 |
+| *현 상황* | ZFS 테스트 환경 및 구성 가능한 프로젝트가 없음 |
+| *기능 검토* | ZFS는 파일 스토리지와 동일한 기능 제공 → 기술적 장애는 없어 보임 |
+| *성능 전망* | 지난해 Oracle 환경에서 수행된 ZFS/Object Storage 성능 테스트 결과를 참고하면, PaaS DB 백업에 충분한 I/O 성능 가능 |
+    - 내부 검토 결과
+      - 개발공수 / 비용 / 신규 사용자 유입 관점에서 부정적인 의견 보고 (배성호 그룹장 → 이주평 상무님)
+    - 참고 자료
+      - DRCC ZFS를 활용한 Oracle 백업 성능 테스트 결과
+        - (참고) DRCC Object로 백업 시, RMAN Oracle Cloud Backup 모듈 사용하여 백업 성능이 좋음
+        - ![](https://devops.sdsdev.co.kr/confluence/download/attachments/2235181312/image-2025-8-20_15-18-0.png?version=1&modificationDate=1775792505000&api=v2)
+      - DRCC Object Storage를 활용한 s3fs Oracle Archive Log 백업 성능 테스트 결과
+        - 124 MB/Sec으로 SCP s3fs 대비 29.1% 향상
+        - ![](image-2026-04-10-14-12-42-990.png)
+  - **DRCC ZFS Q&A**
+    - 프로토콜 NFS / CIFS(윈도우) 지원 여부 → NFS 지원, CIFS 지원 (DRCC File Storage CIFS 미지원)
+    - ZFS Volume 암호화 기능 → 가능
+    - SSD / HDD → DRCC SSD만 지원
+    - ZFS NAS ACL(접근제어) → ACL을 통해 관리 가능<br>ZFS Pool 구성 후 여러 Subpool을 DB 서버에 할당 가능<br>ACL 이용해 특정 IP에서 특정 Subpool 접근 설정
+    - 멀티AZ 지원 → 멀티AZ 지원 안됨, ZFS Replication 지원
+    - 관리방법 → GUI, Rest-API 모두 지원
+  - **관련 Confluence URL** : [[04/03] DRCC활용 방안](https://devops.sdsdev.co.kr/confluence/x/ACk6hQ)
+
+---
