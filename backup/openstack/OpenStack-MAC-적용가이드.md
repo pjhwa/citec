@@ -1,6 +1,6 @@
 # OpenStack Helm 환경 MAC(Mandatory Access Control) 적용 가이드
 
-> **문서 목적**: Samsung SDS Cloud OpenStack Helm 환경에서 MAC(AppArmor + sVirt) 적용을 위한 종합 가이드
+> **문서 목적**: OpenStack Helm 환경에서 MAC(AppArmor + sVirt) 적용을 위한 종합 가이드
 > **작성일**: 2026-04-17
 > **대상 환경**: OpenStack 2025.1 (Epoxy) + Ubuntu 22.04/24.04 + Kubernetes
 
