@@ -6,7 +6,7 @@ apport apport-symptoms whoopsie apport-core-dump-handler
 ftp telnet inetutils-telnet
 byobu screen tmux
 strace gdb crash bpftrace bpfcc-tools
-git buildah podman
+git buildah
 bind9-dnsutils bind9-host bind9-libs
 htop sysstat
 snapd
@@ -24,7 +24,7 @@ apport apport-symptoms whoopsie
 ftp telnet inetutils-telnet
 byobu screen tmux
 strace gdb crash bpftrace bpfcc-tools
-git buildah podman
+git buildah
 bind9-dnsutils bind9-host
 htop sysstat
 snapd
@@ -47,7 +47,7 @@ baobab eog tracker* yelp zenity
 aisleriot mahjongg gnome-mines gnome-sudoku
 
 # 개발/디버그
-strace gdb crash git buildah podman bpftrace bpfcc-tools
+strace gdb crash git buildah bpftrace bpfcc-tools
 
 # 불필요 서비스
 apport apport-symptoms whoopsie whoopsie-preferences
@@ -68,7 +68,7 @@ apport apport-symptoms whoopsie
 ftp telnet inetutils-telnet
 byobu screen tmux
 strace gdb crash bpftrace bpfcc-tools
-git buildah podman
+git buildah
 bind9-dnsutils bind9-host
 htop sysstat
 snapd
@@ -84,7 +84,7 @@ apport apport-symptoms whoopsie
 ftp telnet inetutils-telnet
 byobu screen tmux
 strace gdb crash bpftrace bpfcc-tools
-git buildah podman
+git buildah
 bind9-dnsutils bind9-host
 htop sysstat
 snapd
