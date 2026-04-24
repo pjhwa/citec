@@ -794,7 +794,70 @@ cp -r ./test-results/$SERVER $BUNDLE/test-results/
 # test-matrix.csv 업데이트 (§16.2)
 ```
 
-### G.2 summary.md 증분 작성
+### G.2 서버별 상세 테스트 보고서 작성 (필수)
+
+> **원칙**: 보고서는 **절대 요약하지 않는다.** 이전 서버의 `test-report-<server>.md` 형식과 동일한 수준의 상세도를 유지한다.
+> 기준 형식: `docs/test-report-test-nn2.md` (상세 보고서의 기준 템플릿)
+
+`docs/test-report-<server>.md` 에 아래 항목을 모두 포함해 작성:
+
+```markdown
+# 테스트 보고서: <server> (<profile>) — <날짜>
+
+## 서버 정보
+| 항목 | 값 |   ← 호스트명, 테스트 ID, 프로파일, OS, 테스트 일시,
+                        사용 스크립트 IN/OUT, 번들 모드 전부 기재
+
+## Phase A — 환경 진단
+- 번들 모드, 이전 버그 검토, OS·디스크·sudo·dpkg 체크 결과 상세
+- 판정: ✅/❌
+
+## Phase B — 패키지 정합성
+- 기준 파일명, 현재 패키지 수, diff 결과, 조치 내용
+- 판정: ✅/❌
+
+## Phase C — Dry-run
+- 프로파일 감지 결과, 직접/연쇄 제거 수, 총 영향 수
+- 제거 대상 목록 (직접 N개 전체 나열)
+- 발견 버그 (있으면) 상세: 현상·원인·수정 내용·재검증
+- 보호 체크리스트 전항목 ✅/❌
+- 판정: ✅/❌
+
+## Phase D — Execute
+- 사전 조치 (kubelet mask 등) 상세
+- 외부 백업 경로
+- 실행 타임라인 (시:분:초 → 주요 이벤트)
+- 직접 제거 목록, 연쇄 제거 목록, autoremove 결과
+- 발견 버그 상세 (현상·원인 분석·채택/불채택 해결책·확정 수정 내용)
+- 사후 검증 결과 표 (항목별 ✅/❌)
+- 판정: ✅/❌/⚠
+
+## Phase E — Rollback 검증
+- 실행 방법, 복원 대상 수
+- dpkg-selections diff, apt-mark diff, comm 비교 결과
+- 수동 정리 내용 (있으면)
+- 판정: ✅/❌
+
+## Phase F — Edge Case
+- F.1~F.10 결과 표 (통과/스킵/실패 사유 포함)
+- 주요 항목 검증 상세
+- 판정: ✅/❌
+
+## 발견 버그 (N건)
+- 표: ID, 심각도, Phase, 설명, 상태
+- 각 버그별 상세 섹션: 발견 시점, 원인, 수정 내용, 검증 결과
+
+## 주요 검증 확인 표
+- 이전 서버에서 발견된 버그 수정 효과를 현 서버에서 재확인한 항목
+
+## 다음 서버로 인계 사항
+- 번호 매긴 목록으로 구체적으로 기재
+
+## 산출물 목록
+- 표: 파일명, 위치, 비고
+```
+
+### G.3 summary.md 증분 작성
 
 현재 서버 섹션을 `summary.md`에 **추가**:
 
@@ -837,14 +900,37 @@ cp -r ./test-results/$SERVER $BUNDLE/test-results/
 - <중요 메모>
 ```
 
-### G.3 test-matrix.csv 업데이트
+### G.3.1 test-matrix.csv 업데이트
 
 ```csv
 server,profile,phase_a,phase_b,phase_c,phase_d,phase_e,phase_f,bugs_found,bugs_fixed,script_version_in,script_version_out,timestamp
 test-nn,k8s-worker,✅,✅,✅,✅,✅,✅,2,2,v5.0,v5.0.2,2026-04-22T14:30:00
 ```
 
-### G.4 번들 패키징 (다음 서버로 옮기기 용이)
+### G.4 인계 문서 전체 반영 확인 (번들 패키징 전 필수)
+
+번들을 생성하기 **전에** 아래 모든 문서가 현재 서버 테스트 내용을 완전히 반영하고 있는지 확인한다.
+이 단계를 건너뛰면 번들을 수신한 다음 서버가 구버전 정보를 기반으로 작업하게 된다.
+
+| 문서 | 확인 항목 |
+|------|-----------|
+| `docs/test-report-<server>.md` | 상세 보고서 작성 완료 (G.2.R 참조) |
+| `docs/summary.md` | 현재 서버 섹션 추가 완료 (G.2 참조) |
+| `docs/CHANGELOG.md` | 이번 테스트에서 수정된 스크립트 버전 전체 기재 |
+| `docs/KNOWN-ISSUES.md` | 새로 발견된 KI 등록, 수정된 KI는 Fixed 표시 |
+| `test-results/test-matrix.csv` | 현재 서버 행 추가, `bugs_fixed`·`script_version_out` 정확 기재 |
+| `docs/BUNDLE-CHECKSUMS.txt` | 이번 테스트에서 생성된 스크립트 파일 md5 추가 |
+
+```bash
+# 확인 방법 (빠른 검토)
+grep -c "$SERVER" $BUNDLE/docs/summary.md          # 1 이상이면 OK
+grep -c "$SERVER" $BUNDLE/test-results/test-matrix.csv  # 1 이상이면 OK
+ls $BUNDLE/docs/test-report-${SERVER}.md           # 파일 존재 확인
+```
+
+> ⚠ 위 확인 중 하나라도 실패하면 해당 문서를 먼저 업데이트한 후 G.4로 진행.
+
+### G.5 번들 패키징 (다음 서버로 옮기기 용이)
 
 ```bash
 cd ~
@@ -852,7 +938,7 @@ tar czf minimize-bundle-after-$SERVER-$(date +%Y%m%d).tar.gz minimize-test-bundl
 ls -lh minimize-bundle-after-$SERVER-*.tar.gz
 ```
 
-### G.5 Jerry에게 최종 보고
+### G.6 Jerry에게 최종 보고
 
 ```
 📊 서버 <hostname> 테스트 완료
