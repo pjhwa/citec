@@ -1,6 +1,6 @@
 # NextMosaic Cluster DB Failover (2026-04-22) — 통합 RCA 보고서
 
-> 내부 분석본(DBfailover원인분석석), Grok 분석, Gemini 분석을 교차 검증하고  
+> 내부 분석본(DBfailover원인분석), Grok 분석, Gemini 분석을 교차 검증하고  
 > 로그·벤더 문서에 근거한 사실(Ground Truth)과 추론을 분리하여 작성한 통합 보고서.
 
 ---
