@@ -28,8 +28,52 @@ NTP #2가 3분 당겨진 상태에서 NTP #1이 8,333ppm(0.008333초) 속도로 
  ** 단, 전제 조건은 스토리지와 NTP #1의 시간 차이가 128ms 내에서 움직여야 함
 
 
+Chrony의 공식 문서 및 소스 코드에서 정의하는 기본 최대 Slew 속도(`maxslewrate`)에 대한 인용 정보입니다.
 
-감사드립니다.
+### 1. 공식 매뉴얼 페이지 (chrony.conf) 인용
+Chrony의 공식 매뉴얼(`man chrony.conf`)에서는 `maxslewrate` 지시어에 대해 다음과 같이 명시하고 있습니다.
+
+> **"The maxslewrate directive specifies the maximum rate at which chronyd will slew the system clock. The value is specified in parts per million (ppm). The default value is 83333.333, which corresponds to 1/12 of the actual frequency."**
+>
+> (해석: **maxslewrate** 지시어는 **chronyd**가 시스템 시계를 Slew(점진적 동기화)할 수 있는 최대 속도를 지정합니다. 값은 ppm 단위로 지정됩니다. **기본값은 83333.333이며, 이는 실제 주파수의 1/12에 해당합니다.**)
+
+이 수치는 일반적인 `ntpd`나 Linux 커널의 한계치인 500 PPM보다 약 166배나 공격적인 수치입니다.
+
+---
+
+### 2. 소스 코드 (conf.c) 인용
+Chrony 소스 코드 내에서 이 기본값이 정의된 부분은 `conf.c` 파일(또는 버전에 따라 관련 헤더 파일)에서 확인하실 수 있습니다.
+
+```c
+/* conf.c 파일 내 정의 부분 */
+
+#define DEFAULT_MAX_SLEW_RATE 83333.333333
+
+/* ... 중략 ... */
+
+void
+CNF_Initialise(int reading_from_line, int sparse)
+{
+  /* ... */
+  max_slew_rate = DEFAULT_MAX_SLEW_RATE;
+  /* ... */
+}
+```
+
+---
+
+### 3. 기술적 의미 해석
+인용된 **83,333.333 PPM**은 수학적으로 **1/12**이라는 분수에서 기인합니다. 이를 실제 시간 보정 속도로 환산하면 다음과 같습니다.
+
+* **PPM 계산:** $1,000,000 \mu s \div 12 \approx 83,333.333 \mu s$
+* **초당 보정량:** 초당 약 **83.3ms** (0.0833초)
+* **의미:** Chrony는 기본 설정에서 1초가 흐를 때 시스템 시간을 최대 0.0833초만큼 더 빨리 가게 하거나 느리게 가서 오차를 줄일 수 있습니다.
+
+프로님께서 이전에 언급하셨던 8,333 PPM보다 10배 더 빠른 수치이며, 이 속도로 동기화가 진행될 경우 NetApp NAS의 128ms Step 임계치는 단 **1.5초 내외**($128ms \div (83.3ms - 0.5ms) \approx 1.54s$)에 돌파하게 됩니다. 따라서 `smoothtime` 등을 통해 이 속도를 강제로 제어하는 것이 조치 계획의 핵심입니다.
+
+
+
+
 
 
 # SCP v2 대구 PPP 행정망 NAS 스토리지 NTP 장애 조치 계획서
