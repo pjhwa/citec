@@ -1,0 +1,63 @@
+안녕하세요. Broadcom VCF Support 정해원입니다.
+
+ 
+
+@이광호 프로님, 명확한 정보를 전달해드리지 못하여 죄송한 말씀드립니다.
+
+이승택 그룹장님과 통화한 바, guest os에서 수집된 sar 데이터에서 문제 시점에 storage latency 관련된 문제가 있었던 것으로 확인해주셨습니다.
+
+즉, 이전 KB435544에서 다뤄진 내용대로 아래 가이드를 참고하시어 1) PVSCSI Controller 분리, 2) PVSCSI Tuning 등을 검토해보실 수 있습니다.
+
+타 고객사 사례에서도 MSSQL 성능 이슈가 있던 상황에서 PVSCSI Controller를 분리만 하고 성능이 대폭 개선된 사례가 있었습니다.
+
+ 
+
+1. ARCHITECTING MICROSOFT SQL SERVER ON VMWARE VSPHERE®
+
+https://www.vmware.com/docs/sql-server-on-vmware-best-practices-guide
+
+The following guidelines can help to achieve best performance:
+
+• Place SQL Server data (system and user), transaction log, and backup files into separate VMDKs (if not using RDMs) and possibly on separate datastores.
+
+• For the most critical databases where performance requirements supersede all other requirements, maintain 1:1 mapping between VMDKs and LUNs.
+
+ 
+
+2. SAP HANA on VMware vSphere Best Practices
+
+https://www.vmware.com/docs/vmw-sap-hana-vmware-vsphere-best-practices
+
+
+
+ 
+
+3. Large-scale workloads with intensive I/O patterns might require queue depths significantly greater than Paravirtual SCSI default values
+
+https://knowledge.broadcom.com/external/article/343323/largescale-workloads-with-intensive-io-p.html
+
+For a Linux virtual machine:
+
+Create a file of any name in the /etc/modprobe.d/ directory with this line:
+
+options vmw_pvscsi cmd_per_lun=254 ring_pages=32
+
+Note: For RHEL5, edit /etc/modprobe.conf with the same line. Make a new initrd for the settings to take effect. You can do this either by using mkinitrd, or by re-running vmware-config-tools.pl. Starting in version 6, RHEL uses modprobe.d.
+
+Alternatively, append these to kernel boot arguments (for example, on Red Hat Enterprise Linux edit /etc/grub.conf or on Ubuntu edit /boot/grub/grub.cfg).
+
+vmw_pvscsi.cmd_per_lun=254
+vmw_pvscsi.ring_pages=32
+
+Reboot the virtual machine.
+
+Verify the changed queue depth by using cat on those files:
+
+$ cat /sys/module/vmw_pvscsi/parameters/cmd_per_lun
+$ cat /sys/module/vmw_pvscsi/parameters/ring_pages
+
+ 
+
+감사합니다.
+
+정해원 드림
