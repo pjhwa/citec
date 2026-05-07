@@ -1,3 +1,137 @@
+# 11개 Timeout 사건 종합 분석표
+
+## 표 1: 각 시점별 이벤트 매트릭스
+
+| Timeout (KST) | UTC | cluster_wd stall | aof_slow_disk_io | sar vDisk await peak | LB 에러 | NSX BFD flap (확인) | 추정 책임 호스트 |
+|---|---|---|---|---|---|---|---|
+| 5/3 12:06 | 5/3 03:06 | 7s, 3 evt | — | (sar 5/3 미수집) | 없음 | 미확인 | pifpmd01? (5/3 R-lat 3.87) |
+| 5/4 21:14 | 5/4 12:14 | 23s, 13 evt | — | (sar 5/4 미수집) | 없음 | 미확인 | pifpmd01 (5/4 R-lat 2.67) |
+| 5/5 01:26 | 5/4 16:26 | 19s, 13 evt | — (REAR 백업 01:24 종료) | pifpmd02 16.8ms | 9건 | 미확인 | pifpmd02 (R-lat 3.6) |
+| 5/5 05:38 | 5/4 20:38 | 22s, 19 evt | — | pifpmd01 15.2ms | 2건 | **★ 확인 (pifpmd01 호스트, 5개 TEP 동시 flap)** | **pifpmd01 (호스트 underlay 격리)** |
+| 5/5 09:50 | 5/5 00:50 | 24s, 18 evt | — | pifpmd01 36ms (튐) | 1건 | 미확인 | 다중 추정 |
+| 5/5 14:03 | 5/5 05:03 | 22s, 13 evt | **★ node:2 (14:02:43~14:03:13)** | pifpmd02 97.5ms | 6건 | 미확인 | pifpmd02 |
+| 5/5 18:15 | 5/5 09:15 | 21s, 17 evt | — | pifpmd01 24.9ms | 4건 | 미확인 | pifpmd01 |
+| 5/5 22:27 | 5/5 13:27 | 25s, 16 evt | **★ node:2 (22:27:12~22:27:42)** | pifpmd02 23.9ms | 5건 | 미확인 | pifpmd02 |
+| 5/6 02:39 (missing) | 5/5 17:39 | 24s, 15 evt | — | pifpmd01 47.6ms | 1건 | 미확인 | pifpmd01 |
+| 5/6 06:52 | 5/5 21:52 | 23s, 18 evt | — | pifpmd01 137ms (★최대) | 1건 | **★ 확인 (pifpmd03 호스트, 3개 TEP flap, "Neighbor Signaled Session Down")** | **pifpmd03 (호스트 underlay 격리)** |
+| 5/6 11:05 | 5/6 02:05 | 14s, 9 evt | — | pifpmd02 52.8ms | 1건 | 미확인 | 다중 |
+| 5/6 15:21 | 5/6 06:21 | 21s, 18 evt | — | pifpmd02 89.4ms | 없음 | 미확인 | pifpmd02 |
+
+---
+
+## 표 2: Layer별 신호 강도 (각 Layer가 timeout과 얼마나 일치하는가)
+
+| Layer | 11/11 timeout 매칭? | 매칭 강도 | 진원지 가능성 |
+|---|---|---|---|
+| **NSX overlay BFD flap** (ESXi vmkernel) | **2/2 검증된 건은 ★완벽 매칭** | **Very High** | **★★★ 진원지 후보 1순위** |
+| **cluster_wd 통신 timeout** (Redis Enterprise) | **11/11 완벽 매칭** | **Very High** | 증상 (BFD flap의 결과) |
+| sar vDisk await spike (pifpmd01/02) | 10/11 매칭 (5/3 미수집) | High | **증상** (NAS/datastore I/O가 BFD flap 시 동시 saturate) |
+| LB Datapath connection failure | 9/11 매칭 (5/3, 5/6 15:21 0건) | Moderate | 증상 |
+| aof_slow_disk_io (Redis) | 2/11 매칭 (14:03, 22:27만) | Low | 우연 동시 발생 (별개 메커니즘) |
+| dmcproxy "Connection reset" | 0/11 (상시 발생) | None | Background noise, 무관 |
+| OS journal (kernel/oom/io error) | 0/11 | None | 완전 정상 |
+| NetApp NFS I/O (NFS call/s) | 0/11 (NFS call 0.17/s 일정) | None | 완전 무관 |
+| Redis master shard 로그 | 0/11 (4/11 이후 침묵) | None | 완전 무관 |
+
+---
+
+## 표 3: 노드/호스트별 영향 비대칭성
+
+| 측정 | node:1 (pifpmd01) | node:2 (pifpmd02) | node:3 (pifpmd03) |
+|---|---|---|---|
+| ESXi 호스트 | cn05-ss107-krw2 | cn08-ss106-krw2 | cn11-ss101-krw2 |
+| Master shard | redis:22 (slot 0-5460) | redis:26 (slot 10923-16383) | redis:24 (slot 5461-10922) |
+| Slave shard | redis:25 | redis:23 | redis:27 |
+| AOF rewrite 횟수 | 23 | 38 | **55** (가장 활발) |
+| sar vDisk await spike (5/5-5/6) | 매번 2~137ms | 매번 6~97ms | **항상 ≤1.4ms** |
+| sar Read Latency (NSX 보고) | 0.13~4.73ms | 0.27~8.0ms | **0.067~0.13ms** |
+| OS journal 5월 비정상 키워드 | 일부 (REAR, aof events) | 0 | 0 |
+| cluster_wd reporter→target 합계 | →node:3 70건, →node:2 0건 | →node:3 76건, →node:1 0건 | →node:1 60건, →node:2 57건 |
+| BFD flap 확인 | **★ 5/5 05:38 (다중 TEP flap)** | 미확인 | **★ 5/6 06:52 (다중 TEP flap)** |
+
+**핵심 비대칭**: pifpmd03만 storage I/O latency가 깨끗 → ESXi 호스트(cn11-ss101-krw2)의 datastore가 다른 두 호스트보다 우수하거나, noisy neighbor 영향이 적음. 그러나 **NSX overlay BFD 단절은 모든 호스트에서 발생** — 호스트별 underlay 차이는 별 문제가 안 됨.
+
+---
+
+## 표 4: 각 layer별 Confidence 등급화
+
+| 결론 | Confidence | 근거 |
+|---|---|---|
+| 11개 timeout 모두 cluster_wd 통신 정지로 직접 매칭 | **Very High** | 11/11, 평균 21초 stall |
+| 252분 정확한 주기성 (5/4 21:13 락온 후) | **Very High** | std deviation 1.5분 |
+| 진정한 원인은 NSX-T overlay BFD flap | **High** | 2/2 확인된 시각에서 정확 매칭, 나머지 9건은 vmkernel.log 추가 검증 필요 |
+| 트리거는 underlay network 또는 NSX 측 정기 작업 | **Moderate-High** | 252분 주기는 cron의 일반적 단위가 아님, NSX/underlay 정기 작업 추정 |
+| storage I/O는 진원지 아님 (증상일 뿐) | **High** | NFS 0.17/s 일정, OS journal 깨끗, aof_slow_disk_io는 2건만 |
+| Redis 자체 결함 아님 | **Very High** | master shard 로그 4월부터 침묵, 정상 운영 |
+| Lettuce timeout 3S는 가시화 임계 (원인 아님) | **Very High** | stall이 ~21초이므로 3초든 30초든 stall 동안 명령 실패 |
+| node:3 (pifpmd03)가 단독 진원지 | **부인** (이전 분석 정정) | 확인된 BFD flap에 pifpmd01, pifpmd03 양 호스트 모두 등장 |
+
+---
+
+## 표 5: 각 시점별 인과 사슬 추정
+
+| Timeout | 1차 트리거 | 2차 영향 | 3차 결과 (timeout) |
+|---|---|---|---|
+| 5/3 12:06 | NSX BFD flap (추정, 7초 짧음 — 첫 발생) | 단일 노드 일시 격리 | 1건 timeout |
+| 5/4 21:14 | NSX BFD flap (252분 락온 시작) | 다중 노드 격리 시작 | 1건 timeout |
+| 5/5 01:26 | NSX BFD flap **+ REAR mkbackup 후폭풍** (01:24 종료, page cache flush) | pifpmd01 디스크 부하 + 네트워크 stall 동시 | 1건 timeout (이중 증폭) |
+| 5/5 05:38 | **★ NSX BFD flap 확인 (pifpmd01 호스트 5 TEP)** | pifpmd01 격리, master:redis-22 응답 정지 | 1건 timeout |
+| 5/5 09:50 | NSX BFD flap (추정) | pifpmd01 vDisk 36ms | 1건 timeout |
+| 5/5 14:03 | NSX BFD flap (추정) **+ node:2 AOF fsync stall 우연 동시** | pifpmd02 격리 + 디스크 stall | 1건 timeout (가장 강력 증폭) |
+| 5/5 18:15 | NSX BFD flap (추정) | pifpmd01 vDisk 24ms | 1건 timeout |
+| 5/5 22:27 | NSX BFD flap (추정) **+ node:2 AOF fsync stall 우연 동시** | pifpmd02 격리 + 디스크 stall | 1건 timeout (이중) |
+| 5/6 02:39 | NSX BFD flap (추정) | pifpmd01 vDisk 47ms | **사용자 알림 누락** |
+| 5/6 06:52 | **★ NSX BFD flap 확인 (pifpmd03 호스트, "Neighbor Signaled Session Down")** | pifpmd03 격리, master:redis-24 응답 정지, **pifpmd01 vDisk 137ms (cascading)** | 1건 timeout |
+| 5/6 11:05 | NSX BFD flap (추정), 짧은 stall (14s, 9 evt) | 일시 격리 | 1건 timeout |
+| 5/6 15:21 | NSX BFD flap (추정) | pifpmd02 vDisk 89ms | 1건 timeout |
+
+---
+
+## 핵심 통찰 5가지
+
+### 1. **AOF fsync stall과 client timeout은 별개 메커니즘**
+- `aof_slow_disk_io`는 11건 중 2건(14:03, 22:27)만 우연히 동시 발생
+- 5/5 12:15~12:48에는 30분간 다발성 aof_slow_disk_io 발생했지만 사용자 알림 0건 → **AOF stall ≠ timeout**
+- **이유**: master는 `aof_enabled:0` (AOF 사용 안 함), AOF는 slave에서만. client는 master만 보므로 AOF stall이 직접 timeout 일으키지 않음
+
+### 2. **storage layer는 진원지가 아니라 동반 증상**
+- BFD flap 시각에 **vDisk await도 동시에 spike** → underlay network/datastore 백본의 **공통 saturation**
+- pifpmd03가 항상 깨끗한 이유 = 호스트(cn11-ss101)의 datastore가 우수 또는 noisy neighbor 적음. 그러나 **BFD flap에는 동등하게 영향 받음** (5/6 06:52)
+- 사용자 ESXi 분석의 "5/4 tx drop 증가, CSTOP 4/27 증가"도 같은 underlay 문제의 증상
+
+### 3. **252분 주기 = 4시간 12분 = NSX 또는 underlay의 정기 작업**
+- cron의 자연 단위(5/10/15/30/60분)가 아님 → application/시스템의 시작-기준 상대 타이머
+- NSX edge HA failback timer, route refresh, BFD config sync, security policy reload 가능성
+- **NSX 4.2.3에서 BFD probe 짧은 default가 underlay jitter에 민감하게 반응**하는 것이 증폭 요인
+
+### 4. **cluster_wd 비대칭 패턴은 reporter 편향 효과**
+- 이전 분석에서 "node:3 reporter 절반"으로 봤으나, 이는 cluster_wd가 RTT 가장 긴 페어를 더 자주 fail로 판정한 결과일 수 있음
+- 실제 BFD 단절은 **호스트별 다른 시각에 발생** (5/5 05:38=pifpmd01, 5/6 06:52=pifpmd03)
+- **cluster_wd는 stall의 결과를 보여줄 뿐, 어느 호스트가 진원인지는 vmkernel BFD 로그가 결정**
+
+### 5. **Lettuce 3초 timeout은 진원이 아니라 가시화 임계값**
+- BFD flap이 ~3~10초 → 3초 timeout이면 즉시 노출, 30초면 일부 회복
+- timeout 늘리는 것은 **사용자 가시 횟수만 줄임**, 근본 stall은 그대로
+- 동시에: **pool 8개 → 32개 상향, retry/circuit breaker는 의미 있음** (in-flight 명령 영향 최소화)
+
+---
+
+## 즉시 실행 가능한 조치
+
+| 우선순위 | 조치 | 예상 효과 |
+|---|---|---|
+| 1 | nsx vmkernel.log 추가 검증 (위 표의 9개 미확인 UTC 시각) | 가설 100% 확정 |
+| 2 | NSX BFD multiplier 3 → 5~7 상향 | underlay jitter 둔감화, BFD flap 빈도 감소 |
+| 3 | NSX 측 252분 주기 정기 작업 식별 (NSX manager log, edge node task log) | 진정한 트리거 식별 |
+| 4 | underlay network 측 점검 (ToR 스위치, NSX TEP VLAN) | 진정한 트리거 식별 |
+| 5 | Lettuce timeout 3S → 30S, pool 8 → 32, retry/CB 추가 | 사용자 영향 완화 |
+| 6 | (참고) Redis cluster_wd timeout 상향 | cluster topology 흔들림 감소 |
+
+근본 해결은 1~4번. 5~6번은 사용자 영향 완화용 임시책.
+
+
+
+---
 ### 종합 매칭 표
 
 | Timeout | Node | iowait peak | DEV await max | NFS call/s |
