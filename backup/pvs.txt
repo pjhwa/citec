@@ -1,0 +1,79 @@
+[박재화 (Jerry) / Jaehwa Park] 2026-05-13 13:53
+하시면 어떻게 보이시나요
+
+[안경찬 (Simon) / Kyoungchan Ahn] 2026-05-13 13:56
+[11:29:49-root]sevrbdb01:~#parted /dev/sdj
+GNU Parted 3.2
+Using /dev/sdj
+Welcome to GNU Parted! Type 'help' to view a list of commands.
+(parted)
+
+안경찬 (Simon) / Kyoungchan Ahn님이 심상용 (Noma) / SANGYONG SIM님을 초대했습니다.2026-05-13 12:56 메시지부터 조회할 수 있습니다.초대 멤버 모두보기
+
+그룹 대화로 전환합니다.
+
+이제부터 안경찬 (Simon) / Kyoungchan Ahn님이 리더입니다.
+
+[안경찬 (Simon) / Kyoungchan Ahn] 2026-05-13 13:56
+[11:56:27-root]sevrbdb01:~#partprobe /dev/sdj
+[11:56:32-root]sevrbdb01:~#
+
+[박재화 (Jerry) / Jaehwa Park] 2026-05-13 13:57
+pvresize 해보시죠
+
+[안경찬 (Simon) / Kyoungchan Ahn] 2026-05-13 13:58
+[11:56:32-root]sevrbdb01:~#pvresize /dev/sdj1
+  Physical volume "/dev/sdj1" changed
+  1 physical volume(s) resized or updated / 0 physical volume(s) not resized
+
+[안경찬 (Simon) / Kyoungchan Ahn] 2026-05-13 13:58
+[11:58:26-root]sevrbdb01:~#pvs
+  PV         VG        Fmt  Attr PSize    PFree
+  /dev/sda3  VG01      lvm2 a--    96.00g    0
+  /dev/sdb1  VG02      lvm2 a--  <150.00g    0
+  /dev/sdc1  ENGVG01   lvm2 a--   <50.00g    0
+  /dev/sdg1  vg_arch   lvm2 a--  <100.00g    0
+  /dev/sdh1  vg_mirr   lvm2 a--   <50.00g    0
+  /dev/sdi1  vg_redo   lvm2 a--   <50.00g    0
+  /dev/sdj1  vg_data01 lvm2 a--    <2.60t    0
+
+[박재화 (Jerry) / Jaehwa Park] 2026-05-13 14:00
+lsblk /dev/sdj
+
+[안경찬 (Simon) / Kyoungchan Ahn] 2026-05-13 14:00
+sdj                       8:144  0  2.6T  0 disk
+└─sdj1                    8:145  0  2.6T  0 part
+  └─vg_data01-lv_data01 252:3    0  2.6T  0 lvm  /altibase/SEVRB1/data01
+
+[박재화 (Jerry) / Jaehwa Park] 2026-05-13 14:00
+parted /dev/sdj print
+
+[안경찬 (Simon) / Kyoungchan Ahn] 2026-05-13 14:01
+[12:00:06-root]sevrbdb01:~#parted /dev/sdj print
+Model: NETAPP LUN C-Mode (scsi)
+Disk /dev/sdj: 2859GB
+Sector size (logical/physical): 512B/4096B
+Partition Table: gpt
+Disk Flags:
+
+Number  Start   End     Size    File system  Name  Flags
+ 1      1049kB  2859GB  2859GB               xfs   lvm
+
+[12:01:15-root]sevrbdb01:~#
+
+[안경찬 (Simon) / Kyoungchan Ahn] 2026-05-13 14:02
+sevcldstg02::> vol modify -vserver bn_svm_fcp -volume  DATA_RBDB1 -size 3.48TB
+Volume modify successful on volume DATA_RBDB1 of Vserver bn_svm_fcp.
+
+sevcldstg02::> vol show -vserver bn_svm_fcp -volume DATA_RBDB1 -fields size,available,percent-used
+vserver    volume     size   available percent-used
+---------- ---------- ------ --------- ------------
+bn_svm_fcp DATA_RBDB1 3.48TB 864.6GB   75%
+
+[안경찬 (Simon) / Kyoungchan Ahn] 2026-05-13 14:03
+sevcldstg02::> lun resize -vserver bn_svm_fcp -path /vol/DATA_RBDB1/DATA_RBDB1  -size 3.10TB -force
+
+sevcldstg02::> lun show -vserver bn_svm_fcp -path /vol/DATA_RBDB1/DATA_RBDB1 -fields size
+vserver    path                       size
+---------- -------------------------- ------
+bn_svm_fcp /vol/DATA_RBDB1/DATA_RBDB1 3.10TB
