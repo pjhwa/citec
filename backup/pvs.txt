@@ -77,3 +77,18 @@ sevcldstg02::> lun show -vserver bn_svm_fcp -path /vol/DATA_RBDB1/DATA_RBDB1 -fi
 vserver    path                       size
 ---------- -------------------------- ------
 bn_svm_fcp /vol/DATA_RBDB1/DATA_RBDB1 3.10TB
+
+
+
+[12:15:14-root]sevrbdb01:/sys/class/scsi_host#parted /dev/sdj print
+Warning: Not all of the space available to /dev/sdj appears to be used, you can fix the GPT to use all of the space (an extra 1073741824 blocks) or
+continue with the current setting?
+Fix/Ignore? ^C
+Model: NETAPP LUN C-Mode (scsi)
+Disk /dev/sdj: 3408GB
+Sector size (logical/physical): 512B/4096B
+Partition Table: gpt
+Disk Flags:
+
+Number  Start   End     Size    File system  Name  Flags
+ 1      1049kB  2859GB  2859GB               xfs   lvm
