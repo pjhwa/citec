@@ -42,3 +42,11 @@ chrony 서버에 아래와 같이 설정하겠습니다.
 
 프로님,
 위 케이스로 진행 시 client가 400ppm을 한참 벗어나 급격하게 쫒아갑니다.
+
+chronyc smoothing 결과가 Active: No
+수동으로 chronyc smoothtime activate 한 후 테스트
+
+이 경우에도 client가 빠르게 쫒아가네요.
+
+최초 동기화 후 client에서 chronyc sources로 조회한 mode+state 상태가
+^~ 상태로 몇분 대기하다가 ^* 상태가 되면서 sync를 하는데 빠르게 쫒아가고 있습니다.
