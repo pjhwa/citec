@@ -32,3 +32,10 @@ Client → NTP #1 → NTP #2
 아참 프로님,
 어제 야간에 수행한 케이스에선 smoothtime + maxslewrate 400을 동시에 줬습니다.
 smoothtime만 단독으로 설정 시 빠르게 쫒아가서 maxslewrate를 줬습니다.
+
+[변종민 (Freddie) / JONGMIN BYUN] 2026-05-15 09:49
+chrony 서버에 아래와 같이 설정하겠습니다.
+
+- local stratum 5로 설정
+- smoothtime 400 0.001 설정
+- make step 1 3 설정
