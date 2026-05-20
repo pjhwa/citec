@@ -1,0 +1,13 @@
+[민연홍 (Mr. Min) / YEONHONG MIN] 2026-05-20 09:34
+새벽에 gemini 3.5, antigravity 업데이트가 있었는데 당황 스러울 것 같아서 올립니다.
+https://antigravity.google/  
+맨위에꺼 부터 차례대로 내려오면, 아래와 같은데 Antigrabity 2.0을 설치하면 안됩니다. Antigrabity IDE를 설치하세요.
+
+1. Antigrabity 2.0 
+- 이걸 설치하면 안됩니다. 이건 claude desktop처럼 md 파일 읽기 불가능.
+그 아래에
+2. Antigrabity Cli 
+- 설치해봤는데 기존에 gemini code cli 는 gemini ultra 요금 사용자도 free와 동일했는데, agy.exe 를 수행 하면 claude code cli 처럼 사용 가능 합니다.
+- gemini.exe --yolo 가 없어서 불편하긴 하지만, agy.exe 으로 claude code cli 와 동일하게 사용 가능 합니다. claude skills도 사용 가능.
+3. Antigrabity IDE
+- 이걸 설치하세요. IDE 형태 입니다. gemini 3.5 사용 가능 합니다. md 파일이나 코드 보기 가능 합니다.
