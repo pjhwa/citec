@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mspcollabo002 장애 분석 보고서 (최종 확정판) — 2026.05.26</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --paper:#f6f2e9; --paper2:#fbf9f3; --ink:#1f1d18; --ink2:#5c574c; --ink3:#8a8475;
+  --rule:#d9d2c2; --rule2:#e7e1d3;
+  --ok:#0f6e56; --ok-fill:#e1f5ee; --ok-line:#1d9e75;
+  --bad:#a8362a; --bad-fill:#f7e7e3; --bad-line:#d8492f;
+  --warn:#9a6310; --purple:#4a429f; --blue:#185fa5;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --sans:'IBM Plex Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans); line-height:1.72; font-size:16px;
+  background-image:linear-gradient(var(--rule2) 1px,transparent 1px),linear-gradient(90deg,var(--rule2) 1px,transparent 1px);
+  background-size:34px 34px; background-position:-1px -1px;}
+.wrap{max-width:980px; margin:0 auto; padding:0 24px 80px;}
+.sheet{background:var(--paper2); border:1px solid var(--rule); border-top:none;}
+.mast{background:var(--ink); color:var(--paper); padding:38px 40px 30px; position:relative; overflow:hidden;}
+.mast::after{content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px); background-size:34px 34px;}
+.kicker{font-family:var(--mono); font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink3);}
+.mast .kicker{color:#b8b09c;}
+h1{font-size:33px; font-weight:700; line-height:1.18; margin:10px 0 6px; letter-spacing:-.01em;}
+.mast h1{color:#fff;}
+.sub{color:#cfc8b6; font-size:15px; max-width:64ch;}
+.badge-row{margin-top:16px; display:flex; gap:8px; flex-wrap:wrap;}
+.vb{font-family:var(--mono); font-size:11px; letter-spacing:.05em; padding:5px 10px; border-radius:3px; background:rgba(255,255,255,.1); color:#e9e2d2; border:1px solid rgba(255,255,255,.15);}
+.vb.cf{background:#1d6e57; border-color:#27916f; color:#eafff7;}
+.mast-meta{display:flex; flex-wrap:wrap; gap:0; margin-top:22px; border-top:1px solid rgba(255,255,255,.14); padding-top:18px; font-family:var(--mono); font-size:12.5px;}
+.mast-meta div{padding-right:34px;}
+.mast-meta .lbl{color:#9a937f; display:block;}
+.mast-meta .val{color:#f1ece0;}
+.verdict{padding:22px 40px; background:var(--bad-fill); border-bottom:1px solid var(--rule); display:flex; gap:18px; align-items:flex-start;}
+.verdict .tag{font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.1em; background:var(--bad); color:#fff; padding:5px 9px; border-radius:3px; white-space:nowrap; margin-top:3px;}
+.verdict p{margin:0; font-size:15.5px; color:#5a2a22;} .verdict b{color:var(--bad); font-weight:600;}
+section{padding:40px 40px 8px; border-bottom:1px solid var(--rule2);}
+section:last-of-type{border-bottom:none;}
+h2{font-size:23px; font-weight:600; margin:6px 0 16px; letter-spacing:-.01em;}
+h3{font-size:15px; font-weight:600; margin:22px 0 6px; color:var(--ink2);}
+p{margin:0 0 14px;} .lead{font-size:16.5px;} strong{font-weight:600;}
+.mono{font-family:var(--mono);} .hl-bad{color:var(--bad); font-weight:600;} .hl-ok{color:var(--ok); font-weight:600;}
+.points{list-style:none; padding:0; margin:16px 0 6px;}
+.points li{position:relative; padding:12px 0 12px 30px; border-top:1px solid var(--rule2); font-size:15px;}
+.points li:first-child{border-top:none;}
+.points li::before{content:""; position:absolute; left:4px; top:20px; width:9px; height:9px; background:var(--bad); transform:rotate(45deg);}
+.points li.ok::before{background:var(--ok);}
+.tbl-wrap{overflow-x:auto; margin:8px 0 6px;}
+table{border-collapse:collapse; width:100%; font-size:14px;}
+caption{caption-side:bottom; font-family:var(--mono); font-size:11.5px; color:var(--ink3); text-align:left; padding-top:10px;}
+th,td{text-align:left; padding:10px 13px; border-bottom:1px solid var(--rule2); vertical-align:top;}
+thead th{font-family:var(--mono); font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--ink2); border-bottom:1.5px solid var(--ink); font-weight:600;}
+tbody th{font-weight:500; color:var(--ink); width:36%;}
+.col25{color:var(--ok); font-family:var(--mono); font-size:13px; font-weight:500;}
+.col26{color:var(--bad); font-family:var(--mono); font-size:13px; font-weight:500;}
+.day-head-25{color:var(--ok)!important;} .day-head-26{color:var(--bad)!important;}
+.chart-card{background:var(--paper2); border:1px solid var(--rule); border-radius:6px; padding:20px 20px 16px; margin:14px 0 8px;}
+.legend{display:flex; flex-wrap:wrap; gap:16px; margin:2px 0 12px; font-family:var(--mono); font-size:12px; color:var(--ink2);}
+.legend span{display:flex; align-items:center; gap:6px;}
+.swatch{width:15px; height:0; border-top-width:3px; border-top-style:solid;}
+.chart-box{position:relative; width:100%; height:300px;}
+.cap{font-family:var(--mono); font-size:11.5px; color:var(--ink3); margin:8px 0 0;}
+/* matrix */
+.matrix{display:grid; grid-template-columns:130px 1fr 1fr; gap:8px; margin:16px 0 6px;}
+.matrix .mh{font-family:var(--mono); font-size:11.5px; letter-spacing:.04em; color:var(--ink2); display:flex; align-items:flex-end; padding:0 0 8px;}
+.matrix .rowh{font-family:var(--mono); font-size:12.5px; color:var(--ink); display:flex; align-items:center; font-weight:500;}
+.cell{border-radius:6px; padding:14px 16px; border:1px solid var(--rule);}
+.cell.norm{background:var(--ok-fill); border-color:#b9e3d3;}
+.cell.crit{background:var(--bad-fill); border-color:#ecc4bc;}
+.cell .st{font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;}
+.cell.norm .st{color:var(--ok);} .cell.crit .st{color:var(--bad);}
+.cell .v{font-family:var(--mono); font-size:13px; margin-top:6px; color:var(--ink2);}
+.cell.crit .v b{color:var(--bad);}
+/* numa gauges */
+.numa{display:grid; gap:12px; margin:16px 0 6px;}
+.ng{border:1px solid var(--rule); border-radius:6px; padding:15px 18px;}
+.ng.crit{background:var(--bad-fill); border-color:#ecc4bc;} .ng.norm{background:var(--ok-fill); border-color:#b9e3d3;}
+.ng .top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px; flex-wrap:wrap; gap:6px;}
+.ng .nm{font-family:var(--mono); font-weight:600; font-size:13.5px;} .ng.crit .nm{color:var(--bad);} .ng.norm .nm{color:var(--ok);}
+.ng .free{font-family:var(--mono); font-size:13px; color:var(--ink2);} .ng .free b{font-size:15px;}
+.ng.crit .free b{color:var(--bad);} .ng.norm .free b{color:var(--ok);}
+.track{position:relative; height:22px; background:#efe8da; border-radius:4px; overflow:visible; border:1px solid var(--rule2);}
+.fill{position:absolute; top:0; left:0; height:100%; border-radius:3px 0 0 3px;}
+.fill.crit{background:var(--bad-line);} .fill.norm{background:var(--ok-line);}
+.wm{position:absolute; top:-5px; bottom:-5px; width:2px;}
+.wm.low{background:var(--ink);} .wm span{position:absolute; top:-17px; left:50%; transform:translateX(-50%); white-space:nowrap; font-family:var(--mono); font-size:10px; color:var(--ink2);}
+.scale{display:flex; justify-content:space-between; font-family:var(--mono); font-size:10px; color:var(--ink3); margin-top:4px;}
+/* chain */
+.chain{margin:16px 0 6px;}
+.step{display:grid; grid-template-columns:42px 1fr; gap:16px;}
+.step .rail{display:flex; flex-direction:column; align-items:center;}
+.step .num{font-family:var(--mono); font-weight:600; font-size:14px; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff;}
+.step .line{flex:1; width:2px; background:var(--rule); margin:4px 0;}
+.step:last-child .line{display:none;}
+.step .body{padding:2px 0 20px;}
+.step .ttl{font-weight:600; font-size:15.5px; margin:4px 0 3px;}
+.step .desc{color:var(--ink2); font-size:14px;} .step .desc .mono{color:var(--ink); font-size:12.5px;}
+.t-root .num{background:var(--purple);} .t-root .ttl{color:var(--purple);}
+.t-acute .num{background:var(--bad);} .t-acute .ttl{color:var(--bad);}
+.t-sym .num{background:var(--warn);} .t-sym .ttl{color:var(--warn);}
+.chain-legend{display:flex; gap:18px; flex-wrap:wrap; font-family:var(--mono); font-size:12px; color:var(--ink2); margin:0 0 12px;}
+.chain-legend span{display:flex; align-items:center; gap:6px;} .dot{width:10px; height:10px; border-radius:50%;}
+.note{background:var(--paper2); border-left:3px solid var(--ink); padding:14px 18px; margin:18px 0; font-size:14.5px; color:var(--ink2);}
+.note.warn{border-left-color:var(--warn);} .note b{color:var(--ink);}
+/* exclusions */
+.excl{display:grid; gap:0; margin:14px 0 6px;}
+.ex{display:grid; grid-template-columns:172px 1fr; gap:16px; padding:14px 0; border-top:1px solid var(--rule2);}
+.ex:first-child{border-top:none;}
+.ex .what{font-weight:600; font-size:14.5px; display:flex; gap:8px; align-items:baseline;}
+.ex .x{font-family:var(--mono); color:var(--ok); font-weight:700;}
+.ex p{margin:0; font-size:14px; color:var(--ink2);}
+/* recs */
+.recs{display:grid; gap:0; margin:14px 0 6px;}
+.rec{display:grid; grid-template-columns:96px 1fr; gap:16px; padding:15px 0; border-top:1px solid var(--rule2);}
+.rec:first-child{border-top:none;}
+.rec .area{font-family:var(--mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:#fff; background:var(--ink2); padding:5px 8px; border-radius:3px; height:fit-content; text-align:center;}
+.rec .area.os{background:var(--blue);} .rec .area.db{background:var(--ok);} .rec .area.mon{background:var(--warn);} .rec .area.cl{background:var(--purple);}
+.rec .area.p1{background:var(--bad);}
+.rec p{margin:0; font-size:14.5px;} .rec .rt{font-weight:600; display:block; margin-bottom:2px;}
+/* checklist */
+.chk{display:grid; gap:12px; margin:14px 0 6px;}
+.ck{border:1px solid var(--rule); border-radius:6px; overflow:hidden;}
+.ck .ch{background:#efe8da; padding:9px 15px; font-weight:600; font-size:13.5px; display:flex; gap:9px; align-items:center; border-bottom:1px solid var(--rule);}
+.ck .ch .tagn{font-family:var(--mono); font-size:11px; color:#fff; background:var(--ink2); border-radius:3px; padding:3px 7px;}
+.ck .cb{padding:12px 15px;}
+.ck .why{font-size:13px; color:var(--ink2); margin:0 0 9px;}
+.cmd{font-family:var(--mono); font-size:12.5px; background:#1f1d18; color:#e9e2d2; padding:9px 12px; border-radius:4px; margin:5px 0; white-space:pre-wrap; word-break:break-all; line-height:1.6;}
+.cmd .c{color:#8a8475;}
+footer{padding:26px 40px 34px; background:var(--ink); color:#b8b09c; font-family:var(--mono); font-size:12px; line-height:1.7;}
+footer b{color:#e9e2d2; font-weight:500;}
+.reveal{opacity:0; transform:translateY(14px); transition:opacity .7s ease, transform .7s ease;}
+.reveal.in{opacity:1; transform:none;}
+@media (max-width:680px){
+  .wrap{padding:0 0 60px;} .mast,section,.verdict,footer{padding-left:22px; padding-right:22px;}
+  h1{font-size:25px;} .ex,.rec{grid-template-columns:1fr; gap:5px;} tbody th{width:auto;}
+  .matrix{grid-template-columns:80px 1fr 1fr;} }
+@media print{ body{background:#fff;} .reveal{opacity:1; transform:none;} }
+</style>
+</head>
+<body>
+<div class="wrap"><div class="sheet">
+
+  <header class="mast">
+    <div class="kicker">Root Cause Analysis · Incident #2026-0526 · 최종 확정판</div>
+    <h1>mspcollabo002 성능 장애 분석 보고서</h1>
+    <p class="sub">pidstat·ping·VMware·SAR 커널 카운터에 더해 <strong>sosreport 구성 포렌식</strong>으로 회수 폭주의 트리거를 <strong>NUMA 메모리 불균형</strong>으로 규명한 최종본. 후보였던 THP·zone-reclaim은 설정상 배제됨.</p>
+    <div class="badge-row">
+      <span class="vb cf">✓ SAR 커널 카운터로 확증</span>
+      <span class="vb cf">✓ NUMA 불균형 (sosreport)</span>
+      <span class="vb">THP · zone-reclaim 배제</span>
+      <span class="vb">디스크 · 네트워크 · 하이퍼바이저 배제</span>
+    </div>
+    <div class="mast-meta">
+      <div><span class="lbl">대상</span><span class="val">mspcollabo002 (EDB Postgres · 48 vCPU · 188.6 GB · 2 NUMA node)</span></div>
+      <div><span class="lbl">발생</span><span class="val">2026-05-26 09:30:30 ~ 09:40 KST</span></div>
+      <div><span class="lbl">근거</span><span class="val">pidstat · ping · VMware · SAR(002·001/5·25·26) · sosreport(5/15)</span></div>
+    </div>
+  </header>
+
+  <div class="verdict reveal">
+    <span class="tag">결론</span>
+    <p>원인은 디스크 I/O가 아니라 <b>커널 페이지 회수(kswapd) 폭주</b>이며, 그 트리거는 <b>NUMA 메모리 불균형</b>이다. 2개 노드 중 <b>Node 0은 free가 low 워터마크에 붙어</b> kswapd가 캐시를 계속 회수하는데(<span class="mono">pgscan_direct=0</span>), <b>Node 1은 16 GB 이상 여유</b>다. 아침 부하가 Node 0을 워터마크 아래로 밀자 캐시 <b>149→121 GB</b>가 축출되고 <b>runq-sz 14→234</b>로 48 vCPU가 포화돼 게스트가 스톨했다. THP(<span class="mono">never</span>)와 zone-reclaim(<span class="mono">=0</span>)은 설정상 배제된다.</p>
+  </div>
+
+  <section class="reveal">
+    <div class="kicker">§ 01 — Executive Summary</div>
+    <h2>핵심 결론</h2>
+    <p class="lead">초기 가설(메모리 압박 → 회수 → CPU 포화)은 SAR로 확증됐고, "왜 여유 RAM에도 회수가 폭주했나"는 sosreport로 <strong>NUMA 노드 간 불균형</strong>임이 밝혀졌다.</p>
+    <ul class="points">
+      <li class="ok"><strong>확증 1 — 회수 폭주.</strong> <span class="mono">pgscank/s</span>(kswapd 스캔) 0→195,000, <span class="mono">pgsteal</span> 동반 폭증, 캐시(<span class="mono">kbcached</span>) 149→121 GB 축출.</li>
+      <li class="ok"><strong>확증 2 — 런큐 폭증.</strong> <span class="mono">runq-sz</span> 14→<strong>234</strong>, <span class="mono">ldavg-1</span> 8→<strong>131</strong>(48 CPU 대비 ~5×). pidstat <span class="mono">%wait</span> 폭증과 일치.</li>
+      <li class="ok"><strong>확증 3 — 스왑 아님.</strong> <span class="mono">pswpin/out ≈ 0</span>, <span class="mono">majflt ≈ 0</span>, <span class="mono">swappiness=1</span> → 순수 파일 캐시 회수.</li>
+      <li class="ok"><strong>트리거 규명 — NUMA 불균형.</strong> Node 0의 free가 low 워터마크에 정확히 붙어 있고 Node 1은 16 GB+ 여유. 전체 free의 92%가 Node 1에 편중. <span class="mono">pgscan_direct=0</span>(부팅 이후 평생) = kswapd 전용 회수. 전역 고갈이 아닌 <strong>노드 로컬 부족</strong>이 원인.</li>
+      <li><strong>피드백.</strong> 느린 쿼리가 커넥션 점유 → <span class="mono">plist-sz</span> 1,177→1,283. 09:35 일시 회복 후 09:36 2차 피크, ~09:40 회수 종료.</li>
+    </ul>
+  </section>
+
+  <section class="reveal">
+    <div class="kicker">§ 02 — Direct Proof (SAR kernel counters)</div>
+    <h2>SAR 커널 카운터: 가설의 직접 확증</h2>
+    <p>좌측은 회수 활동과 런큐가 09:31에 함께 폭발하는 모습(평소 둘 다 ≈0), 우측은 그 메커니즘 — <strong>페이지 캐시 축출(↓)과 익명 메모리 증가(↑)</strong>의 교차다.</p>
+    <div class="chart-card">
+      <div class="legend">
+        <span><span class="swatch" style="border-top-color:#4a429f"></span>pgscank/s (커널 페이지 스캔)</span>
+        <span><span class="swatch" style="border-top-color:#a8362a;border-top-style:dashed"></span>runq-sz (실행대기 큐, 우축)</span>
+      </div>
+      <div class="chart-box"><canvas id="sarA" role="img" aria-label="002서버 pgscank와 runq-sz가 09시31분부터 동시에 폭증하는 선그래프.">pgscank와 runq-sz가 09:31부터 동시 폭증.</canvas></div>
+      <p class="cap">mspcollabo002 · 2026-05-26 09:25~09:42 · 1분 간격 (sar -B / sar -q)</p>
+    </div>
+    <div class="chart-card">
+      <div class="legend">
+        <span><span class="swatch" style="border-top-color:#185fa5"></span>kbcached (페이지 캐시, GB)</span>
+        <span><span class="swatch" style="border-top-color:#9a6310;border-top-style:dashed"></span>kbanonpg (익명 메모리, GB · 우축)</span>
+      </div>
+      <div class="chart-box"><canvas id="sarB" role="img" aria-label="002서버 페이지 캐시가 149GB에서 121GB로 감소하고 익명 메모리가 2.8에서 5.9GB로 증가하는 선그래프.">캐시는 축출되고 익명 메모리는 증가.</canvas></div>
+      <p class="cap">sar -r · 익명 메모리 +3 GB에 캐시 −28 GB 회수 = 과도/비효율 회수 정황</p>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="kicker">§ 03 — Spatial / Temporal Isolation</div>
+    <h2>시·공간 격리: 단 한 칸만 불이 켜진다</h2>
+    <p>동일 지표(<span class="mono">pgscank/s · runq-sz</span> 09:25~09:45 최댓값)를 두 노드 × 두 날짜로 교차했다. <strong>오직 002의 5/26</strong>만 이상이고 나머지 셋은 평온하다 — 공유 인프라(네트워크·DRBD·스토리지·하이퍼바이저)와 상시 구성 결함을 배제하고, 원인이 <strong>002 노드의 그날 워크로드</strong>에 있음을 확정한다.</p>
+    <div class="matrix">
+      <div class="mh"></div><div class="mh">5/25 · 정상일</div><div class="mh">5/26 · 장애일</div>
+      <div class="rowh">002<br>동탄·액티브</div>
+      <div class="cell norm"><div class="st">정상</div><div class="v">pgscank 114 · runq 12</div></div>
+      <div class="cell crit"><div class="st">● 장애</div><div class="v"><b>pgscank 195,703 · runq 234</b></div></div>
+      <div class="rowh">001<br>수원·스탠바이</div>
+      <div class="cell norm"><div class="st">정상</div><div class="v">pgscank 0 · runq 7</div></div>
+      <div class="cell norm"><div class="st">정상</div><div class="v">pgscank 0 · runq 4</div></div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="kicker">§ 04 — Baseline vs Incident</div>
+    <h2>정상(5/25) 대비 장애(5/26) 동일 구간 비교 — 002</h2>
+    <div class="tbl-wrap">
+    <table>
+      <caption>09:25~09:45 동일 윈도우 · 출처: pidstat, SAR, VMware</caption>
+      <thead><tr><th>지표</th><th class="day-head-25">5/25 정상</th><th class="day-head-26">5/26 장애</th></tr></thead>
+      <tbody>
+        <tr><th>pgscank/s (커널 페이지 스캔)</th><td class="col25">최대 114</td><td class="col26">최대 195,703</td></tr>
+        <tr><th>runq-sz / ldavg-1</th><td class="col25">12 / 7.9</td><td class="col26">234 / 131</td></tr>
+        <tr><th>kbcached (페이지 캐시)</th><td class="col25">안정 ~149 GB</td><td class="col26">149 → 121 GB 축출</td></tr>
+        <tr><th>총 CPU %sys (sar, all)</th><td class="col25">&lt; 5%</td><td class="col26">~52%</td></tr>
+        <tr><th>CPU %steal (게스트 관점)</th><td class="col25">0.00</td><td class="col26">0.00</td></tr>
+        <tr><th>swap (pswpin/out)</th><td class="col25">0</td><td class="col26">≈ 0</td></tr>
+        <tr><th>plist-sz (총 태스크)</th><td class="col25">~1,180</td><td class="col26">→ 1,283</td></tr>
+        <tr><th>ping &gt;50ms (09시)</th><td class="col25">0 건</td><td class="col26">84 건</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="kicker">§ 05 — Config Forensics (sosreport)</div>
+    <h2>NUMA 구성 포렌식: 회수 폭주의 트리거</h2>
+    <p>5/15 sosreport의 <span class="mono">cmdline·sysctl·zoneinfo·vmstat</span>를 분석했다. 설정·구조는 재부팅·변경이 없으면 5/26에도 동일하므로 트리거 판단의 토대가 된다. 후보였던 두 메커니즘은 설정상 꺼져 있었고, 대신 <strong>NUMA 노드 간 메모리 불균형</strong>이라는 더 날카로운 원인이 드러났다.</p>
+
+    <h3>결정적 증거 — Node 0은 워터마크에 붙어 있고, Node 1은 텅 비어 있다 (proc/zoneinfo, Normal zone)</h3>
+    <div class="numa">
+      <div class="ng crit">
+        <div class="top"><span class="nm">Node 0 · zone Normal</span><span class="free">free <b>0.97 GB</b></span></div>
+        <div class="track">
+          <div class="fill crit" style="width:62%"></div>
+          <div class="wm low" style="left:62%"><span>low 0.97 = kswapd 가동선</span></div>
+        </div>
+        <div class="scale"><span>min 0.88</span><span style="color:var(--bad);font-weight:600">free = low → kswapd 회수 중</span><span>high 1.06</span></div>
+      </div>
+      <div class="ng norm">
+        <div class="top"><span class="nm">Node 1 · zone Normal</span><span class="free">free <b>16.27 GB</b></span></div>
+        <div class="track">
+          <div class="fill norm" style="width:97%"></div>
+          <div class="wm low" style="left:4.5%"><span>low 0.68</span></div>
+        </div>
+        <div class="scale"><span>min 0.58</span><span style="color:var(--ok);font-weight:600">free ≫ high (약 21배) → 여유</span><span>high 0.77</span></div>
+      </div>
+    </div>
+    <p class="cap">단위 GB(4KB page 환산) · Node 0 막대는 그 노드의 워터마크 대역(min~high)을, Node 1 막대는 free가 high를 크게 초과함을 표시 · 시스템 전체 free의 약 92%가 Node 1에 편중.</p>
+
+    <p style="margin-top:18px">이 그림이 5/26 SAR의 역설 — <strong>전체 RAM의 60%가 가용인데 kswapd만(<span class="mono">pgscand=0</span>) 맹렬히 회수</strong> — 을 설명한다. 회수가 전역 부족이 아니라 <strong>Node 0 로컬 부족</strong> 때문이었던 것. 아침 부하가 (CPU·백엔드가 몰린) Node 0에 익명 메모리를 쌓자 Node 0이 워터마크 아래로 떨어졌고 kswapd0이 그 노드의 캐시를 축출했다.</p>
+
+    <h3>구성 증거 요약</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>항목</th><th>값 (sosreport)</th><th>의미</th></tr></thead>
+      <tbody>
+        <tr><th>transparent_hugepage (cmdline)</th><td class="col25 mono">never</td><td>THP 트리거 배제 (모든 <span class="mono">thp_*</span> 카운터 0, <span class="mono">compact_stall 0</span>)</td></tr>
+        <tr><th>vm.zone_reclaim_mode</th><td class="col25 mono">0</td><td>zone-reclaim 트리거 배제</td></tr>
+        <tr><th>vm.swappiness</th><td class="mono">1</td><td>스왑 대신 캐시만 축출 (SAR과 일치)</td></tr>
+        <tr><th>vm.watermark_boost_factor</th><td class="mono">15000</td><td>단편화 시 워터마크 상향 → 회수 <strong>증폭 요인</strong></td></tr>
+        <tr><th>vm.overcommit_memory / ratio</th><td class="mono">2 / 80</td><td>strict. 단 Committed_AS 54 GB ≪ CommitLimit 162 GB → 이번 트리거 아님</td></tr>
+        <tr><th>vmstat 누적 (부팅 이후)</th><td class="col26 mono">pgscan_direct 0</td><td>평생 kswapd 전용 회수 + <span class="mono">kswapd_low_wmark_hit 783K</span> = 만성 압박</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="note warn"><strong>만성 정황.</strong> vmstat의 <span class="mono">pageoutrun 1,005,172</span>·<span class="mono">kswapd_low_wmark_hit_quickly 783,324</span>는 kswapd가 low 워터마크에 부딪혀 깨어난 횟수가 막대함을 보여준다. 최초 노트의 "5/15 이후 CPU 상승"과 부합 — Node 0이 만성적으로 회수 압박을 받다 5/26 아침 부하에서 포화로 넘어간 것이다.</div>
+  </section>
+
+  <section class="reveal">
+    <div class="kicker">§ 06 — Causal Chain</div>
+    <h2>인과 사슬</h2>
+    <div class="chain-legend">
+      <span><span class="dot" style="background:#4a429f"></span>근본 (NUMA/워크로드)</span>
+      <span><span class="dot" style="background:#a8362a"></span>급성 (커널·CPU)</span>
+      <span><span class="dot" style="background:#9a6310"></span>증상·2차</span>
+    </div>
+    <div class="chain">
+      <div class="step t-root"><div class="rail"><div class="num">1</div><div class="line"></div></div>
+        <div class="body"><div class="ttl">메모리 많이 쓰는 쿼리 유입 (Node 0 편중)</div><div class="desc">익명 메모리(<span class="mono">kbanonpg</span>)가 CPU·백엔드가 몰린 Node 0에 누적. Node 0은 이미 free가 워터마크 근처.</div></div></div>
+      <div class="step t-root"><div class="rail"><div class="num">2</div><div class="line"></div></div>
+        <div class="body"><div class="ttl">Node 0 워터마크 하향 돌파</div><div class="desc"><span class="mono">09:30:30</span> 전역 RAM은 60% 여유(대부분 Node 1)였으나 Node 0이 low 아래로. ping 1ms→386ms 첫 증상.</div></div></div>
+      <div class="step t-acute"><div class="rail"><div class="num">3</div><div class="line"></div></div>
+        <div class="body"><div class="ttl">kswapd 백그라운드 회수 폭주</div><div class="desc"><span class="mono">pgscank/s 0→195k</span>, 캐시 149→121 GB 축출, <span class="mono">%sys ~52%</span>. direct reclaim=0(노드 로컬 kswapd). swappiness=1로 스왑 미사용.</div></div></div>
+      <div class="step t-acute"><div class="rail"><div class="num">4</div><div class="line"></div></div>
+        <div class="body"><div class="ttl">48 vCPU 포화 + 런큐 스톨</div><div class="desc"><span class="mono">runq-sz 234 · ld1 131</span> = ~5× 오버서브. 게스트 스케줄링 정지 → ping·로그 catch-up.</div></div></div>
+      <div class="step t-sym"><div class="rail"><div class="num">5</div><div class="line"></div></div>
+        <div class="body"><div class="ttl">캐시 축출 → I/O 지연</div><div class="desc">축출된 데이터 재독으로 <span class="mono">iodelay 2→233</span>, 쿼리 ~4배 지연. 디스크 처리량은 스톨 중 낮았다가 09:34 버스트.</div></div></div>
+      <div class="step t-sym"><div class="rail"><div class="num">6</div><div class="line"></div></div>
+        <div class="body"><div class="ttl">커넥션 2차 폭주 (피드백)</div><div class="desc"><span class="mono">plist-sz +100</span>, 09:36 런큐 최대치. ~09:40 회수 종료 후 정상화.</div></div></div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="kicker">§ 07 — Ruled Out</div>
+    <h2>배제된 원인 (증거 기반)</h2>
+    <div class="excl">
+      <div class="ex"><div class="what"><span class="x">✗</span>THP 컴팩션</div><p>cmdline <span class="mono">transparent_hugepage=never</span>, 모든 <span class="mono">thp_*</span> 카운터·<span class="mono">AnonHugePages</span> 0, <span class="mono">compact_stall 0</span>. THP 활동 전무.</p></div>
+      <div class="ex"><div class="what"><span class="x">✗</span>NUMA zone-reclaim</div><p><span class="mono">vm.zone_reclaim_mode=0</span>. (원인은 zone-reclaim 동작이 아니라 노드 간 메모리 <strong>불균형</strong> 자체)</p></div>
+      <div class="ex"><div class="what"><span class="x">✗</span>전역 메모리 고갈 / overcommit</div><p>최악에도 ~113 GB 가용, <span class="mono">Committed_AS 54 GB ≪ CommitLimit 162 GB</span>. 절대량 부족 아님.</p></div>
+      <div class="ex"><div class="what"><span class="x">✗</span>디스크 대역폭</div><p>스톨 피크 동안 <span class="mono">tps·bwrtn</span> 오히려 낮았고 대용량 쓰기는 09:34 회복기에 발생. 5/25엔 216 MB/s 쓰기도 무탈.</p></div>
+      <div class="ex"><div class="what"><span class="x">✗</span>네트워크 / DRBD</div><p>ping &gt;50ms는 09시에만 집중(catch-up=호스트 스톨). 스탠바이 001은 같은 시각 완전 평온.</p></div>
+      <div class="ex"><div class="what"><span class="x">✗</span>하이퍼바이저 경합</div><p>게스트 <span class="mono">%steal=0</span>이 VMware <span class="mono">Ready 0.78% / CSTP 0.25%</span>(≈0)와 일치. 호스트는 vCPU 즉시 공급.</p></div>
+      <div class="ex"><div class="what"><span class="x">✗</span>스왑 thrashing</div><p><span class="mono">pswpin/out≈0 · majflt≈0</span>. 회수 대상은 스왑이 아닌 클린 파일 캐시.</p></div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="kicker">§ 08 — Recommendations</div>
+    <h2>권고 사항</h2>
+    <div class="recs">
+      <div class="rec"><span class="area p1">P1 · NUMA</span><p><span class="rt">노드 간 메모리 불균형 해소 — 근본 해법</span>VMware에서 이 48 vCPU 와이드 VM의 <strong>vNUMA가 물리 NUMA와 정렬</strong>됐는지, vCPU·메모리가 한 노드로 쏠리지 않는지 점검. OS/DB 차원에서 메모리를 두 노드에 분산(<span class="mono">numactl --interleave</span> 또는 Postgres NUMA 배치 검토). 현재 <span class="mono">kernel.numa_balancing=1</span>은 부하 중 페이지 마이그레이션 오버헤드도 유발하므로 동작 재검토.</p></div>
+      <div class="rec"><span class="area os">OS</span><p><span class="rt">회수 증폭 요인 완화 (보조)</span>Red Hat이 "여유 메모리에도 kswapd가 캐시를 공격적으로 회수" 증상에 문서화한 <span class="mono">vm.watermark_boost_factor=0</span> 검토. Node 0 여유 확보를 위해 <span class="mono">vm.min_free_kbytes</span> 소폭 상향도 완화책. 단 근본은 노드 균형이며 RAM 증설은 핵심 해법이 아님.</p></div>
+      <div class="rec"><span class="area db">DB</span><p><span class="rt">메모리 폭증 쿼리 식별</span><span class="mono">pg_stat_statements</span>(또는 슬로우 쿼리 로그·Kibana)로 09:30 전후 대형 정렬/해시·계획 변화 추적. <span class="mono">work_mem</span>·<span class="mono">max_connections</span> 점검 및 커넥션 풀로 동시 작업메모리 상한 설정.</p></div>
+      <div class="rec"><span class="area mon">MON</span><p><span class="rt">에이전트 부하 조정</span>metricbeat가 피크에 171% CPU(system 99%)로 장애 가중. process metricset 주기·범위 축소. SAR 1분 수집은 유효했으므로 유지.</p></div>
+      <div class="rec"><span class="area cl">CLUSTER</span><p><span class="rt">펜싱 안전여유 재검토</span>약 5분 스톨이 corosync token timeout / SBD watchdog에 근접했는지 점검. 동일 스톨 재발 시 펜싱·스위치오버로 번지지 않도록 임계값 확보.</p></div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="kicker">§ 09 — Live Verification Checklist</div>
+    <h2>라이브 서버 확정 점검 체크리스트</h2>
+    <p>sosreport는 5/15 스냅샷이므로, 09:30 시점의 동적 상태와 5/15 이후 변경 여부는 <strong>라이브 서버에서</strong> 확인해야 한다. 아래 순서로 점검하면 NUMA 불균형 트리거가 5/26에도 동일했는지 확정된다.</p>
+    <div class="chk">
+      <div class="ck">
+        <div class="ch"><span class="tagn">A</span>현재 NUMA 상태 — 불균형 재현 확인 (최우선)</div>
+        <div class="cb">
+          <p class="why">Node 0 free가 지금도 워터마크에 붙어 있는지, 메모리가 한 노드로 쏠리는지 확인.</p>
+          <div class="cmd">numactl --hardware            <span class="c"># 노드 수·노드별 메모리/거리</span>
+numastat -m                   <span class="c"># 노드별 Free/Used/FilePages 분포</span>
+grep -A22 "Node 0, zone   Normal" /proc/zoneinfo   <span class="c"># free vs min/low/high</span>
+numastat -p $(pgrep -d, -f edb-postgres | cut -d, -f1)  <span class="c"># 백엔드의 노드 분포</span></div>
+        </div>
+      </div>
+      <div class="ck">
+        <div class="ch"><span class="tagn">B</span>설정 변경 여부 — 5/15 대비</div>
+        <div class="cb">
+          <p class="why">THP·zone-reclaim·swappiness 등이 5/15 이후 바뀌지 않았는지 대조.</p>
+          <div class="cmd">cat /sys/kernel/mm/transparent_hugepage/enabled   <span class="c"># [never] 유지 확인</span>
+sysctl vm.zone_reclaim_mode vm.swappiness vm.watermark_boost_factor \
+       vm.min_free_kbytes vm.overcommit_memory kernel.numa_balancing
+uptime; who -b; last -x reboot | head   <span class="c"># 5/15~5/26 재부팅 여부</span></div>
+        </div>
+      </div>
+      <div class="ck">
+        <div class="ch"><span class="tagn">C</span>09:30 커널 메시지 — 직접 증거</div>
+        <div class="cb">
+          <p class="why">page allocation failure·kswapd·oom·hung_task·RCU stall 메시지 확인(회전 로그 포함).</p>
+          <div class="cmd">grep -hE "May 26 09:[234]" /var/log/messages* \
+  | grep -iE "page allocation|kswapd|oom|hung_task|rcu|stall|order:"   <span class="c"># 5/26 09:2x~09:4x</span></div>
+        </div>
+      </div>
+      <div class="ck">
+        <div class="ch"><span class="tagn">D</span>워크로드 트리거 — 익명 메모리를 늘린 쿼리</div>
+        <div class="cb">
+          <p class="why">Node 0에 익명 메모리를 쌓은 대형 정렬/해시 쿼리와 메모리 설정 식별.</p>
+          <div class="cmd"><span class="c">-- 누적이라도 최악값으로 용의 쿼리 좁히기</span>
+SELECT queryid, calls, max_exec_time, temp_blks_written, shared_blks_read
+FROM pg_stat_statements ORDER BY temp_blks_written DESC LIMIT 20;
+SHOW work_mem; SHOW shared_buffers; SHOW max_connections; SHOW huge_pages;
+<span class="c"># + 슬로우 쿼리 로그(log_min_duration_statement)의 09:30 전후 / Kibana(metricbeat)</span></div>
+        </div>
+      </div>
+      <div class="ck">
+        <div class="ch"><span class="tagn">E</span>VMware vNUMA 정렬</div>
+        <div class="cb">
+          <p class="why">와이드 VM의 vCPU·메모리가 물리 노드에 어떻게 매핑되는지(쏠림 원인) 확인.</p>
+          <div class="cmd"><span class="c"># vCenter/ESXi: VM 고급설정 numa.vcpu.maxPerVirtualNode,</span>
+<span class="c"># numa.nodeAffinity, esxtop 메모리(NUMA) 화면의 NLMEM/GST_ND 분포 확인</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <b>분석 범위</b> · mspcollabo002·mspcollabo001 두 노드의 5/25·5/26 SAR(1분)·pidstat(1분)·ping(1초), VMware Ready/CSTP, sosreport(5/15: cmdline·meminfo·vmstat·zoneinfo·sysctl). RHEL 8.5(4.18.0-348) · 48 CPU · 188.6 GB · 2 NUMA node.<br>
+    <b>SAR/커널 지표</b> · sar -r(Memory)/-B(Paging)/-q(Queue)/-u(CPU)/-W(Swap)/-b(IO); /proc/zoneinfo 워터마크; /proc/vmstat 회수·THP·NUMA 카운터.<br>
+    <b>한계 / 다음 단계</b> · sosreport는 5/15 스냅샷이라 09:30 동적 상태는 §09 라이브 점검으로 확정 필요. zoneinfo의 free/워터마크는 5/15 시점값이며, 재부팅·구성 변경이 없었다는 전제에서 5/26에 적용됨. pgscank 일부 첫-샘플 값과 %vmeff≈200은 측정 아티팩트로 제외.<br><br>
+    mspcollabo002 RCA · 최종 확정판 · 2026-05-27
+  </footer>
+
+</div></div>
+
+<script>
+const FONT="'IBM Plex Sans KR',sans-serif";
+Chart.defaults.font.family=FONT; Chart.defaults.font.size=12; Chart.defaults.color="#5c574c";
+const GRID="rgba(31,29,24,0.08)";
+const L=['09:25','09:26','09:27','09:28','09:29','09:30','09:31','09:32','09:33','09:34','09:35','09:36','09:37','09:38','09:39','09:40','09:41','09:42'];
+
+new Chart(document.getElementById('sarA'),{
+  type:'line',
+  data:{labels:L,datasets:[
+    {label:'pgscank/s',yAxisID:'y',data:[0,0,0,0,0,0,28523,35453,36364,46128,11349,23825,112832,49885,0,976,4456,0],borderColor:'#4a429f',backgroundColor:'rgba(74,66,159,.10)',borderWidth:2.5,pointRadius:2,pointHoverRadius:5,tension:.2,fill:true},
+    {label:'runq-sz',yAxisID:'y1',data:[15,8,16,24,10,14,98,145,143,170,18,234,12,8,12,11,15,7],borderColor:'#a8362a',backgroundColor:'#a8362a',borderWidth:2.5,borderDash:[7,4],pointRadius:2,pointHoverRadius:5,tension:.2,fill:false}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{display:false}},
+    scales:{
+      y:{position:'left',beginAtZero:true,title:{display:true,text:'pgscank/s (pages/s)'},grid:{color:GRID},ticks:{callback:v=>v>=1000?(v/1000)+'k':v}},
+      y1:{position:'right',beginAtZero:true,max:260,title:{display:true,text:'runq-sz (48 vCPU)'},grid:{drawOnChartArea:false}},
+      x:{grid:{display:false},ticks:{maxRotation:45,autoSkip:false,font:{size:10}}}}}
+});
+
+new Chart(document.getElementById('sarB'),{
+  type:'line',
+  data:{labels:L,datasets:[
+    {label:'kbcached (GB)',yAxisID:'y',data:[147,147.9,149.6,148.6,148.9,149.2,146.9,138.8,133.5,131.1,128.7,124.1,121.2,124.2,125.1,125.6,125.9,126.6],borderColor:'#185fa5',backgroundColor:'rgba(24,95,165,.10)',borderWidth:2.5,pointRadius:2,pointHoverRadius:5,tension:.3,fill:true},
+    {label:'kbanonpg (GB)',yAxisID:'y1',data:[3.0,2.9,3.1,3.0,2.9,2.8,3.4,3.8,4.3,4.4,4.9,5.6,5.9,5.7,5.4,4.9,4.7,3.1],borderColor:'#9a6310',backgroundColor:'#9a6310',borderWidth:2.5,borderDash:[7,4],pointRadius:2,pointHoverRadius:5,tension:.3,fill:false}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+    plugins:{legend:{display:false}},
+    scales:{
+      y:{position:'left',min:110,max:155,title:{display:true,text:'페이지 캐시 (GB)'},grid:{color:GRID}},
+      y1:{position:'right',min:0,max:8,title:{display:true,text:'익명 메모리 (GB)'},grid:{drawOnChartArea:false}},
+      x:{grid:{display:false},ticks:{maxRotation:45,autoSkip:false,font:{size:10}}}}}
+});
+
+const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.1});
+document.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transitionDelay=(Math.min(i,6)*40)+'ms';io.observe(el);});
+</script>
+</body>
+</html>
