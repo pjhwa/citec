@@ -1,4 +1,76 @@
+대구PPP 행정망 NAS 스토리지 시간 불일치에 따른 조치로 첨부파일과 같이 점진적인 동기화를 위한 방안 4가지를 제시해주셨는데요
 
+저희 운영쪽에서 방안B로 작업 방안을 결정 후 검증을 위한 환경을 구성하는 과정에 문제가 있어 연락드렸습니다.
+
+
+
+ontap select를 가상VM으로 배포하여 스토리지를 준비했고
+
+chrony 서버용 VM 1대를 배포하여 스토리지와 VM 모두 시간을 -22분으로 설정 및 가이드에 따라 설정을 한뒤 제공해주신 동기화 스크립트를 수행하여 점진적 동기화를 시도하기 위해 준비했는데
+
+구성한 chrony VM의 시간이 빠른 속도로 앞으로 쫒아감에 따라 시간이 벌어지는 문제가 발생하고 있습니다. (5분에 13초 이상 벌어짐)
+
+이 때문에 테스트를 진행하지 못하고 있는데요, 로컬 NTP 구성에 어떤 부분을 보완해야할까요?
+
+
+
+참고로 chrony 서버 1대를 구성해도 문제가 있고, 2대를 구성하여 상호 참조하도록해도 시간이 당겨지는 문제는 동일합니다.
+
+아래는 케이스 별 설정 값입니다.
+
+
+
+(chrony 서버 1대 구성)
+
+- 가상화 환경은 VMware이며 hw clock을 참조하지 않도록 Synchronize at startup and resume 및 Synchronize time periodically 비활성화
+
+- chronyc에는 아래와 같이 설정했음
+
+   -------------------------
+
+   local stratum 5
+
+   manual
+
+   maxslewrate 400 
+
+   makestep 0 0
+
+
+
+(chrony 서버 2대 구성)
+
+- 가상화 환경은 VMware이며 hw clock을 참조하지 않도록 Synchronize at startup and resume 및 Synchronize time periodically 비활성화
+
+- chronyc에는 아래와 같이 설정했음
+
+ntp #1
+
+ntp #2
+
+peer ntp #2 iburst
+
+local stratum 8 orphan
+
+rtcsync
+
+makestep 1 3
+
+maxdistance 16 
+
+peer ntp #1 iburst
+
+local stratum 8 orphan
+
+rtcsync
+
+makestep 1 3
+
+maxdistance 16 
+
+
+
+---
 기존 시나리오에 대해 말씀주신 결점에 대한 질문이 있습니다.
 
 
