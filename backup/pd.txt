@@ -1,3 +1,14 @@
+
+5/29에 생명 장애건으로 sar 를 받은건데요.
+이슈 시점은 09:35 ~ 09:55 사이로 보이는데, 
+sar 보고 OS 적인 입장의 의견 좀 주세요!! ^^
+memory 는 계속 98 정도이고, 99.88 이니까 max 로는 100 을 갔을거 같아 보이구요.
+그러면 swap 이 일어나면서 성능 지연은 약간 생기지 않았을까 하구요.
+
+java 의 로그상으로 보면 그 시점에 can not create native thread(OOM) 가 발생하거든요.
+이건 java 에서 thread 를 생성하려고 OS kernel 의 thread 를 호출했는데, EAGAIN 이나 ENOMEM 이 발생할 경우
+return 값으로 저 오류를 리턴해 주거든요
+
 Memory Util:
 Name	Mean	Max	Min
 %memused PDBEAL01SL
