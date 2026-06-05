@@ -1,3 +1,66 @@
+핵심 파일 3개(free, meminfo, slabinfo)는 봤고, 나머지 5개(특히 `sysctl.conf`, `ps_-elfL`, `var_log_messages`)는 아직 디스크에서 안 읽었습니다. 먼저 이것들을 읽겠습니다 — 그 전에 meminfo에서 **이미 결정적 단서**가 하나 나왔습니다.`sysctl.conf`에 `vm.overcommit_memory`가 **없습니다** → 런타임은 기본값 **0(heuristic)**일 가능성이 큽니다. 이건 제 직전 추론 방향 하나를 꺾습니다(아래 설명). 실제 스레드 수와 messages 로그를 봐야 확정됩니다.NLWP 파싱이 어긋났습니다(컬럼 정렬 문제). 스레드 수는 **PID별 라인 수**로 직접 세는 게 정확합니다. 다시 하겠습니다.이제 **결정적 증거**가 나왔습니다. var_log_messages에서 사건 시점 에러 시그니처를 확인하겠습니다.OOM-killer는 **0건** — 물리 메모리 고갈은 확정적으로 아닙니다. 그런데 09:30대에 **ansible(ansibg1)이 spinadm으로 su를 폭주**시키는 패턴이 보입니다. 이게 nproc 한도와 직결될 수 있어 더 파봅니다.su 폭주는 09:30에 집중되어 사건 직전입니다. 마지막으로 열린 파일 수(NOFILE 한도 10240, 프로세스 단위)를 확인해 EMFILE 가능성도 정리합니다.데이터가 사건을 확정해줍니다. 결론부터 갑니다.
+
+## 결론 — 당신의 최종 가설("Memory밖에 없다")은 **틀렸습니다**
+
+진짜 원인은 **`spinadm` 유저의 nproc(프로세스/스레드) 한도 10240 도달 → `fork/clone`이 EAGAIN 반환 → JVM "cannot create native thread"** 입니다 (확신도: **High**).
+
+당신이 2번째 메시지에서 "한도 10240 설정됨 → EAGAIN 아님 → Memory밖에 없다"며 배제했던 바로 그 EAGAIN이 범인입니다. 한도값을 본 것이 "한도에 안 닿았다"는 증거가 아니라고 그때 지적했던 부분이 데이터로 확인됐습니다.
+
+---
+
+## 결정적 증거
+
+**1. 스냅샷 시점에 이미 nproc 한도의 94.3% 소진 (확신도: High)**
+- `spinadm` UID 스레드/프로세스 총합 = **9,657** / 한도 **10,240** → **94.3%**
+- 이건 sosreport가 **리스타트 이후(복구 후)** 정상 상태로 추정되는데도 94%입니다. 사건 시점(09:35~09:55, 리스타트 전)에는 여기서 수백 개만 더 늘면 천장(10240)을 칩니다. `RLIMIT_NPROC`은 UID 단위 전 시스템 합산이라 38개 JVM이 한 유저(spinadm) 밑에 다 깔려 있으면 이렇게 됩니다.
+
+**2. 범인 프로세스 구조 (확신도: High)**
+- `com.ksign.spin.server.SPINServer` (KSign SPIN, DB 암호화 솔루션) JVM이 **38개 인스턴스**, 전부 `-Xms10240M -Xmx10240M`(10GB 힙, 당신이 말한 "Java 10GB" 일치), JDK 1.8.0_51.
+- 그중 **6개 JVM이 각각 ~1,061개 스레드** 보유. 비정상적으로 많습니다(스레드-per-connection 또는 풀 폭주 의심). 6×1061 = 6,366스레드가 6개 프로세스에 집중.
+
+**3. 사건 직전 트리거 — su 폭주 (확신도: Moderate)**
+- 09:30분 한 분 동안 `ansibg1`(Ansible)이 `su - spinadm` 세션을 **약 28회** 폭주시켰습니다. su 세션마다 spinadm UID로 단명 프로세스가 뜨면서 **nproc 슬롯을 일시적으로 추가 소모**합니다. 9,657에 이미 차 있던 상태 + su 버스트 + 스레드 증가 → 10240 돌파 → EAGAIN. 시간상으로도 사건 직전입니다.
+
+**4. 물리 메모리·swap은 무죄 (확신도: High)**
+- `var/log/messages`에 **oom-killer / out of memory / page allocation failure = 0건.** 커널 OOM 안 떴습니다.
+- `free`/`meminfo`: 사용 28%, `MemAvailable 474GB`. 물리 메모리 남아돕니다.
+- 즉 "메모리 99.9%라 100% 갔을 것 → swap → 지연 → OOM"이라던 1번째 가설의 물리 고갈 전제가 완전히 깨집니다. (1호기의 99.9%는 page cache였고, 이 AP서버는 29%였습니다.)
+
+**5. 다른 한도들은 무죄 (확신도: High~Moderate)**
+- **NOFILE(열린 파일) 10240:** 프로세스당 최대 오픈 FD = **831** (PID 36785). 한도 근처도 아님 → EMFILE 아님.
+- **pid_max = 120,000** (sysctl 설정 확인), 시스템 전체 스레드 12,630 → pid_max 무관.
+- **max_map_count:** sysctl 미설정(기본 65530). 이게 원인이었다면 errno=ENOMEM이지만, 위 nproc 정황이 훨씬 강함. (JVM 로그 errno가 12면 이쪽도 재검토 필요)
+
+---
+
+## "swap 있으면 swap으로 처리되지 않나?" — 최종 답: **아니오** (확신도: High)
+
+이번 데이터로 확정됩니다.
+- 원인이 **nproc count 한도(EAGAIN)** 이므로 물리 메모리 용량과 무관합니다. swap을 32GB→320GB로 늘려도 **스레드 개수 천장은 1도 안 올라갑니다.**
+- `vm.overcommit_memory`가 sysctl.conf에 없어 **기본값 0(heuristic)** 으로 추정 → `CommitLimit`(351GB) < `Committed_AS`(398GB)이지만 **강제되지 않습니다.** (만약 strict=2였다면 ENOMEM이 떴겠지만, 그 흔적이 없음.) 따라서 swap 증설로 CommitLimit을 올려서 얻는 이득도 이 사건엔 해당 없음.
+- 09:55의 swap-in/out 스파이크(`pswpin 100, pswpout 251`)는 당신 말대로 **리스타트의 결과(증상)** 이지 원인이 아닙니다.
+
+---
+
+## 조치 (우선순위)
+
+| # | 조치 | 효과 | 확신도 |
+|---|---|---|---|
+| 1 | **`spinadm` nproc 한도 상향** (10240 → 32768+). `/etc/security/limits.d/`에 `spinadm - nproc 32768`. systemd 서비스면 `TasksMax`도 함께 | 즉시 재발 방지 (응급) | High |
+| 2 | **6개 JVM의 1061 스레드 원인 규명** — 스레드 풀 설정/누수. KSign SPIN 측 thread pool 파라미터, 커넥션-per-thread 모델 여부 확인. 근본 원인 | 근본 해결 | High |
+| 3 | **Ansible의 su 폭주 점검** — 09:30 28회 su. 불필요한 반복 세션이면 직렬화/축소 | 트리거 제거 | Moderate |
+| 4 | JVM 로그에서 **errno 확정**(`hs_err_pid*.log` 또는 stdout의 `errno=11`(EAGAIN) vs `errno=12`(ENOMEM)). 11이면 위 진단 100% 확정, 12면 max_map_count 추가 점검 | 검증 | — |
+| 5 | 38개 JVM × 10GB 힙 설계 재검토 — 한 UID에 몰린 구조 자체가 nproc 한도에 취약 | 구조 개선 | Moderate |
+
+---
+
+## 한 줄 정리
+
+1호기는 **direct reclaim**, 이 AP서버(2/3호기 포함)는 **물리 메모리와 전혀 무관한 nproc 한도(EAGAIN)** 입니다. 9,657/10,240(94%)에서 38개 KSign SPIN JVM(6개가 1천+ 스레드)이 su 버스트와 겹쳐 천장을 친 것. **swap 증설·메모리 증설 모두 이 장애엔 효과 없습니다.** 응급은 nproc 상향, 근본은 1061 스레드 JVM의 스레드 폭증 규명입니다.
+
+확정을 위해 JVM 로그의 `errno=` 값 한 줄만 확인해 주세요. 11이면 위 진단이 그대로 확정됩니다.
+
+---
 ```
 /var/log/sa/sa29 
 
