@@ -1,3 +1,30 @@
+```
+[박재화 (Jerry) / Jaehwa Park] 2026-06-05 15:07
+hs_err_pid<pid>.log
+
+[박재화 (Jerry) / Jaehwa Park] 2026-06-05 15:07
+여기에는 오류가 없나요?
+
+[박경현 (solvage) / Kyonghyon Park] 2026-06-05 15:08
+heap memory 가 부족해서 떨어진 OOM 이 아니라 hs_err 파일 자체가 안 생겼습니다.
+
+[박경현 (solvage) / Kyonghyon Park] 2026-06-05 15:09
+OOM 종류 중에 java 에서 thread 를 신규로 생성할때 OS kernel 호출을 하는데 
+거기서 오류를 주면 java 는 OOM - can not create native thread 로 처리를 하거든요
+
+[박경현 (solvage) / Kyonghyon Park] 2026-06-05 15:10
+그렇기 때문에 heap memory 는 여유가 있어도 OOM tracking 이 발생할 수 있습니다.
+
+[박경현 (solvage) / Kyonghyon Park] 2026-06-05 15:10
+Memory 부족으로 발생했을 확률이 거의 99% 일거 같은데, 그 증거를 못찾겠네요. ㅠㅠ
+
+[박재화 (Jerry) / Jaehwa Park] 2026-06-05 15:11
+sar 파일 받으신거 좀 메일로 전달해주세요
+
+[박경현 (solvage) / Kyonghyon Park] 2026-06-05 15:11
+2,3호기도 Memory 를 비슷한 패턴으로 97% 이상 사용중인데, 1호기만 발생했다고 하구요.
+```
+---
 이 plist-sz 패턴이 그림을 크게 바꿉니다. 한 가지 확인하고 종합하겠습니다 — 09:42 전후 messages에 JVM 사망/킬/코어 흔적이 있는지.messages에 09:42~09:55 사이 **kill·core·CRASH·oom·segfault·watchdog 동작 흔적이 전혀 없습니다.** 09:40 WatchDog.sh는 매분 도는 정기 크론일 뿐입니다. 그리고 사건 직전 plist-sz 12.6~12.7k는 **복구 후 정상 스냅샷(12,630)과 사실상 동일**합니다. 이 두 가지가 결론을 다시 한 번 조정합니다.
 
 ---
