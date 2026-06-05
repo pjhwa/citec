@@ -1,3 +1,29 @@
+```
+IO read/write: 09:38 ~ 09:50 까지 Max
+Name	Mean	Max	Min
+readB/s PDBEAL01SL
+12.7 MiB/s	388 MiB/s	0 B/s
+writeB/s PDBEAL01SL
+1.16 MiB/s	3.58 MiB/s	171 KiB/s
+
+IO tps: 09:38 ~ 09:50 까지 Max
+Name	Mean	Max	Min
+rtps PDBEAL01SL
+31.4	1.11 K	0
+tps PDBEAL01SL
+47.4	1.14 K	10.8
+wtps PDBEAL01SL
+16.0	40.8	10.3
+
+Process proc/cswch: cswch는 09:41에 Max 치고 바로 50K로 떨어짐 
+Name	Mean	Max	Min
+cswch/s PDBEAL01SL
+120 K	221 K	30.0 K
+proc/s PDBEAL01SL
+1.83 K	4.24 K	149
+
+```
+---
 좋은 지적입니다 — 제가 09:30을 시작점처럼 쓴 건 **검증되지 않은 표현**이었습니다. 09:30~09:56 윈도우만 grep해놓고 "사건 직전 시작"처럼 서술한 건 윈도우 잘림(window truncation) 오류입니다. 실제 시작점을 확인하겠습니다.grep 버그입니다 — `to spinadm`(su 라인)과 `session opened`(pam 라인)는 **서로 다른 줄**이라 둘 다 매칭하면 0건이 나옵니다. 분리해서 다시 셉니다.당신이 맞고, 제가 틀렸습니다. **"09:30 su 폭주 28회"는 제 이전 grep 버그가 만든 허상**이었습니다. 정정합니다.
 
 ## 정정: su는 트리거가 아니다 (확신도: High)
