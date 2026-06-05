@@ -8,6 +8,13 @@ memory 는 계속 98 정도이고, 99.88 이니까 max 로는 100 을 갔을거 
 java 의 로그상으로 보면 그 시점에 can not create native thread(OOM) 가 발생하거든요.
 이건 java 에서 thread 를 생성하려고 OS kernel 의 thread 를 호출했는데, EAGAIN 이나 ENOMEM 이 발생할 경우
 return 값으로 저 오류를 리턴해 주거든요
+[박경현 (solvage) / Kyonghyon Park] 2026-06-05 13:53
+Max processes             10240                10240                processes
+Max open files            10240                10240                files
+요렇게 설정이 되어 있어서 자원 개수 부족에 의한 EAGAIN 은 아닌걸로 보이니, Memory 밖에 없을거 같거든요
+
+[박경현 (solvage) / Kyonghyon Park] 2026-06-05 13:54
+근데 swap 이 있으면 swap 을 사용해서 처리가 가능하지 않을까요?
 
 Memory Util:
 Name	Mean	Max	Min
