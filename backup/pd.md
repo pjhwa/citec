@@ -1,4 +1,17 @@
 ```
+/var/log/sa/sa29 
+
+/var/log/messages
+/sos_commands/kernel/sysctl_-a
+sos_commands/process/ps_auxwww, ps_-elf, ps_-ealf 
+
+sos_commands/cgroups 
+memory/free_-m proc/meminfo
+memory/slabinfo 
+process/lsof 
+```
+
+```
 서버가 3대로 구성되어 있어서 추가로 sar 를 받았는데,(아깐 1호기) 2,3호기도 Memory 는 비슷해 보이네요.
 DB 암호화를 위한 암호화 솔루션이 올라가 있는 AP 서버입니다.
 sos report 에서 아래 부분은 프로세스 리스타트 때문으로 보입니다.
