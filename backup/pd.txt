@@ -1,0 +1,67 @@
+Memory Util:
+Name	Mean	Max	Min
+%memused PDBEAL01SL
+98.4%	99.9%	81.6%
+
+Memory Details:
+Name	Mean	Max	Min
+kbavail PDBEAL01SL
+0 kB	0 kB	0 kB
+kbbuffers PDBEAL01SL
+130 kB	132 kB	128 kB
+kbcached PDBEAL01SL
+464 GB	513 GB	451 GB
+kbcommit PDBEAL01SL
+416 GB	422 GB	151 GB
+kbmemfree PDBEAL01SL
+10.5 GB	123 GB	792 MB
+kbmemused PDBEAL01SL
+660 GB	670 GB	547 GB
+kbslab PDBEAL01SL
+0 kB	0 kB	0 kB
+
+Swap Util:
+Name	Mean	Max	Min
+%swpcad PDBEAL01SL
+3.69%	3.92%	3.48%
+%swpused PDBEAL01SL
+8.72%	8.84%	8.47%
+
+Swap details:
+Name	Mean	Max	Min
+kbswpcad PDBEAL01SL
+108 MB	114 MB	101 MB
+kbswpused PDBEAL01SL
+2.92 GB	2.97 GB	2.84 GB
+
+Swapping details:
+Name	Mean	Max	Min
+pswpin/s PDBEAL01SL
+0.591	100	0
+pswpout/s PDBEAL01SL
+1.10	267	0
+
+Pages details:
+Name	Mean	Max	Min
+%vmeff PDBEAL01SL
+23.3	101	0
+fault/s PDBEAL01SL
+13.3 K	243 K	3.61 K
+majflt/s PDBEAL01SL
+0.197	49.8	0
+pgfree/s PDBEAL01SL
+32.2 K	334 K	4.55 K
+pgpgin/s PDBEAL01SL
+3.10 K	397 K	0
+pgpgout/s PDBEAL01SL
+1.15 K	17.8 K	123
+pgscand/s PDBEAL01SL
+689	114 K	0
+pgscank/s PDBEAL01SL
+579	170 K	0
+pgsteal/s PDBEAL01SL
+1.27 K	186 K	0
+
+
+
+
