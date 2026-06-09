@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>브리즈번 · 시드니 9박 10일 여행 가이드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF7F0; --paper-2:#F4EDE1; --card:#FFFFFF;
+    --ink:#233032; --ink-soft:#5E6E6C; --ink-faint:#8A9794;
+    --sea:#0E6E7D; --sea-deep:#0A4A55; --sun:#D98A2B; --sun-soft:#F0C27A;
+    --coral:#D2543B; --euc:#3C6E54; --line:#E6DBC9; --line-soft:#EFE7D8;
+    --good:#3C6E54; --warn:#B5742A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:"Noto Sans KR",sans-serif; font-weight:400; line-height:1.72;
+    -webkit-font-smoothing:antialiased; font-size:16px;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 22px}
+  h1,h2,h3,h4{font-family:"Noto Serif KR",serif;font-weight:600;line-height:1.3;color:var(--ink)}
+  .eyebrow{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--sun);font-weight:700;margin-bottom:.5rem}
+  a{color:var(--sea)}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative;overflow:hidden;color:#FFF;
+    background:linear-gradient(155deg,var(--sea-deep) 0%,var(--sea) 55%,#157E83 100%);}
+  .hero::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:64px;
+    background:var(--paper);
+    -webkit-mask:radial-gradient(40px 64px at 50% 0,transparent 98%,#000) repeat-x;
+            mask:radial-gradient(40px 64px at 50% 0,transparent 98%,#000) repeat-x;
+    -webkit-mask-size:80px 64px;mask-size:80px 64px;}
+  .hero .wrap{padding:64px 22px 90px;position:relative;z-index:2}
+  .hero .eyebrow{color:var(--sun-soft)}
+  .hero h1{color:#fff;font-size:clamp(2.1rem,6vw,3.5rem);font-weight:700;letter-spacing:-.01em}
+  .hero h1 .sep{color:var(--sun-soft);font-weight:400}
+  .hero .lede{margin-top:14px;font-size:1.05rem;color:#E4F1F1;max-width:46ch}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .chip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);
+    padding:7px 14px;border-radius:999px;font-size:.82rem;color:#EAF6F5;backdrop-filter:blur(2px)}
+  .chip b{color:#fff;font-weight:700}
+  .wave{position:absolute;inset:0;opacity:.16;z-index:1}
+
+  /* ---------- SECTION ---------- */
+  section{padding:52px 0}
+  .sec-head{margin-bottom:26px}
+  .sec-head h2{font-size:clamp(1.5rem,4vw,2rem)}
+  .sec-head p{color:var(--ink-soft);margin-top:6px;max-width:60ch}
+
+  /* ---------- OVERVIEW GRID ---------- */
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:680px){.g2,.g3{grid-template-columns:1fr}}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px}
+  .stat .k{font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+  .stat .v{font-family:"Noto Serif KR",serif;font-size:1.5rem;font-weight:700;margin-top:4px;color:var(--sea-deep)}
+  .stat .s{font-size:.85rem;color:var(--ink-soft);margin-top:4px}
+
+  /* ---------- CALLOUTS ---------- */
+  .note{border-radius:14px;padding:16px 20px;margin:18px 0;font-size:.93rem;line-height:1.65}
+  .note h4{font-family:"Noto Sans KR";font-weight:700;font-size:.95rem;margin-bottom:5px;display:flex;align-items:center;gap:8px}
+  .note .tag{font-size:.66rem;font-weight:700;letter-spacing:.1em;padding:2px 7px;border-radius:5px;text-transform:uppercase}
+  .note.fix{background:#FBEFE9;border:1px solid #EBC9BC}
+  .note.fix .tag{background:var(--coral);color:#fff}
+  .note.verify{background:#FAF3E3;border:1px solid #E9D9B0}
+  .note.verify .tag{background:var(--warn);color:#fff}
+  .note.tip{background:#EAF3EF;border:1px solid #C7E0D5}
+  .note.tip .tag{background:var(--euc);color:#fff}
+  .note ul{margin:.4rem 0 0 1.1rem}
+  .note li{margin:.2rem 0}
+
+  /* ---------- PHOTO ---------- */
+  figure.ph{position:relative;border-radius:14px;overflow:hidden;background:var(--paper-2);margin:0}
+  figure.ph img{display:block;width:100%;height:230px;object-fit:cover}
+  figure.ph figcaption{position:absolute;left:0;right:0;bottom:0;
+    background:linear-gradient(transparent,rgba(15,40,42,.82));
+    color:#fff;font-size:.8rem;padding:24px 14px 11px;font-weight:500}
+  /* graceful fallback when image fails */
+  figure.ph.ph--fb{height:230px;display:flex;align-items:flex-end}
+  figure.ph.ph--fb .fbname{font-family:"Noto Serif KR",serif;color:#fff;font-size:1.15rem;font-weight:600;
+    padding:16px;text-shadow:0 1px 8px rgba(0,0,0,.35);z-index:2}
+  figure.ph.ph--fb.sea{background:linear-gradient(140deg,#0A4A55,#1A8A93)}
+  figure.ph.ph--fb.mtn{background:linear-gradient(140deg,#3E5C6E,#7E9AAB)}
+  figure.ph.ph--fb.beach{background:linear-gradient(140deg,#1C7F8C,#E9C77E)}
+  figure.ph.ph--fb.wild{background:linear-gradient(140deg,#3C6E54,#86A66A)}
+  figure.ph.ph--fb.city{background:linear-gradient(140deg,#2A4A52,#C97B3C)}
+  figure.ph.ph--fb.sky{background:linear-gradient(140deg,#1C6E8C,#6FB7C9)}
+
+  /* ---------- DAY CARD ---------- */
+  .day{background:var(--card);border:1px solid var(--line);border-radius:20px;
+    padding:26px 26px 30px;margin-bottom:26px;scroll-margin-top:20px}
+  .day-top{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+  .daynum{font-family:"Noto Serif KR",serif;font-weight:700;line-height:.9;
+    font-size:2.7rem;color:var(--sun);min-width:64px}
+  .daynum small{display:block;font-size:.62rem;letter-spacing:.14em;color:var(--ink-faint);
+    font-family:"Noto Sans KR";font-weight:700;margin-top:6px}
+  .day-title h3{font-size:1.3rem}
+  .day-title .date{font-size:.84rem;color:var(--ink-soft);margin-top:2px}
+  .day-title .theme{font-size:.9rem;color:var(--sea);font-weight:500;margin-top:8px}
+
+  /* step gauge signature */
+  .gauge{margin:20px 0 6px;background:var(--paper-2);border-radius:12px;padding:13px 16px;border:1px solid var(--line-soft)}
+  .gauge .lab{display:flex;justify-content:space-between;font-size:.76rem;color:var(--ink-soft);margin-bottom:7px}
+  .gauge .lab b{color:var(--ink);font-weight:700}
+  .gbar{height:9px;border-radius:99px;background:#E7DECF;position:relative;overflow:hidden}
+  .gbar i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;
+    background:linear-gradient(90deg,var(--euc),var(--sun))}
+  .glimit{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--coral);right:0}
+  .gauge .cap{font-size:.72rem;color:var(--ink-faint);margin-top:7px}
+
+  /* timeline */
+  .tl{margin-top:22px;border-left:2px solid var(--line);padding-left:0}
+  .ev{position:relative;padding:0 0 22px 26px;margin-left:8px}
+  .ev::before{content:"";position:absolute;left:-7px;top:5px;width:11px;height:11px;border-radius:50%;
+    background:var(--sea);border:2px solid var(--card);box-shadow:0 0 0 2px var(--line)}
+  .ev .time{font-size:.78rem;font-weight:700;color:var(--sun);letter-spacing:.04em}
+  .ev h4{font-family:"Noto Sans KR";font-weight:700;font-size:1rem;margin:2px 0 4px}
+  .ev p{font-size:.92rem;color:var(--ink-soft)}
+  .ev .bg{font-size:.86rem;color:var(--ink-soft);background:var(--paper-2);
+    border-radius:9px;padding:9px 13px;margin-top:9px;border-left:3px solid var(--sun-soft)}
+  .ev .bg b{color:var(--euc)}
+  .meta-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .mtag{font-size:.74rem;background:#EFF5F3;color:var(--sea-deep);border:1px solid #D8E8E3;
+    padding:3px 9px;border-radius:7px}
+  .mtag.cost{background:#FAF3E3;color:var(--warn);border-color:#E9D9B0}
+  .mtag.safe{background:#FBEFE9;color:var(--coral);border-color:#EBC9BC}
+  .ev figure.ph{margin-top:12px}
+
+  /* tables */
+  .tbl{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:10px;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .tbl th,.tbl td{padding:11px 13px;text-align:left;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  .tbl th{background:var(--paper-2);font-family:"Noto Sans KR";font-weight:700;font-size:.78rem;
+    letter-spacing:.04em;color:var(--ink)}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl td b{color:var(--sea-deep)}
+
+  /* checklist */
+  .check{columns:2;column-gap:26px}
+  @media(max-width:680px){.check{columns:1}}
+  .check div{break-inside:avoid;padding:8px 0 8px 26px;position:relative;font-size:.92rem;color:var(--ink-soft)}
+  .check div::before{content:"";position:absolute;left:0;top:13px;width:13px;height:13px;border-radius:4px;
+    border:2px solid var(--sun)}
+
+  /* nav */
+  .toc{position:sticky;top:0;z-index:30;background:rgba(251,247,240,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);padding:11px 0}
+  .toc .wrap{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none}
+  .toc .wrap::-webkit-scrollbar{display:none}
+  .toc a{flex:0 0 auto;font-size:.8rem;text-decoration:none;color:var(--ink-soft);
+    padding:6px 13px;border-radius:99px;border:1px solid var(--line);white-space:nowrap;font-weight:500}
+  .toc a:hover{background:var(--sea);color:#fff;border-color:var(--sea)}
+
+  footer{background:var(--sea-deep);color:#CFE6E6;padding:40px 0;font-size:.85rem}
+  footer .wrap{display:flex;flex-direction:column;gap:8px}
+  footer b{color:#fff}
+
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+  hr.soft{border:none;border-top:1px solid var(--line);margin:30px 0}
+  .small{font-size:.82rem;color:var(--ink-faint)}
+</style>
+</head>
+<body>
+
+<!-- ===================== HERO ===================== -->
+<header class="hero">
+  <svg class="wave" viewBox="0 0 1200 400" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,260 C200,200 400,320 600,260 C800,200 1000,300 1200,250 L1200,400 L0,400 Z" fill="#fff"/>
+    <path d="M0,300 C220,250 420,350 640,300 C860,250 1040,330 1200,300 L1200,400 L0,400 Z" fill="#fff" opacity=".6"/>
+  </svg>
+  <div class="wrap">
+    <div class="eyebrow">엄마 &amp; 딸의 호주 동부 첫 여행</div>
+    <h1>브리즈번 <span class="sep">·</span> 시드니</h1>
+    <p class="lede">두 도시, 두 가지 결의 봄. 코알라와 도심 강변에서 시작해, 세계유산 항구와 해안 절벽 산책로로 마무리하는 여유로운 9박 10일.</p>
+    <div class="hero-meta">
+      <span class="chip"><b>9/18(금)</b> 출발 ~ <b>9/27(일)</b> 귀국</span>
+      <span class="chip">실제 <b>9박 10일</b> · 지상 7박</span>
+      <span class="chip">브리즈번 <b>3박</b> · 시드니 <b>4박</b></span>
+      <span class="chip">성인 2인 · 여유 페이스</span>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== TOC ===================== -->
+<nav class="toc">
+  <div class="wrap">
+    <a href="#overview">한눈에 보기</a>
+    <a href="#essentials">출발 전 핵심</a>
+    <a href="#d1">1일 브리즈번</a>
+    <a href="#d2">2일 코알라</a>
+    <a href="#d3">3일 골드코스트</a>
+    <a href="#d4">4일 시드니 이동</a>
+    <a href="#d5">5일 블루마운틴</a>
+    <a href="#d6">6일 도심·미술관</a>
+    <a href="#d7">7일 본다이</a>
+    <a href="#d8">8일 마지막날</a>
+    <a href="#budget">예산</a>
+    <a href="#safety">치안·안전</a>
+    <a href="#pack">체크리스트</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- ===================== OVERVIEW ===================== -->
+<section id="overview" class="reveal">
+  <div class="sec-head">
+    <div class="eyebrow">한눈에 보기</div>
+    <h2>여정 개요와 먼저 짚을 것</h2>
+    <p>일정에 적힌 “브리즈번 4박”은 실제 동선과 맞지 않습니다. 출발·도착 시차를 따져 정정한 뒤 계획을 세웠습니다.</p>
+  </div>
+
+  <div class="note fix">
+    <h4><span class="tag">정정</span> 박수 계산 — “브리즈번 4박”이 아니라 3박입니다</h4>
+    <p>9/19(토) 06:45 브리즈번 도착 → 9/22(화) 오전 시드니 이동이면, 브리즈번에서 실제로 자는 밤은 9/19·20·21 <b>3박</b>입니다. 시드니는 9/22·23·24·25 <b>4박</b>이 맞습니다. 비행기에서 자는 밤(9/18 출발편, 9/26 귀국편) 2박을 합치면 전체 일정은 <b>9박 10일</b>, 호텔 숙박은 <b>7박</b>입니다. 브리즈번 호텔 예약이 4박으로 잡혀 있다면 마지막 1박이 비는지 반드시 확인하세요.</p>
+  </div>
+
+  <div class="grid g3">
+    <div class="stat"><div class="k">시차</div><div class="v">+1시간</div><div class="s">한국보다 1시간 빠름(9월엔 서머타임 전). 시차 부담은 거의 없고, 진짜 문제는 첫날 밤샘 비행 피로입니다.</div></div>
+    <div class="stat"><div class="k">환율(2026.6 기준)</div><div class="v">1 AUD ≈ 1,080원</div><div class="s">9월엔 다소 오를 수 있음(예측 1,100~1,160원대). 카드·현금 환율은 다르니 출발 직전 재확인.</div></div>
+    <div class="stat"><div class="k">9월 날씨</div><div class="v">초봄 · 건기</div><div class="s">브리즈번 최고 25/최저 14℃, 시드니 최고 20/최저 11℃. 둘 다 연중 가장 건조한 달. 일교차 큼.</div></div>
+    <div class="stat"><div class="k">결제</div><div class="v">탭 결제 중심</div><div class="s">시드니는 신용카드·삼성/애플페이 그대로 교통 탭 결제 가능. 브리즈번도 카드 가능 + 50센트 정액제.</div></div>
+    <div class="stat"><div class="k">콘센트</div><div class="v">Type I (230V)</div><div class="s">한국과 모양이 달라 호주용 어댑터 필수. 멀티탭 1개 챙기면 편리.</div></div>
+    <div class="stat"><div class="k">긴급전화</div><div class="v">000</div><div class="s">경찰·구급·소방 공통. 비응급 경찰은 131 444.</div></div>
+  </div>
+
+  <div class="note verify">
+    <h4><span class="tag">확인 필요</span> 가격·운영 정보는 ‘추정·변동’ 항목이 섞여 있습니다</h4>
+    <p>입장료·투어비·항공료는 검증된 2026년 자료 기반의 추정치이며 시즌·환율·예약 시점에 따라 달라집니다. 본 가이드에서 <b style="color:var(--warn)">확인 필요</b>로 표시한 항목(트레저리 호텔 운영 상태, 론파인 성인 입장료, 스카이다이빙 가격 등)은 예약 전 공식 사이트로 재확인하세요. 신뢰도: 이동시간·교통체계·치안 정보 <b>높음</b> / 구체적 요금 <b>중간</b>.</p>
+  </div>
+</section>
+
+<!-- ===================== ESSENTIALS ===================== -->
+<section id="essentials" class="reveal">
+  <div class="sec-head">
+    <div class="eyebrow">출발 전 핵심</div>
+    <h2>이동·교통·돈, 미리 정리</h2>
+  </div>
+
+  <h3 style="margin-bottom:8px">① 브리즈번 → 시드니 항공 (미예약 — 9/22 화)</h3>
+  <p style="color:var(--ink-soft)">직항 1시간 30~40분. 콴타스·버진오스트레일리아·젯스타가 매일 다수 운항합니다. 9/22는 화요일이라 비교적 저렴한 요일입니다. <b>오전 늦게~정오</b> 출발편(예: 11~12시 출발 → 13시경 시드니 도착)을 추천합니다. 아침 여유 → 점심 즈음 도착 → 오후 시드니 첫 산책으로 이어집니다.</p>
+  <table class="tbl">
+    <tr><th>항목</th><th>내용</th></tr>
+    <tr><td>편도 요금(1인)</td><td><b>약 AUD 120~190</b> (젯스타 저가 시 더 낮음 · 위탁수하물 별도일 수 있음)</td></tr>
+    <tr><td>예약 시점</td><td>약 6주 전(8월 초)에 화요일 출발편이 가장 저렴한 경향</td></tr>
+    <tr><td>공항 접근(BNE)</td><td>에어트레인으로 시내→공항 약 20분, <b>AUD 약 22~23/인</b> (에어트레인은 50센트 정액제 제외)</td></tr>
+    <tr><td>도착(SYD)</td><td>국내선 도착 → T8 공항선으로 서클러키까지 약 20분. 공항역 이용료 포함 <b>AUD 약 22/인</b></td></tr>
+  </table>
+
+  <h3 style="margin:26px 0 8px">② 시내 교통</h3>
+  <table class="tbl">
+    <tr><th></th><th>브리즈번 (TransLink)</th><th>시드니 (Opal/탭)</th></tr>
+    <tr><td>방식</td><td>고카드 또는 카드 탭. <b>전 노선 50센트 정액</b>(버스·기차·페리·트램, 골드코스트 포함)</td><td>해외 신용카드·삼성/애플페이 그대로 탭. 별도 오팔카드 불필요</td></tr>
+    <tr><td>요금 상한</td><td>편도 50센트라 사실상 부담 없음</td><td>1일 상한 약 AUD 18.70, 일요일 상한 더 저렴. 공항역만 별도 이용료(약 AUD 17.9)</td></tr>
+    <tr><td>예외</td><td><b>에어트레인(공항선)은 50센트 제외</b> — 별도 약 AUD 22</td><td>공항 출·도착 탭 시 이용료 추가</td></tr>
+  </table>
+  <div class="note tip">
+    <h4><span class="tag">꿀팁</span> 시드니 페리는 ‘교통수단이자 관광’</h4>
+    <p>서클러키 ↔ 맨리 페리(약 30분)는 그 자체가 하버 크루즈입니다. 탭 요금만 내면 오페라하우스·하버브리지를 바다에서 감상할 수 있어 가성비 최고. 6일차 대안으로 강력 추천.</p>
+  </div>
+
+  <h3 style="margin:26px 0 8px">③ 숙소 위치</h3>
+  <table class="tbl">
+    <tr><th>호텔</th><th>위치 &amp; 동선</th></tr>
+    <tr><td><b>트레저리 브리즈번</b></td><td>브리즈번 CBD 헤리티지 건물(130 William St). 강변·퀸스트리트몰·사우스뱅크(빅토리아교 도보 10분) 모두 도보권. <span style="color:var(--warn)"><b>확인 필요:</b></span> 2024년 카지노가 옆 ‘퀸즈워프’로 이전하며 일대가 단계적으로 재편됐습니다. 호텔 운영·체크인 동선을 예약처에 한번 더 확인하세요.</td></tr>
+    <tr><td><b>포시즌스 시드니</b></td><td>199 George St, 더록스(The Rocks). 서클러키 역·오페라하우스·하버브리지 도보 5~10분. 입지 자체가 관광 동선의 중심 — 매우 이상적입니다.</td></tr>
+  </table>
+</section>
+
+<hr class="soft">
+
+<!-- ===================== DAY 1 ===================== -->
+<section id="d1" class="reveal" style="padding-top:24px">
+  <div class="sec-head"><div class="eyebrow">Brisbane</div><h2>일자별 상세 일정</h2></div>
+
+  <div class="day">
+    <div class="day-top">
+      <div class="daynum">01<small>9 / 19 SAT</small></div>
+      <div class="day-title">
+        <h3>도착 · 사우스뱅크에서 천천히 시작</h3>
+        <div class="date">브리즈번 도착 06:45 · 밤샘 비행 직후라 ‘회복형’ 일정</div>
+        <div class="theme">강변 파크랜드 산책 + 가벼운 첫 식사</div>
+      </div>
+    </div>
+
+    <div class="gauge">
+      <div class="lab"><span>예상 걸음</span><span><b>약 8,000~11,000보</b> / 한계 20,000보</span></div>
+      <div class="gbar"><i style="width:48%"></i><span class="glimit"></span></div>
+      <div class="cap">첫날은 의도적으로 짧게. 무리하면 남은 일정이 흔들립니다.</div>
+    </div>
+
+    <div class="tl">
+      <div class="ev">
+        <div class="time">06:45 – 08:30</div>
+        <h4>입국 · 수하물 · 검역</h4>
+        <p>호주는 검역이 엄격합니다. 기내 받은 음식·과일·견과류는 전부 신고하거나 버리세요. 입국심사 자동화 게이트(SmartGate) 이용 가능.</p>
+        <div class="meta-row"><span class="mtag safe">치안: 공항 내 안전, 호객 택시 주의</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">08:30 – 09:30</div>
+        <h4>공항 → 시내(트레저리)</h4>
+        <p>밤샘 비행 직후 짐을 끌고 이동하므로 <b>택시·우버 권장</b>(약 20분). 비용을 아끼려면 에어트레인.</p>
+        <div class="meta-row">
+          <span class="mtag">우버/택시 약 20분</span>
+          <span class="mtag cost">우버 약 AUD 50/대 · 에어트레인 약 AUD 23/인</span>
+        </div>
+      </div>
+      <div class="ev">
+        <div class="time">09:30 – 11:00</div>
+        <h4>짐 보관 · 첫 커피와 브런치</h4>
+        <p>체크인은 보통 오후 3시. 프런트에 짐을 맡기고 CBD/사우스뱅크의 카페에서 호주식 플랫화이트와 브런치로 시동을 거세요.</p>
+        <div class="meta-row"><span class="mtag cost">커피 AUD 5~6 · 브런치 AUD 22~30/인</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">11:00 – 16:00</div>
+        <h4>사우스뱅크 파크랜드</h4>
+        <p>빅토리아교를 건너 강 건너편으로(도보 약 10분). 스트리츠 비치(도심 인공 해변), 네펜티 아치 산책로, 브리즈번 휠, 강변 카페. 평지라 다리에 부담이 적습니다.</p>
+        <div class="bg"><b>배경:</b> 이 일대는 1988년 <b>세계엑스포</b> 부지였고, 이후 시민 공원으로 탈바꿈했습니다. ‘스트리츠 비치’는 호주에서 유일한 도심 인공 해변이에요.</div>
+        <figure class="ph">
+          <img loading="lazy" alt="브리즈번 사우스뱅크 파크랜드" src="https://commons.wikimedia.org/wiki/Special:FilePath/South_Bank_Parklands,_Brisbane.jpg" onerror="this.closest('.ph').classList.add('ph--fb','sea');this.closest('.ph').insertAdjacentHTML('beforeend','<span class=fbname>사우스뱅크 파크랜드</span>');this.remove();">
+          <figcaption>사우스뱅크 파크랜드 · 도심 강변의 인공 해변과 산책로</figcaption>
+        </figure>
+        <div class="meta-row"><span class="mtag">입장 무료</span><span class="mtag safe">치안: 낮 시간 매우 안전 · 강변 난간 주의</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">16:00 이후</div>
+        <h4>이른 저녁 → 호텔 복귀, 일찍 취침</h4>
+        <p>사우스뱅크 그레이 스트리트나 CBD에서 가벼운 해산물·스테이크. 첫날은 무리하지 말고 일찍 쉬어 시차 아닌 ‘피로’를 푸세요.</p>
+        <div class="meta-row"><span class="mtag cost">저녁 AUD 40~60/인</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 2 -->
+  <div id="d2" class="day">
+    <div class="day-top">
+      <div class="daynum">02<small>9 / 20 SUN</small></div>
+      <div class="day-title">
+        <h3>론파인 코알라 + 마운트 쿠사 전망대</h3>
+        <div class="date">오전 야생동물, 오후 전망 — 일몰로 마무리</div>
+        <div class="theme">코알라 안기 + 캥거루 먹이주기 + 도시 파노라마</div>
+      </div>
+    </div>
+    <div class="gauge">
+      <div class="lab"><span>예상 걸음</span><span><b>약 9,000~12,000보</b> / 한계 20,000보</span></div>
+      <div class="gbar"><i style="width:55%"></i><span class="glimit"></span></div>
+      <div class="cap">론파인은 넓지만 평지. 전망대는 차/버스로 올라가 도보 최소화.</div>
+    </div>
+    <div class="tl">
+      <div class="ev">
+        <div class="time">09:00 – 09:45</div>
+        <h4>시내 → 론파인 (버스 430)</h4>
+        <p>퀸스트리트 버스역(플랫폼 2C)에서 430번, 또는 애들레이드 스트리트에서 445번. 약 45분, <b>50센트</b>.</p>
+        <div class="meta-row"><span class="mtag">버스 약 45분</span><span class="mtag cost">편도 AUD 0.50/인</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">09:45 – 13:00</div>
+        <h4>론파인 코알라 보호구역</h4>
+        <p>코알라 안고 사진(추가 요금), 캥거루·왈라비 먹이주기, 양몰이견·맹금류 쇼, 오리너구리·태즈메이니아데빌. 20대 딸들이 가장 좋아할 코스.</p>
+        <div class="bg"><b>배경:</b> 1927년 개장한 <b>세계 최초·최대 코알라 보호구역</b>. 핵심 포인트 — <b>퀸즐랜드는 코알라를 합법적으로 안을 수 있는 거의 유일한 주</b>입니다(시드니가 있는 NSW는 안기 금지). 코알라를 직접 안아보려면 바로 여기예요.</div>
+        <figure class="ph">
+          <img loading="lazy" alt="론파인 코알라" src="https://commons.wikimedia.org/wiki/Special:FilePath/Koala_climbing_tree.jpg" onerror="this.closest('.ph').classList.add('ph--fb','wild');this.closest('.ph').insertAdjacentHTML('beforeend','<span class=fbname>론파인 코알라</span>');this.remove();">
+          <figcaption>론파인 코알라 보호구역 · 코알라 안기·캥거루 먹이주기</figcaption>
+        </figure>
+        <div class="meta-row">
+          <span class="mtag cost">성인 입장 약 AUD 52/인 <b style="color:var(--warn)">(확인 필요)</b></span>
+          <span class="mtag cost">캥거루 먹이 약 AUD 3 · 코알라 사진 약 AUD 35+</span>
+          <span class="mtag">운영 09:00~17:00</span>
+        </div>
+      </div>
+      <div class="ev">
+        <div class="time">13:00 – 14:00</div>
+        <h4>점심 (보호구역 카페 또는 이동 중)</h4>
+        <p>내부 카페 이용 또는 마운트 쿠사로 이동하며 해결.</p>
+      </div>
+      <div class="ev">
+        <div class="time">14:30 – 17:00</div>
+        <h4>마운트 쿠사 전망대 &amp; 식물원</h4>
+        <p>론파인 → 마운트 쿠사는 버스 환승이 번거로워 <b>우버(약 15분, AUD 약 25)</b>가 편합니다. 정상에서 브리즈번 도심·모턴 베이까지 한눈에. 산기슭 식물원(무료, 일본정원·플라네타리움)도 가볍게.</p>
+        <div class="bg"><b>배경:</b> ‘쿠사(Coot-tha)’는 원주민어로 <b>꿀(native bee honey)이 나는 곳</b>이라는 뜻. 브리즈번 근교 최고 전망 포인트입니다.</div>
+        <figure class="ph">
+          <img loading="lazy" alt="마운트 쿠사에서 본 브리즈번" src="https://commons.wikimedia.org/wiki/Special:FilePath/Brisbane_skyline_from_Mount_Coot-tha.jpg" onerror="this.closest('.ph').classList.add('ph--fb','city');this.closest('.ph').insertAdjacentHTML('beforeend','<span class=fbname>마운트 쿠사 전망</span>');this.remove();">
+          <figcaption>마운트 쿠사 전망대 · 브리즈번 도심 파노라마</figcaption>
+        </figure>
+        <div class="meta-row"><span class="mtag">전망대·식물원 무료</span><span class="mtag cost">우버 약 AUD 25/대</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">17:00 이후</div>
+        <h4>일몰 감상 후 시내 복귀 · 저녁</h4>
+        <p>정상 카페에서 노을. 이후 우버/버스로 시내 복귀, 이글 스트리트 피어(강변 스테이크·해산물 레스토랑 밀집) 추천.</p>
+        <div class="meta-row"><span class="mtag safe">치안: 일몰 후 전망대 인적 줄어듦 — 어두워지기 전 하산</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 3 -->
+  <div id="d3" class="day">
+    <div class="day-top">
+      <div class="daynum">03<small>9 / 21 MON</small></div>
+      <div class="day-title">
+        <h3>골드코스트 — 딸의 비치 착지 스카이다이빙</h3>
+        <div class="date">하루 종일 코스 · 동선이 까다로운 날</div>
+        <div class="theme">딸: 키라비치 착지 스카이다이빙 / 엄마: 서퍼스 파라다이스</div>
+      </div>
+    </div>
+    <div class="gauge">
+      <div class="lab"><span>예상 걸음</span><span><b>약 10,000~14,000보</b> / 한계 20,000보</span></div>
+      <div class="gbar"><i style="width:67%"></i><span class="glimit"></span></div>
+      <div class="cap">이동이 길어 체감 피로가 큼. 무리하면 한계에 근접합니다.</div>
+    </div>
+
+    <div class="note fix">
+      <h4><span class="tag">솔직히</span> 이 날이 동선상 가장 어렵습니다</h4>
+      <p>스카이다이빙 착지점 <b>키라비치(코랑가타)</b>는 골드코스트 최남단으로, 브리즈번에서 차로 <b>1.5~2시간</b> 거리입니다. 렌터카가 없으면 ‘기차+트램+라이드셰어’ 조합이 필요해 시간이 많이 듭니다. 업체(Gold Coast Skydive)는 보통 <b>서퍼스 파라다이스에서 오전 7시경 픽업</b>을 제공하는데, 같은 날 아침 브리즈번에서 기차로 7시까지 도달하긴 어렵습니다. <b>대안:</b> ①늦은 오전/정오 세션을 예약하고 자력 이동, 또는 ②전날 골드코스트 1박을 고려. 예약 시 픽업·세션 시간을 업체와 직접 조율하세요.</p>
+    </div>
+
+    <div class="tl">
+      <div class="ev">
+        <div class="time">07:30 – 09:30</div>
+        <h4>브리즈번 → 골드코스트 (기차)</h4>
+        <p>브리즈번 센트럴 → 골드코스트선으로 헬렌스베일(약 1시간) → G:link 트램 남행(약 30분) → 서퍼스 파라다이스.</p>
+        <div class="meta-row"><span class="mtag">약 1시간 30분~2시간</span><span class="mtag cost">기차+트램 각 AUD 0.50/인</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">~10:00 (딸)</div>
+        <h4>서퍼스 → 코랑가타(키라) 이동 → 스카이다이빙</h4>
+        <p>딸은 라이드셰어로 코랑가타(약 30~40분)로 이동해 정오 전후 세션. 12,000ft에서 약 45초 자유낙하 후 <b>키라비치 모래사장에 착지</b>. <b>만 16세 이상·체중 95kg 이하.</b> 날씨에 따라 일정 변경될 수 있음.</p>
+        <div class="bg"><b>배경:</b> 골드코스트는 57km 해안의 ‘서핑 수도’. 키라·스내퍼록스는 세계적 서핑 포인트입니다.</div>
+        <figure class="ph">
+          <img loading="lazy" alt="골드코스트 해변" src="https://commons.wikimedia.org/wiki/Special:FilePath/Surfers_Paradise_Beach.jpg" onerror="this.closest('.ph').classList.add('ph--fb','beach');this.closest('.ph').insertAdjacentHTML('beforeend','<span class=fbname>골드코스트 해변</span>');this.remove();">
+          <figcaption>골드코스트 · 비치 착지 스카이다이빙의 무대</figcaption>
+        </figure>
+        <div class="meta-row">
+          <span class="mtag cost">스카이다이빙 약 AUD 359~399 <b style="color:var(--warn)">(확인 필요)</b></span>
+          <span class="mtag cost">라이드셰어 편도 약 AUD 50</span>
+          <span class="mtag safe">치안: 인증 업체·안전 브리핑 필수 확인</span>
+        </div>
+      </div>
+      <div class="ev">
+        <div class="time">10:00 – 15:00 (엄마)</div>
+        <h4>서퍼스 파라다이스 (엄마 단독 코스)</h4>
+        <p>스카이포인트 전망대(Q1 타워 77층, 호주 최고층 해안 전망대), 해변 산책, 캐빌 애비뉴 쇼핑·카페. 점프하지 않는 엄마에게 딱 맞는 여유 코스.</p>
+        <div class="meta-row"><span class="mtag cost">스카이포인트 약 AUD 31/인</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">15:00 – 17:00</div>
+        <h4>서퍼스에서 재합류 · 늦은 점심</h4>
+        <p>해변 카페에서 만나 후기를 나누고 휴식.</p>
+      </div>
+      <div class="ev">
+        <div class="time">17:00 이후</div>
+        <h4>브리즈번 복귀 (기차)</h4>
+        <p>다시 트램+기차로 약 2시간. 긴 하루였으니 시내 도착 후 호텔 근처에서 간단히 저녁.</p>
+        <div class="meta-row"><span class="mtag safe">치안: 서퍼스 야간 유흥가 다소 번잡 — 해 지기 전 이동 권장</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== SYDNEY DAYS ===================== -->
+<section class="reveal" style="padding-top:8px">
+  <div class="sec-head"><div class="eyebrow">Sydney</div><h2>시드니 4박</h2></div>
+
+  <!-- DAY 4 -->
+  <div id="d4" class="day">
+    <div class="day-top">
+      <div class="daynum">04<small>9 / 22 TUE</small></div>
+      <div class="day-title">
+        <h3>시드니 이동 · 오페라하우스 &amp; 더록스 산책</h3>
+        <div class="date">정오 도착 후 ‘시드니의 얼굴’부터</div>
+        <div class="theme">서클러키 → 오페라하우스 → 왕립식물원 → 더록스</div>
+      </div>
+    </div>
+    <div class="gauge">
+      <div class="lab"><span>예상 걸음</span><span><b>약 8,000~11,000보</b> / 한계 20,000보</span></div>
+      <div class="gbar"><i style="width:50%"></i><span class="glimit"></span></div>
+      <div class="cap">이동일이라 오후만 활용. 호텔이 더록스라 모든 명소가 도보권.</div>
+    </div>
+    <div class="tl">
+      <div class="ev">
+        <div class="time">오전</div>
+        <h4>브리즈번 마무리 · 공항</h4>
+        <p>체크아웃 후 시티 보타닉 가든(트레저리 옆 강변, 무료) 산책 또는 마지막 커피. 에어트레인으로 BNE 국내선 → 정오 전후 항공편.</p>
+        <div class="meta-row"><span class="mtag">에어트레인 약 20분</span><span class="mtag cost">AUD 약 23/인</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">~13:30</div>
+        <h4>시드니 도착 → 더록스 체크인</h4>
+        <p>SYD 국내선 → T8 공항선으로 서클러키(약 20분). 포시즌스(199 George St)는 역에서 도보 5~10분.</p>
+        <div class="meta-row"><span class="mtag cost">공항선 약 AUD 22/인</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">15:00 – 18:30</div>
+        <h4>오페라하우스 · 왕립식물원 · 매쿼리 부인의 의자</h4>
+        <p>서클러키 → 오페라하우스 외관 → 왕립식물원을 따라 ‘매쿼리 부인의 의자(Mrs Macquarie’s Chair)’까지. 여기서 <b>오페라하우스+하버브리지가 한 프레임</b>에 담기는 시드니 대표 사진을 찍을 수 있습니다.</p>
+        <div class="bg"><b>배경:</b> 오페라하우스는 덴마크 건축가 <b>예른 웃손</b> 설계, 1973년 개관한 유네스코 세계유산. 하버브리지는 1932년 개통, 별명은 ‘옷걸이(The Coathanger)’.</div>
+        <figure class="ph">
+          <img loading="lazy" alt="시드니 오페라하우스" src="https://commons.wikimedia.org/wiki/Special:FilePath/Sydney_Opera_House_-_Dec_2008.jpg" onerror="this.closest('.ph').classList.add('ph--fb','sea');this.closest('.ph').insertAdjacentHTML('beforeend','<span class=fbname>오페라하우스 &amp; 하버브리지</span>');this.remove();">
+          <figcaption>오페라하우스 · 왕립식물원에서 이어지는 하버 산책</figcaption>
+        </figure>
+        <div class="meta-row"><span class="mtag">외관·공원 무료</span><span class="mtag safe">치안: 관광 중심지로 안전 · 소매치기만 주의</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">19:00 이후</div>
+        <h4>더록스에서 저녁</h4>
+        <p>자갈길 골목의 더록스에서 해산물·스테이크. 호텔 도보권이라 부담 없음.</p>
+        <div class="bg"><b>배경:</b> 더록스는 1788년 유럽 정착이 시작된 시드니 최古 지구. 사암 건물과 골목이 그대로 남아 있습니다.</div>
+        <div class="meta-row"><span class="mtag cost">저녁 AUD 50~75/인</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 5 -->
+  <div id="d5" class="day">
+    <div class="day-top">
+      <div class="daynum">05<small>9 / 23 WED</small></div>
+      <div class="day-title">
+        <h3>블루마운틴 소규모 일일투어</h3>
+        <div class="date">픽업 ~7:30, 복귀 ~18:30 · 다리는 편한 날</div>
+        <div class="theme">세 자매봉 + 세닉월드 + 야생동물원 + 페리 귀환</div>
+      </div>
+    </div>
+    <div class="gauge">
+      <div class="lab"><span>예상 걸음</span><span><b>약 6,000~9,000보</b> / 한계 20,000보</span></div>
+      <div class="gbar"><i style="width:38%"></i><span class="glimit"></span></div>
+      <div class="cap">대부분 버스 이동 + 짧은 산책. 체력 부담이 가장 적은 날.</div>
+    </div>
+    <div class="tl">
+      <div class="ev">
+        <div class="time">07:30경</div>
+        <h4>CBD 픽업</h4>
+        <p>소규모(소형 밴) 올인클루시브 투어 권장. 가이드 동행으로 동선·설명이 알차고, 대형 버스 인파를 피할 수 있습니다.</p>
+        <div class="meta-row"><span class="mtag cost">올인클루시브 약 AUD 230~285/인</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">오전</div>
+        <h4>페더데일/시드니 동물원 → 산악 진입</h4>
+        <p>코알라·캥거루를 한 번 더(투어에 보통 포함). 이후 1.5~2시간 달려 카툼바로.</p>
+      </div>
+      <div class="ev">
+        <div class="time">정오~오후</div>
+        <h4>에코포인트 ‘세 자매봉’ &amp; 세닉월드</h4>
+        <p>제이미슨 밸리를 굽어보는 세 자매봉 전망. 세닉월드의 레일웨이·스카이웨이·케이블웨이 탑승.</p>
+        <div class="bg"><b>배경:</b> ‘블루’마운틴은 유칼립투스 기름이 햇빛을 산란시켜 <b>푸른 안개</b>가 끼는 데서 이름이 유래. 세 자매봉은 원주민 군둥구라족 ‘돌이 된 세 자매’ 전설이 있고, 세닉 레일웨이는 <b>경사 52°, 세계에서 가장 가파른 여객 철도</b>입니다.</p></div>
+        <figure class="ph">
+          <img loading="lazy" alt="블루마운틴 세 자매봉" src="https://commons.wikimedia.org/wiki/Special:FilePath/Three_Sisters,_Blue_Mountains.jpg" onerror="this.closest('.ph').classList.add('ph--fb','mtn');this.closest('.ph').insertAdjacentHTML('beforeend','<span class=fbname>세 자매봉</span>');this.remove();">
+          <figcaption>블루마운틴 ‘세 자매봉’ · 에코포인트 전망</figcaption>
+        </figure>
+        <div class="meta-row"><span class="mtag safe">치안: 절벽 난간 밖 금지 · 봄철 거미·뱀, 정해진 길만</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">늦은 오후</div>
+        <h4>파라마타강 페리로 귀환</h4>
+        <p>많은 투어가 올림픽파크에서 페리로 하버까지 돌아옵니다 — 하버브리지 아래를 지나며 마무리.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 6 -->
+  <div id="d6" class="day">
+    <div class="day-top">
+      <div class="daynum">06<small>9 / 24 THU</small></div>
+      <div class="day-title">
+        <h3>도심 미술관·박물관 가벼운 투어 <span style="font-size:.8rem;color:var(--coral)">(추천 일정)</span></h3>
+        <div class="date">‘일정 없음’ → 무료 미술관 중심의 여유로운 도심 루프</div>
+        <div class="theme">QVB → 하이드파크 → 호주박물관 → NSW 미술관</div>
+      </div>
+    </div>
+    <div class="gauge">
+      <div class="lab"><span>예상 걸음</span><span><b>약 10,000~14,000보</b> / 한계 20,000보</span></div>
+      <div class="gbar"><i style="width:68%"></i><span class="glimit"></span></div>
+      <div class="cap">전부 도보권이지만 누적되니 카페 휴식을 중간중간.</div>
+    </div>
+    <div class="tl">
+      <div class="ev">
+        <div class="time">10:00 – 11:30</div>
+        <h4>QVB(퀸 빅토리아 빌딩) · 커피</h4>
+        <p>1898년 로마네스크 양식의 아름다운 쇼핑 아케이드. 피에르 가르뎅이 “세계에서 가장 아름다운 쇼핑센터”라 칭한 곳. 내부 카페에서 모닝커피.</p>
+        <figure class="ph">
+          <img loading="lazy" alt="퀸 빅토리아 빌딩" src="https://commons.wikimedia.org/wiki/Special:FilePath/Queen_Victoria_Building_Sydney.jpg" onerror="this.closest('.ph').classList.add('ph--fb','city');this.closest('.ph').insertAdjacentHTML('beforeend','<span class=fbname>퀸 빅토리아 빌딩</span>');this.remove();">
+          <figcaption>QVB · 1898년 빅토리아 시대 쇼핑 아케이드</figcaption>
+        </figure>
+      </div>
+      <div class="ev">
+        <div class="time">11:30 – 12:30</div>
+        <h4>하이드파크 · 세인트메리 대성당</h4>
+        <p>호주에서 가장 오래된 도심 공원을 가로질러 고딕 양식 대성당으로. 그늘 벤치에서 잠깐 쉬기 좋음.</p>
+        <div class="meta-row"><span class="mtag safe">치안: 봄철 까치(magpie) 둥지 근처 주의 — 아래 안전편 참고</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">12:30 – 14:00</div>
+        <h4>호주박물관 (무료)</h4>
+        <p>1 William St, 하이드파크 건너편. 공룡, 광물, 원주민 ‘가리가랑’ 갤러리. <b>상설전 무료입장.</b> 점심은 박물관 카페 또는 인근.</p>
+        <div class="meta-row"><span class="mtag">상설전 무료</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">14:30 – 16:30</div>
+        <h4>뉴사우스웨일스 미술관 (무료)</h4>
+        <p>더 도메인 공원 쪽. 2022년 개관한 신관 ‘시드니 모던(Naala Badu)’으로 전시 공간이 두 배가 됐습니다. <b>상설전 무료.</b></p>
+        <div class="bg"><b>배경:</b> 호주 원주민·아시아·유럽 컬렉션이 강점. 신관은 옛 연료저장고를 개조한 ‘탱크’ 전시실이 인상적입니다.</div>
+        <div class="meta-row"><span class="mtag">상설전 무료</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">대안</div>
+        <h4>더 느긋하게 — 맨리 페리</h4>
+        <p>박물관 대신, 서클러키에서 맨리행 페리(약 30분)로 바다 위 ‘무료 크루즈’를 즐기고 맨리 해변에서 점심·산책하는 코스도 훌륭합니다(걸음 부담↓, 풍경↑).</p>
+        <div class="meta-row"><span class="mtag cost">페리 탭 요금(1일 상한 내)</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 7 -->
+  <div id="d7" class="day">
+    <div class="day-top">
+      <div class="daynum">07<small>9 / 25 FRI</small></div>
+      <div class="day-title">
+        <h3>본다이 비치 &amp; 해안 절벽 산책로</h3>
+        <div class="date">시드니의 상징적 해변 — 단, 9월은 ‘수영’보다 ‘걷기’</div>
+        <div class="theme">본다이 → 브론테 코스털 워크 + 아이스버그 풀</div>
+      </div>
+    </div>
+    <div class="gauge">
+      <div class="lab"><span>예상 걸음</span><span><b>약 11,000~15,000보</b> / 한계 20,000보</span></div>
+      <div class="gbar"><i style="width:78%"></i><span class="glimit"></span></div>
+      <div class="cap">한계에 가장 근접한 날. 풀코스(본다이~쿠지 6km) 대신 <b>본다이~브론테(2.5km)</b> 권장.</div>
+    </div>
+
+    <div class="note tip">
+      <h4><span class="tag">현실</span> 9월 바다는 차갑습니다(약 18.6℃)</h4>
+      <p>봄이라 해수온이 낮아 ‘수영하는 날’이 아니라 ‘걷고 사진 찍고 카페 즐기는 날’입니다. 발만 담그는 정도면 충분. 풀코스 본다이~쿠지(6km)는 2만보 한계를 넘길 수 있어 <b>본다이~브론테(약 2.5km, 1시간)</b>를 추천합니다.</p>
+    </div>
+
+    <div class="tl">
+      <div class="ev">
+        <div class="time">09:30 – 10:30</div>
+        <h4>도심 → 본다이</h4>
+        <p>기차로 본다이 정션 → 333/380번 버스로 본다이 비치(총 40~50분). 카드 탭.</p>
+        <div class="meta-row"><span class="mtag">약 45분</span><span class="mtag cost">왕복 약 AUD 7~9/인(1일 상한 적용)</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">10:30 – 12:00</div>
+        <h4>본다이 비치 + 아이스버그 풀</h4>
+        <p>해변 산책과 아이스버그 풀(바다 절벽 위 인공 수영장) 사진. 카페에서 브런치.</p>
+        <div class="bg"><b>배경:</b> ‘본다이(Bondi)’는 원주민어로 ‘바위에 부서지는 물’. <b>본다이 아이스버그 클럽</b>은 1929년 창립된 겨울 수영 동호회로 유명합니다.</p></div>
+        <figure class="ph">
+          <img loading="lazy" alt="본다이 비치" src="https://commons.wikimedia.org/wiki/Special:FilePath/Bondi_Beach,_Sydney.jpg" onerror="this.closest('.ph').classList.add('ph--fb','beach');this.closest('.ph').insertAdjacentHTML('beforeend','<span class=fbname>본다이 비치</span>');this.remove();">
+          <figcaption>본다이 비치 · 아이스버그 풀과 황금빛 해안</figcaption>
+        </figure>
+        <div class="meta-row"><span class="mtag cost">아이스버그 풀 입장 약 AUD 9(선택)</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">12:00 – 13:30</div>
+        <h4>본다이 → 타마라마 → 브론테 코스털 워크</h4>
+        <p>세계적으로 손꼽히는 도심 해안 산책로. 절벽·바위·작은 만이 이어지고 곳곳에 포토 스폿. 무리 없는 길이.</p>
+        <div class="meta-row"><span class="mtag safe">치안: 깃발(빨강·노랑) 사이에서만 입수 · 이안류 주의</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">오후</div>
+        <h4>브론테에서 커피 → 도심 복귀</h4>
+        <p>브론테 해변 카페에서 쉬고 버스로 복귀. 여유 있으면 클로벨리까지 더 걷기.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 8 -->
+  <div id="d8" class="day">
+    <div class="day-top">
+      <div class="daynum">08<small>9 / 26 SAT</small></div>
+      <div class="day-title">
+        <h3>마지막 날 — 더록스 마켓 &amp; 하버브리지 워크</h3>
+        <div class="date">체크아웃 11:00 → 공항(21:00 아시아나, 국제선)</div>
+        <div class="theme">짐 보관 후 도보 동선만으로 알차게</div>
+      </div>
+    </div>
+    <div class="gauge">
+      <div class="lab"><span>예상 걸음</span><span><b>약 8,000~12,000보</b> / 한계 20,000보</span></div>
+      <div class="gbar"><i style="width:58%"></i><span class="glimit"></span></div>
+      <div class="cap">호텔 도보권에서만 움직여 캐리어 없이 가볍게.</div>
+    </div>
+    <div class="tl">
+      <div class="ev">
+        <div class="time">11:00</div>
+        <h4>체크아웃 · 호텔에 짐 보관</h4>
+        <p>포시즌스 프런트에 수하물 보관. 토요일이라 더록스 일대가 특히 활기.</p>
+      </div>
+      <div class="ev">
+        <div class="time">11:00 – 13:00</div>
+        <h4>더록스 마켓 (주말 한정)</h4>
+        <p>주말에만 서는 더록스 마켓 — 수공예·디자인·먹거리. 마지막 기념품과 길거리 음식.</p>
+        <div class="bg"><b>배경:</b> 1990년대부터 조지 스트리트·플레이페어 스트리트의 역사 지구에서 열리는 주말 마켓입니다.</div>
+        <figure class="ph">
+          <img loading="lazy" alt="시드니 하버브리지" src="https://commons.wikimedia.org/wiki/Special:FilePath/Sydney_Harbour_Bridge_night.jpg" onerror="this.closest('.ph').classList.add('ph--fb','sky');this.closest('.ph').insertAdjacentHTML('beforeend','<span class=fbname>하버브리지</span>');this.remove();">
+          <figcaption>하버브리지 보행로 · 밀슨스포인트 방향 전망</figcaption>
+        </figure>
+      </div>
+      <div class="ev">
+        <div class="time">13:00 – 15:00</div>
+        <h4>하버브리지 보행로 워크 (무료)</h4>
+        <p>다리 위 보행로를 걸어 밀슨스포인트까지(왕복). 루나파크와 오페라하우스를 배경으로 마지막 사진. ‘브리지클라임’ 유료 등반과 달리 보행로는 무료.</p>
+        <div class="meta-row"><span class="mtag">보행로 무료</span></div>
+      </div>
+      <div class="ev">
+        <div class="time">15:00 – 17:00</div>
+        <h4>이른 저녁 · 짐 회수</h4>
+        <p>서클러키 인근에서 이른 저녁. 호텔에서 캐리어 회수.</p>
+      </div>
+      <div class="ev">
+        <div class="time">17:30경</div>
+        <h4>공항 이동 (국제선 21:00)</h4>
+        <p><b>국제선은 출발 3시간 전 도착 권장</b> → 늦어도 18:00 전 공항 도착. 서클러키 → T1 국제선 공항선 약 20분, 또는 택시 약 AUD 55.</p>
+        <div class="meta-row"><span class="mtag cost">공항선 약 AUD 22/인 · 택시 약 AUD 55/대</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BUDGET ===================== -->
+<section id="budget" class="reveal">
+  <div class="sec-head">
+    <div class="eyebrow">예산</div>
+    <h2>식비 예산, 솔직한 진단</h2>
+    <p>예산은 “인당 하루 평균 10만원, 최대 15만원, 액티비티 제외 순수 식대” 기준. 환율 1 AUD ≈ 1,080원으로 환산하면 평균 <b>AUD 약 92</b>, 최대 <b>AUD 약 139</b>입니다.</p>
+  </div>
+
+  <div class="note verify">
+    <h4><span class="tag">결론</span> 평균 예산은 ‘딱 맞음’, 스테이크·해산물 저녁엔 최대치에 근접</h4>
+    <p>하루 2끼(브런치+저녁)+커피 기준 전형적 지출: 커피 AUD 6 + 브런치 AUD 28 + 중급 저녁(스테이크/해산물 메인) AUD 55 = <b>약 AUD 89</b> → 평균 예산(92)에 거의 맞습니다. 다만 와인 한 잔(AUD 12~15)이나 디저트·두 번째 커피를 더하면 <b>AUD 110~140</b>으로 최대치에 닿습니다. <b>요약: 무알코올·중급이면 평균 안에서 충분. ‘근사한 저녁’ 날은 최대 예산을 쓰게 됩니다.</b> (신뢰도: 중상)</p>
+  </div>
+
+  <table class="tbl">
+    <tr><th>항목</th><th>1인 단가(AUD)</th><th>비고</th></tr>
+    <tr><td>스페셜티 커피(플랫화이트)</td><td><b>5 ~ 6.5</b></td><td>호주 커피 문화 최고 수준 — 매일 즐길 가치 충분</td></tr>
+    <tr><td>브런치</td><td><b>22 ~ 32</b></td><td>스매시드 아보·빅브렉퍼스트 등. 주스 추가 시 +6~8</td></tr>
+    <tr><td>중급 저녁(스테이크/해산물 메인)</td><td><b>40 ~ 70</b></td><td>오이스터·바라문디·앵거스 스테이크 등</td></tr>
+    <tr><td>와인 한 잔</td><td><b>12 ~ 15</b></td><td>추가 시 최대 예산 근접</td></tr>
+    <tr><td>하루 합계(무알코올·중급)</td><td><b>약 89</b></td><td>평균 예산(AUD 92) 이내 ✓</td></tr>
+    <tr><td>하루 합계(와인·디저트 포함)</td><td><b>110 ~ 140</b></td><td>최대 예산(AUD 139) 활용</td></tr>
+  </table>
+
+  <div class="note tip">
+    <h4><span class="tag">절약 포인트</span> 무리 없이 예산을 지키는 법</h4>
+    <ul>
+      <li>점심을 ‘브런치’로 통합하는 현재 2끼 패턴이 이미 예산 친화적입니다.</li>
+      <li>미술관·박물관·해안 산책로·공원·마켓 구경은 대부분 <b>무료</b> — 활동비 부담이 적습니다.</li>
+      <li>브리즈번 교통은 <b>50센트 정액</b>, 시드니는 <b>1일 요금 상한</b>이라 교통비가 예측 가능합니다.</li>
+      <li>호주는 <b>팁 문화가 거의 없습니다</b>(의무 아님). 식대에 팁을 더할 필요 없음.</li>
+      <li>저녁에 와인을 줄이면 평균 예산 내에서 ‘근사한 저녁’도 가능.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===================== SAFETY ===================== -->
+<section id="safety" class="reveal">
+  <div class="sec-head">
+    <div class="eyebrow">치안 · 안전</div>
+    <h2>반드시 알아둘 안전 정보</h2>
+    <p>호주는 전반적으로 매우 안전합니다(브리즈번·시드니 모두 강력범죄 낮음). 진짜 주의 대상은 ‘범죄’보다 <b>자연 환경</b>입니다.</p>
+  </div>
+
+  <div class="grid g2">
+    <div class="stat"><div class="k">①  자외선 — 1순위 위험</div><div class="v" style="font-size:1.15rem">봄에도 UV 강함</div><div class="s">호주 자외선은 한국보다 훨씬 강합니다. 흐려도 SPF50+·모자·선글라스 필수. 화상·기미 주의.</div></div>
+    <div class="stat"><div class="k">②  까치(magpie) 스워핑</div><div class="v" style="font-size:1.15rem">8~11월 둥지철</div><div class="s">봄철 까치가 둥지 근처 보행자에게 돌진합니다. 공원·산책로에서 머리 위 주의. 위협 시 눈을 보며 천천히 벗어나기.</div></div>
+    <div class="stat"><div class="k">③  바다 — 이안류</div><div class="v" style="font-size:1.15rem">깃발 사이만</div><div class="s">반드시 빨강·노랑 깃발 사이에서만 입수. 9월 해수온 18℃대로 차갑고, 이안류는 매년 사망 사고의 원인.</div></div>
+    <div class="stat"><div class="k">④  소매치기·분실</div><div class="v" style="font-size:1.15rem">관광지·마켓</div><div class="s">서클러키, 더록스 마켓, 서퍼스 야간 등 혼잡지에서 가방 앞으로. 폭력범죄보다 ‘기회성 절도’가 현실 위험.</div></div>
+    <div class="stat"><div class="k">⑤  부시워크 야생</div><div class="v" style="font-size:1.15rem">길 밖 금지</div><div class="s">블루마운틴 등에선 거미·뱀이 있을 수 있음. 정해진 길만, 절벽 난간 밖 금지.</div></div>
+    <div class="stat"><div class="k">⑥  생활 규칙</div><div class="v" style="font-size:1.15rem">무단횡단 벌금</div><div class="s">신호 지켜 횡단(벌금 부과 가능). 수돗물 음용 가능. 좌측통행(렌터카 시).</div></div>
+  </div>
+
+  <div class="note tip">
+    <h4><span class="tag">여성 2인 여행</span> 일반 수칙</h4>
+    <p>두 도시 모두 여성 여행자에게 안전한 편입니다. 야간엔 인적 드문 골목·역 외곽을 피하고, 늦은 이동은 우버를 이용하세요. 시드니 킹스크로스, 서퍼스 파라다이스 유흥가는 늦은 밤 다소 번잡하니 낮 위주로 다니면 충분합니다. 긴급 시 <b>000</b>.</p>
+  </div>
+
+  <div class="note fix">
+    <h4><span class="tag">입국</span> 검역 신고 — 벌금 위험</h4>
+    <p>호주 검역은 세계에서 가장 엄격한 축입니다. 라면·과일·견과류·육포·꿀·씨앗류 등은 입국카드에 <b>반드시 신고</b>하세요. 미신고 적발 시 고액 벌금. 애매하면 무조건 신고/폐기.</p>
+  </div>
+</section>
+
+<!-- ===================== CHECKLIST ===================== -->
+<section id="pack" class="reveal">
+  <div class="sec-head">
+    <div class="eyebrow">출발 전 체크리스트</div>
+    <h2>예약·준비물 최종 점검</h2>
+  </div>
+
+  <h3 style="margin-bottom:10px">미리 예약/확인할 것</h3>
+  <div class="check">
+    <div>브리즈번 호텔 ‘박수’ 재확인 — 실제 3박인지(4박 예약 시 마지막 1박 공실 여부)</div>
+    <div>트레저리 브리즈번 호텔 운영·체크인 상태 재확인(퀸즈워프 재편 영향)</div>
+    <div>브리즈번 → 시드니 항공(9/22 오전~정오) 예약, 약 6주 전</div>
+    <div>골드코스트 스카이다이빙 — 세션 시간·픽업·드롭, 체중/연령 기준, 가격 직접 확인</div>
+    <div>블루마운틴 소규모 일일투어(9/23) 예약, 픽업 장소 확정</div>
+    <div>론파인 입장권(온라인 예매 시 할인), 코알라 사진 옵션 여부</div>
+    <div>여행자보험(스카이다이빙 액티비티 보장 포함 여부 확인)</div>
+    <div>호주 ETA 비자(여권 + 모바일 앱 신청) — 출발 전 필수</div>
+  </div>
+
+  <hr class="soft">
+
+  <h3 style="margin-bottom:10px">짐 (9월 초봄·일교차 대비)</h3>
+  <div class="check">
+    <div>SPF50+ 선크림, 모자, 선글라스 (자외선 1순위)</div>
+    <div>낮엔 반팔, 아침·저녁용 가벼운 겉옷/카디건 (일교차 큼)</div>
+    <div>편한 워킹화 (하루 1만보 이상)</div>
+    <div>호주용 멀티 어댑터(Type I), 보조배터리</div>
+    <div>가벼운 우산/방수 자켓(9월은 건기지만 소나기 가능)</div>
+    <div>해변용 슬리퍼·수건(수영보단 발 담그기용)</div>
+    <div>상비약·개인 의약품(영문 처방전 권장)</div>
+    <div>해외결제 카드 + 소액 현금(AUD)</div>
+  </div>
+
+  <div class="note tip" style="margin-top:24px">
+    <h4><span class="tag">마지막 한마디</span></h4>
+    <p>전체 페이스는 ‘여유’에 맞춰 설계했습니다. 가장 빡빡한 날은 <b>3일차(골드코스트)</b>와 <b>7일차(본다이)</b>이니, 그 전후 날을 더 느슨하게 쓰면 2만보 한계 안에서 충분히 즐길 수 있습니다. 사진이 비어 보이면 인터넷 연결 상태에서 다시 열어 주세요(사진은 웹에서 불러옵니다).</p>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<footer>
+  <div class="wrap">
+    <b>브리즈번 · 시드니 9박 10일 맞춤 가이드</b>
+    <span>가격·운영시간·항공료는 2026년 기준 추정치이며 예약 시점에 따라 변동합니다. ‘확인 필요’ 표시 항목은 공식 채널로 재확인하세요.</span>
+    <span>이동시간·교통체계·치안 정보 신뢰도 높음 / 구체적 요금 신뢰도 중간. 환율 1 AUD ≈ 1,080원(2026.6) 기준.</span>
+  </div>
+</footer>
+
+<script>
+  // graceful reveal on scroll
+  (function(){
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+    },{threshold:.08});
+    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+  })();
+</script>
+</body>
+</html>
