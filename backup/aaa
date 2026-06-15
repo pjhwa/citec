@@ -1,3 +1,5 @@
+# SCP PP 의 nf_conntrak_max 로 인한 패킷 Drop 에 대한 원인분석 및 가이드
+
 작성자: 홍성순, 마지막 업데이트: 1분 이내  2분 읽기
 1. 현상 
 kernel: [12188698.772879] nf_conntrack: nf_conntrack: table full, dropping packet 로그 발생
@@ -8,14 +10,33 @@ nf_conntrack_max 증가를 했지만 소켓이 계속 증가하여 VM 중단 후
 
 
 3. 향후 장애 재발 예방을 위한 방안
-전체 VM 의 디폴트 Limit 설정 (OVN Zone Limit)
+- 전체 VM 의 디폴트 Limit 설정 (OVN Zone Limit)
 OVN 의 zone-limit 을 설정하여 VM 포트별로 최대로 사용할 수 있는 Limit 설정 (zone-limit 은 VM 의 포트 - Logical Switch Port 별로 설정 가능) 
 Limit 값은 VM 정상 트래픽 처리가 가능한 값으로 설정함 (LSP 별 사용량 확인 후 최대 사용량의 5배 이상)
  
 설정 방법 예시
-여기를 클릭하여 펼치기...
+```
+- 네트워크의 모든 VM에 기본 Limit 설정
 
-SCP Compute Node 별 기본 Conntrack Max 증설 
+# ovn-nbctl set Logical_Switch <스위치이름> other_config:ct-zone-limit=300000
+
+   (LSP 이름/UUID는 보통 Neutron 포트 ID와 연결)
+
+
+
+** 특정 VM 포트만 제한 (VM당 격리)
+
+# ovn-nbctl set Logical_Switch_Port <포트UUID 또는 이름> options:ct-zone-limit=300000
+
+
+
+- 확인 방법
+
+# ovn-nbctl show # 스위치와 포트 목록
+# ovn-nbctl list Logical_Switch_Port | head
+```
+
+- SCP Compute Node 별 기본 Conntrack Max 증설 
 현재 nf_conntrack_max 대비 최대 사용량은 10% (Ceph), 2% (일반 호스트)  로 미비함 
 그러나 향후 VM 수 증가 및 대량 VM 의 네트워크 처리를 고려하여 사전 증설 함 
 → 메모리 2 TB 이상일 경우 동일하게 Max 8 M (bucket - 2M) 로 설정 
@@ -31,8 +52,13 @@ max 는 buckets 의 4 배로 설정
 (일반적으로 buckets 의 2~8 배)
 
 설정 방법
-여기를 클릭하여 펼치기...
-참고: Conntrack_max 값별 메모리 사용량 계산 (2TB 호스트 기준으로 nf_conntrack_max 값별 메모리 사용량)
+```
+  *  /etc/sysctl.d/nf_conntrack.conf 
+    net.netfilter.nf_conntrack_buckets = 2097152
+    net.netfilter.nf_conntrack_max = 8388608    
+```
+
+- 참고: Conntrack_max 값별 메모리 사용량 계산 (2TB 호스트 기준으로 nf_conntrack_max 값별 메모리 사용량)
 2M	600 MB	4.0 MB	약 604 MB	0.029%
 3M (현재)	900 MB	6.0 MB	약 906 MB	0.043%
 4M	1,200 MB	8.0 MB	약 1,208 MB	0.058%
