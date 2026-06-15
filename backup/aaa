@@ -1,0 +1,41 @@
+작성자: 홍성순, 마지막 업데이트: 1분 이내  2분 읽기
+1. 현상 
+kernel: [12188698.772879] nf_conntrack: nf_conntrack: table full, dropping packet 로그 발생
+VM 패킷 Drop 발생 
+2. 원인 및 해결
+삼성화재의 포티넷 가상 방화벽 테스트로 인해 소켓 무한 증가 
+nf_conntrack_max 증가를 했지만 소켓이 계속 증가하여 VM 중단 후 해소됨 
+
+
+3. 향후 장애 재발 예방을 위한 방안
+전체 VM 의 디폴트 Limit 설정 (OVN Zone Limit)
+OVN 의 zone-limit 을 설정하여 VM 포트별로 최대로 사용할 수 있는 Limit 설정 (zone-limit 은 VM 의 포트 - Logical Switch Port 별로 설정 가능) 
+Limit 값은 VM 정상 트래픽 처리가 가능한 값으로 설정함 (LSP 별 사용량 확인 후 최대 사용량의 5배 이상)
+ 
+설정 방법 예시
+여기를 클릭하여 펼치기...
+
+SCP Compute Node 별 기본 Conntrack Max 증설 
+현재 nf_conntrack_max 대비 최대 사용량은 10% (Ceph), 2% (일반 호스트)  로 미비함 
+그러나 향후 VM 수 증가 및 대량 VM 의 네트워크 처리를 고려하여 사전 증설 함 
+→ 메모리 2 TB 이상일 경우 동일하게 Max 8 M (bucket - 2M) 로 설정 
+Param	2 TB 호스트	4 TB 호스트	비고
+AS-IS	TO-BE	AS-IS	TO-BE
+net.netfilter.nf_conntrack_buckets
+
+(/sys/module/nf_conntrack/parameters/hashsize)
+
+786432	2097152	2097152	2097152	
+net.netfilter.nf_conntrack_max	3145728	8388608	8388608	8388608	
+max 는 buckets 의 4 배로 설정
+(일반적으로 buckets 의 2~8 배)
+
+설정 방법
+여기를 클릭하여 펼치기...
+참고: Conntrack_max 값별 메모리 사용량 계산 (2TB 호스트 기준으로 nf_conntrack_max 값별 메모리 사용량)
+2M	600 MB	4.0 MB	약 604 MB	0.029%
+3M (현재)	900 MB	6.0 MB	약 906 MB	0.043%
+4M	1,200 MB	8.0 MB	약 1,208 MB	0.058%
+6M	1,800 MB	12.0 MB	약 1,812 MB	0.086%
+8M	2,400 MB	16.0 MB	약 2,416 MB	0.115%
+10M	3,000 MB	20.0 MB	약 3,020 MB	0.144%
