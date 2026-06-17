@@ -1,5 +1,0 @@
-https://github.com/elder-plinius/CL4R1T4S/blob/main/ANTHROPIC/CLAUDE-FABLE-5.md
-
-==> 워낙 유명해서 다들 많이 아시겠지만 fable 성격을 내는 프롬프트 입니다. fable의 시스템 프롬프트를 추출한 거라고 합니다. venv 가상환경 안에 넣으면 프로젝트에 들어가지도 않고 좋겠죠.
-
-claude --dangerously-skip-permissions --system-prompt-file .venv/CLAUDE-FABLE-5.md
