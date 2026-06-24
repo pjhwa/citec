@@ -1,7 +1,0 @@
-IT서비스지수 출처:
-- IT 서비스 지수는 한국거래소(KRX)가 산출, 발표하는 KOSPI 업종(산업별) 지수 중 하나.
-- KRX가 유가증권시장 상장사를 산업별로 분류한 뒤, IT 서비스 업종에 속하는 종목들을 묶어 별도 지수로 산출
-- 조회경로:
-  - KRX 정보데이터시스템(data.krx.co.kr): [통계] -> [지수] -> [주가지수]에서 코스피 업종지수 중 "IT 서비스" 선택(원천데이터)
-  - FnGuide CompanyGuide, 증권사 HTS/MTS, FactSet, Bloomberg 등에서도 동일 지수 조회 가능
-  - https://stock.mk.co.kr/domestic/index/type 에서도 조회 가능
