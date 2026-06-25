@@ -1,0 +1,2312 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ceph-collector · 진단 정보 수집기 레퍼런스</title>
+<style>
+:root{
+  --bg:#f5f7f8; --panel:#ffffff; --ink:#172029; --muted:#5d6b78; --faint:#8b98a4;
+  --line:#e3e9ed; --line2:#eef2f5;
+  --teal:#0c7e8c; --teal-d:#0a5f6a; --teal-bg:#e6f3f4;
+  --code-bg:#f4f7f8; --cmt:#8593a0;
+  --hi:#1a7f4b; --hi-bg:#e7f4ec; --mod:#a8741b; --mod-bg:#fbf2e2; --low:#b23b36; --low-bg:#fbe9e8;
+  --l0:#6b7a89; --l0-bg:#eef1f3; --l1:#1f5fa6; --l1-bg:#e7eef8; --l2:#a8741b; --l2-bg:#fbf2e2;
+  --sevh:#b23b36; --sevm:#a8741b;
+  --warn:#a8741b; --warn-bg:#fcf4e3; --warn-bd:#eccf8e;
+  --rail:300px;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",Roboto,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+  font-size:15px;line-height:1.62;-webkit-font-smoothing:antialiased}
+
+/* ---------- top bar ---------- */
+header.top{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.93);
+  backdrop-filter:saturate(1.4) blur(6px);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:18px;padding:11px 22px}
+header.top .mark{display:flex;align-items:center;gap:11px;min-width:0}
+header.top .dot{width:11px;height:11px;border-radius:3px;background:var(--teal);
+  box-shadow:0 0 0 4px var(--teal-bg)}
+header.top h1{font-size:15px;margin:0;font-weight:680;letter-spacing:-.01em;white-space:nowrap}
+header.top h1 small{color:var(--muted);font-weight:500;margin-left:8px}
+header.top .ver{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted);
+  border:1px solid var(--line);border-radius:6px;padding:3px 9px;white-space:nowrap}
+.filter{position:relative}
+.filter input{font-family:var(--mono);font-size:12.5px;border:1px solid var(--line);
+  background:#fff;border-radius:7px;padding:6px 10px 6px 28px;width:230px;color:var(--ink);outline:none}
+.filter input:focus{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-bg)}
+.filter svg{position:absolute;left:8px;top:50%;transform:translateY(-50%);opacity:.5}
+
+/* ---------- layout ---------- */
+.wrap{display:grid;grid-template-columns:var(--rail) 1fr;align-items:start}
+nav.rail{position:sticky;top:53px;height:calc(100vh - 53px);overflow:auto;
+  border-right:1px solid var(--line);background:var(--panel);padding:14px 10px 60px}
+nav.rail .grp{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--faint);padding:16px 10px 6px;border-top:1px solid var(--line2);margin-top:6px}
+nav.rail .grp:first-child{border-top:0;margin-top:0}
+nav.rail a{display:block;text-decoration:none;color:var(--muted);border-radius:6px;
+  padding:4px 10px;font-size:13px;line-height:1.4;border-left:2px solid transparent}
+nav.rail a.nav-l1{color:var(--ink);font-weight:640;margin-top:4px}
+nav.rail a.nav-l2{color:var(--ink);font-weight:560}
+nav.rail a.nav-l3{font-family:var(--mono);font-size:11.5px;color:var(--muted);padding-left:20px}
+nav.rail a:hover{background:var(--teal-bg);color:var(--teal-d)}
+nav.rail a.active{background:var(--teal-bg);color:var(--teal-d);border-left-color:var(--teal);font-weight:680}
+nav.rail a.navsub{display:none}
+nav.rail a.navsub.show{display:block}
+
+main{min-width:0}
+.inner{max-width:1000px;margin:0 auto;padding:30px 40px 120px}
+
+/* ---------- hero ---------- */
+.hero{border:1px solid var(--line);background:linear-gradient(180deg,#fff, #fbfdfd);
+  border-radius:14px;padding:26px 28px;margin-bottom:30px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;right:-40px;top:-40px;width:200px;height:200px;
+  background:radial-gradient(circle,var(--teal-bg),transparent 70%);opacity:.7}
+.hero .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal-d)}
+.hero h2{font-size:27px;line-height:1.2;margin:8px 0 6px;letter-spacing:-.02em;font-weight:760}
+.hero p{margin:0;color:var(--muted);max-width:62ch}
+.hero .stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;position:relative}
+.hero .stat{border:1px solid var(--line);background:#fff;border-radius:9px;padding:8px 14px;min-width:118px}
+.hero .stat b{display:block;font-size:20px;font-weight:740;font-family:var(--mono);letter-spacing:-.02em}
+.hero .stat span{font-size:11.5px;color:var(--muted)}
+
+/* ---------- legend ---------- */
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:0 0 26px;padding:13px 16px;
+  border:1px dashed var(--line);border-radius:10px;background:#fff;font-size:12.5px;color:var(--muted)}
+.legend b{color:var(--ink);font-weight:640;margin-right:4px}
+
+/* ---------- doc content ---------- */
+.doc{margin-bottom:10px}
+.doc h1,.doc h2,.doc h3,.doc h4{letter-spacing:-.01em;scroll-margin-top:66px}
+.doc h1{font-size:23px;font-weight:740;margin:46px 0 14px;padding-bottom:9px;border-bottom:2px solid var(--ink)}
+.doc h2{font-size:19px;font-weight:700;margin:34px 0 12px}
+.doc h3{font-size:15.5px;font-weight:660;margin:24px 0 8px}
+.doc h3 code{font-size:14px}
+.doc h4{font-size:14px;font-weight:660;margin:18px 0 6px;color:var(--muted)}
+.doc p{margin:10px 0}
+.doc ul,.doc ol{margin:10px 0;padding-left:22px}
+.doc li{margin:4px 0}
+.doc a{color:var(--teal-d);text-decoration:none;border-bottom:1px solid var(--teal-bg)}
+.doc a:hover{border-bottom-color:var(--teal)}
+.doc strong{font-weight:680}
+.doc hr{border:0;border-top:1px solid var(--line);margin:34px 0}
+
+/* doc title (first h1) bigger / divider between docs */
+.docband{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:#fff;background:var(--teal-d);display:inline-block;padding:5px 12px;border-radius:7px;margin:8px 0 2px}
+
+/* code */
+.doc code{font-family:var(--mono);font-size:12.5px;background:var(--code-bg);
+  border:1px solid var(--line2);border-radius:5px;padding:1px 5px;color:#0d4f58}
+.doc pre{background:var(--code-bg);border:1px solid var(--line);border-radius:10px;
+  padding:14px 16px;overflow:auto;margin:12px 0;line-height:1.5}
+.doc pre code{background:none;border:0;padding:0;font-size:12.5px;color:var(--ink);white-space:pre}
+.cmt{color:var(--cmt)}
+
+/* blockquote -> callout (handles "제외:" and notes) */
+.doc blockquote{margin:14px 0;padding:11px 16px;border:1px solid var(--line);border-left:3px solid var(--teal);
+  background:#fbfdfd;border-radius:0 9px 9px 0;color:var(--muted)}
+.doc blockquote p{margin:6px 0}
+.doc blockquote.excl{border-left-color:var(--low)}
+.doc blockquote.excl strong:first-child,.doc blockquote.excl::before{}
+
+/* tables */
+.doc table{border-collapse:collapse;width:100%;margin:14px 0;font-size:13px;display:block;overflow:auto}
+.doc th,.doc td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+.doc th{background:#f0f4f5;font-weight:660;white-space:nowrap}
+.doc tr:nth-child(even) td{background:#fafcfc}
+.doc td code{font-size:11.5px}
+
+/* badges */
+.badge{display:inline-block;font-family:var(--mono);font-size:10.5px;font-weight:700;
+  padding:1px 6px;border-radius:5px;line-height:1.5;vertical-align:1px;border:1px solid transparent}
+.b-hi{color:var(--hi);background:var(--hi-bg);border-color:#bfe3cd}
+.b-mod{color:var(--mod);background:var(--mod-bg);border-color:#ecd6a3}
+.b-low{color:var(--low);background:var(--low-bg);border-color:#f0c4c1}
+.b-l0{color:var(--l0);background:var(--l0-bg);border-color:#dde3e7}
+.b-l1{color:var(--l1);background:var(--l1-bg);border-color:#cdddf2}
+.b-l2{color:var(--l2);background:var(--l2-bg);border-color:#ecd6a3}
+.warnpill{color:var(--warn);font-weight:680}
+
+/* appendix severity */
+.sev-h{color:var(--sevh);font-weight:660}
+.sev-m{color:var(--sevm);font-weight:620}
+
+/* misc */
+.backtop{position:fixed;right:22px;bottom:22px;z-index:40;border:1px solid var(--line);
+  background:#fff;color:var(--teal-d);border-radius:10px;width:42px;height:42px;cursor:pointer;
+  display:none;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(20,40,50,.1);font-size:18px}
+.backtop.show{display:flex}
+
+@media (max-width:980px){
+  .wrap{grid-template-columns:1fr}
+  nav.rail{display:none}
+  .filter input{width:150px}
+  .inner{padding:22px 18px 100px}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="mark"><span class="dot"></span>
+    <h1>ceph-collector <small>진단 정보 수집기 레퍼런스</small></h1></div>
+  <div class="filter">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    <input id="filter" type="text" placeholder="명령 검색  예: osd perf, sync status" autocomplete="off">
+  </div>
+  <span class="ver">Ceph 18.2.x (Reef) · Light</span>
+</header>
+
+<div class="wrap">
+  <nav class="rail" id="rail">
+    <div class="grp">설계 문서</div>
+<a class="nav-l2" href="#d-1" data-target="d-1" data-section="d-1">1. 설계 원칙</a>
+<a class="nav-l2" href="#d-2" data-target="d-2" data-section="d-2">2. 아키텍처</a>
+<a class="nav-l3 navsub" href="#d-21" data-target="d-21" data-section="d-2">2.1 디렉토리 구조</a>
+<a class="nav-l3 navsub" href="#d-22" data-target="d-22" data-section="d-2">2.2 실행 흐름</a>
+<a class="nav-l3 navsub" href="#d-23" data-target="d-23" data-section="d-2">2.3 실행 환경</a>
+<a class="nav-l2" href="#d-3" data-target="d-3" data-section="d-3">3. 수집 모듈별 명령어</a>
+<a class="nav-l3 navsub" href="#d-31-metadata" data-target="d-31-metadata" data-section="d-3">3.1 Metadata</a>
+<a class="nav-l3 navsub" href="#d-32-cluster" data-target="d-32-cluster" data-section="d-3">3.2 Cluster (기본 상태)</a>
+<a class="nav-l3 navsub" href="#d-33-mon" data-target="d-33-mon" data-section="d-3">3.3 MON / 쿼럼 / 시계</a>
+<a class="nav-l3 navsub" href="#d-34-mgr" data-target="d-34-mgr" data-section="d-3">3.4 MGR</a>
+<a class="nav-l3 navsub" href="#d-35-osd" data-target="d-35-osd" data-section="d-3">3.5 OSD / 디바이스</a>
+<a class="nav-l3 navsub" href="#d-36-pg" data-target="d-36-pg" data-section="d-3">3.6 PG</a>
+<a class="nav-l3 navsub" href="#d-37-crush" data-target="d-37-crush" data-section="d-3">3.7 CRUSH</a>
+<a class="nav-l3 navsub" href="#d-38-pool-ec" data-target="d-38-pool-ec" data-section="d-3">3.8 Pool / EC</a>
+<a class="nav-l3 navsub" href="#d-39-config" data-target="d-39-config" data-section="d-3">3.9 Config</a>
+<a class="nav-l3 navsub" href="#d-310-orchestrator-cephadm" data-target="d-310-orchestrator-cephadm" data-section="d-3">3.10 Orchestrator / cephadm</a>
+<a class="nav-l3 navsub" href="#d-311-rgw-vaultkeystone-multisite" data-target="d-311-rgw-vaultkeystone-multisite" data-section="d-3">3.11 RGW (vault/keystone 연동 + 메타데이터 + multisite)</a>
+<a class="nav-l3 navsub" href="#d-312-rbd-pool-ls-rbd-application" data-target="d-312-rbd-pool-ls-rbd-application" data-section="d-3">3.12 RBD (pool ls 결과에서 rbd application 풀 순회)</a>
+<a class="nav-l3 navsub" href="#d-313-cephfs-mds" data-target="d-313-cephfs-mds" data-section="d-3">3.13 CephFS / MDS</a>
+<a class="nav-l3 navsub" href="#d-314-crash" data-target="d-314-crash" data-section="d-3">3.14 Crash (레닥션 후 저장)</a>
+<a class="nav-l3 navsub" href="#d-315" data-target="d-315" data-section="d-3">3.15 인증 (레닥션 필수)</a>
+<a class="nav-l3 navsub" href="#d-316-host-os" data-target="d-316-host-os" data-section="d-3">3.16 Host / OS 컨텍스트 (해당 노드 로컬)</a>
+<a class="nav-l2" href="#d-4" data-target="d-4" data-section="d-4">4. 운영 영향 안전성 분석 (핵심)</a>
+<a class="nav-l3 navsub" href="#d-41-mutating" data-target="d-41-mutating" data-section="d-4">4.1 상태 변경(mutating) 명령 부재 — 입증</a>
+<a class="nav-l3 navsub" href="#d-42" data-target="d-42" data-section="d-4">4.2 부하 위험 분류</a>
+<a class="nav-l3 navsub" href="#d-43-l2" data-target="d-43-l2" data-section="d-4">4.3 L2 명령 가드 (필수)</a>
+<a class="nav-l3 navsub" href="#d-44" data-target="d-44" data-section="d-4">4.4 수집기 자체의 부하 통제</a>
+<a class="nav-l3 navsub" href="#d-45" data-target="d-45" data-section="d-4">4.5 파일시스템 영향</a>
+<a class="nav-l3 navsub" href="#d-46" data-target="d-46" data-section="d-4">4.6 &quot;반드시 수집하지만 부하가 있는&quot; 명령 — 메커니즘·필요성·완화</a>
+<a class="nav-l2" href="#d-5" data-target="d-5" data-section="d-5">5. 민감정보 레닥션 &amp; 실행 안정성</a>
+<a class="nav-l3 navsub" href="#d-51-on" data-target="d-51-on" data-section="d-5">5.1 레닥션 (기본 ON)</a>
+<a class="nav-l3 navsub" href="#d-52" data-target="d-52" data-section="d-5">5.2 안정성·실패 흡수</a>
+<a class="nav-l2" href="#d-6" data-target="d-6" data-section="d-6">6. 수집 범위 / 성능 정책</a>
+<a class="nav-l2" href="#d-7" data-target="d-7" data-section="d-7">7. 출력 패키징</a>
+<a class="nav-l3 navsub" href="#d-manifestjson" data-target="d-manifestjson" data-section="d-7">manifest.json (예)</a>
+<a class="nav-l2" href="#d-8-s3-listputgetdel" data-target="d-8-s3-listputgetdel" data-section="d-8-s3-listputgetdel">8. 기능 테스트(S3 list/put/get/del) 범위 정의</a>
+<a class="nav-l2" href="#d-9" data-target="d-9" data-section="d-9">9. 구현 로드맵</a>
+<a class="nav-l2" href="#d-10" data-target="d-10" data-section="d-10">10. 클러스터 검증 권장 항목</a>
+<a class="nav-l2" href="#d-11" data-target="d-11" data-section="d-11">11. 결론</a>
+    <div class="grp">예시 출력 &amp; 해설집</div>
+<a class="nav-l1" href="#s-1-metadata" data-target="s-1-metadata" data-section="s-1-metadata">1. Metadata</a>
+<a class="nav-l3 navsub" href="#s-ceph-version" data-target="s-ceph-version" data-section="s-1-metadata">ceph --version</a>
+<a class="nav-l3 navsub" href="#s-ceph-fsid" data-target="s-ceph-fsid" data-section="s-1-metadata">ceph fsid</a>
+<a class="nav-l3 navsub" href="#s-uname-a" data-target="s-uname-a" data-section="s-1-metadata">uname -a</a>
+<a class="nav-l1" href="#s-2-cluster" data-target="s-2-cluster" data-section="s-2-cluster">2. Cluster (기본 상태)</a>
+<a class="nav-l3 navsub" href="#s-ceph-s" data-target="s-ceph-s" data-section="s-2-cluster">ceph -s</a>
+<a class="nav-l3 navsub" href="#s-ceph-health-detail" data-target="s-ceph-health-detail" data-section="s-2-cluster">ceph health detail</a>
+<a class="nav-l3 navsub" href="#s-ceph-df-detail" data-target="s-ceph-df-detail" data-section="s-2-cluster">ceph df detail</a>
+<a class="nav-l3 navsub" href="#s-ceph-versions" data-target="s-ceph-versions" data-section="s-2-cluster">ceph versions</a>
+<a class="nav-l3 navsub" href="#s-ceph-features" data-target="s-ceph-features" data-section="s-2-cluster">ceph features</a>
+<a class="nav-l3 navsub" href="#s-ceph-node-ls" data-target="s-ceph-node-ls" data-section="s-2-cluster">ceph node ls</a>
+<a class="nav-l3 navsub" href="#s-ceph-log-last-2000" data-target="s-ceph-log-last-2000" data-section="s-2-cluster">ceph log last 2000</a>
+<a class="nav-l3 navsub" href="#s-ceph-report" data-target="s-ceph-report" data-section="s-2-cluster">ceph report (발췌)</a>
+<a class="nav-l1" href="#s-3-mon" data-target="s-3-mon" data-section="s-3-mon">3. MON / 쿼럼 / 시계</a>
+<a class="nav-l3 navsub" href="#s-ceph-mon-stat" data-target="s-ceph-mon-stat" data-section="s-3-mon">ceph mon stat</a>
+<a class="nav-l3 navsub" href="#s-ceph-mon-dump" data-target="s-ceph-mon-dump" data-section="s-3-mon">ceph mon dump</a>
+<a class="nav-l3 navsub" href="#s-ceph-quorum_status" data-target="s-ceph-quorum_status" data-section="s-3-mon">ceph quorum_status</a>
+<a class="nav-l3 navsub" href="#s-chronyc-tracking" data-target="s-chronyc-tracking" data-section="s-3-mon">chronyc tracking</a>
+<a class="nav-l3 navsub" href="#s-timedatectl" data-target="s-timedatectl" data-section="s-3-mon">timedatectl</a>
+<a class="nav-l1" href="#s-4-mgr" data-target="s-4-mgr" data-section="s-4-mgr">4. MGR</a>
+<a class="nav-l3 navsub" href="#s-ceph-mgr-dump" data-target="s-ceph-mgr-dump" data-section="s-4-mgr">ceph mgr dump (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-mgr-module-ls" data-target="s-ceph-mgr-module-ls" data-section="s-4-mgr">ceph mgr module ls (요약)</a>
+<a class="nav-l3 navsub" href="#s-ceph-mgr-services" data-target="s-ceph-mgr-services" data-section="s-4-mgr">ceph mgr services</a>
+<a class="nav-l3 navsub" href="#s-ceph-balancer-status" data-target="s-ceph-balancer-status" data-section="s-4-mgr">ceph balancer status</a>
+<a class="nav-l3 navsub" href="#s-ceph-progress" data-target="s-ceph-progress" data-section="s-4-mgr">ceph progress</a>
+<a class="nav-l1" href="#s-5-osd" data-target="s-5-osd" data-section="s-5-osd">5. OSD / 디바이스</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-tree" data-target="s-ceph-osd-tree" data-section="s-5-osd">ceph osd tree</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-df-tree" data-target="s-ceph-osd-df-tree" data-section="s-5-osd">ceph osd df tree</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-perf" data-target="s-ceph-osd-perf" data-section="s-5-osd">ceph osd perf</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-stat" data-target="s-ceph-osd-stat" data-section="s-5-osd">ceph osd stat</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-dump" data-target="s-ceph-osd-dump" data-section="s-5-osd">ceph osd dump (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-blocked-by" data-target="s-ceph-osd-blocked-by" data-section="s-5-osd">ceph osd blocked-by</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-pool-autoscale-status" data-target="s-ceph-osd-pool-autoscale-status" data-section="s-5-osd">ceph osd pool autoscale-status</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-metadata-osd0" data-target="s-ceph-osd-metadata-osd0" data-section="s-5-osd">ceph osd metadata (osd.0 발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-device-ls" data-target="s-ceph-device-ls" data-section="s-5-osd">ceph device ls</a>
+<a class="nav-l3 navsub" href="#s-ceph-device-get-health-metrics-devid" data-target="s-ceph-device-get-health-metrics-devid" data-section="s-5-osd">ceph device get-health-metrics &lt;devid&gt; (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-tell-osd7-perf-dump" data-target="s-ceph-tell-osd7-perf-dump" data-section="s-5-osd">ceph tell osd.7 perf dump (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-tell-osd7-dump_historic_ops" data-target="s-ceph-tell-osd7-dump_historic_ops" data-section="s-5-osd">ceph tell osd.7 dump_historic_ops (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-tell-osd7-dump_ops_in_flight" data-target="s-ceph-tell-osd7-dump_ops_in_flight" data-section="s-5-osd">ceph tell osd.7 dump_ops_in_flight</a>
+<a class="nav-l1" href="#s-6-pg" data-target="s-6-pg" data-section="s-6-pg">6. PG</a>
+<a class="nav-l3 navsub" href="#s-ceph-pg-stat" data-target="s-ceph-pg-stat" data-section="s-6-pg">ceph pg stat</a>
+<a class="nav-l3 navsub" href="#s-ceph-pg-dump-pgs_brief" data-target="s-ceph-pg-dump-pgs_brief" data-section="s-6-pg">ceph pg dump pgs_brief (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-pg-ls" data-target="s-ceph-pg-ls" data-section="s-6-pg">ceph pg ls (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-pg-dump_stuck-inactive" data-target="s-ceph-pg-dump_stuck-inactive" data-section="s-6-pg">ceph pg dump_stuck inactive (예: 정상 시)</a>
+<a class="nav-l3 navsub" href="#s-ceph-pg-41a-query" data-target="s-ceph-pg-41a-query" data-section="s-6-pg">ceph pg 4.1a query (발췌)</a>
+<a class="nav-l1" href="#s-7-crush" data-target="s-7-crush" data-section="s-7-crush">7. CRUSH</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-crush-tree" data-target="s-ceph-osd-crush-tree" data-section="s-7-crush">ceph osd crush tree</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-crush-class-ls" data-target="s-ceph-osd-crush-class-ls" data-section="s-7-crush">ceph osd crush class ls</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-crush-rule-ls" data-target="s-ceph-osd-crush-rule-ls" data-section="s-7-crush">ceph osd crush rule ls</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-crush-rule-dump-rgw-ec-rule" data-target="s-ceph-osd-crush-rule-dump-rgw-ec-rule" data-section="s-7-crush">ceph osd crush rule dump rgw-ec-rule (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-crush-dump" data-target="s-ceph-osd-crush-dump" data-section="s-7-crush">ceph osd crush dump (발췌)</a>
+<a class="nav-l1" href="#s-8-pool-ec" data-target="s-8-pool-ec" data-section="s-8-pool-ec">8. Pool / EC</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-pool-ls-detail" data-target="s-ceph-osd-pool-ls-detail" data-section="s-8-pool-ec">ceph osd pool ls detail (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-lspools" data-target="s-ceph-osd-lspools" data-section="s-8-pool-ec">ceph osd lspools</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-pool-stats" data-target="s-ceph-osd-pool-stats" data-section="s-8-pool-ec">ceph osd pool stats</a>
+<a class="nav-l3 navsub" href="#s-ceph-osd-erasure-code-profile-get-standard_8_2" data-target="s-ceph-osd-erasure-code-profile-get-standard_8_2" data-section="s-8-pool-ec">ceph osd erasure-code-profile get standard_8_2</a>
+<a class="nav-l1" href="#s-9-config" data-target="s-9-config" data-section="s-9-config">9. Config</a>
+<a class="nav-l3 navsub" href="#s-ceph-config-dump" data-target="s-ceph-config-dump" data-section="s-9-config">ceph config dump (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-config-key-dump" data-target="s-ceph-config-key-dump" data-section="s-9-config">ceph config-key dump (레닥션 후)</a>
+<a class="nav-l3 navsub" href="#s-ceph-config-show-clientrgwscp-rgw-01" data-target="s-ceph-config-show-clientrgwscp-rgw-01" data-section="s-9-config">ceph config show client.rgw.scp-rgw-01 (발췌)</a>
+<a class="nav-l1" href="#s-10-orchestrator-cephadm" data-target="s-10-orchestrator-cephadm" data-section="s-10-orchestrator-cephadm">10. Orchestrator / cephadm</a>
+<a class="nav-l3 navsub" href="#s-ceph-orch-ls" data-target="s-ceph-orch-ls" data-section="s-10-orchestrator-cephadm">ceph orch ls</a>
+<a class="nav-l3 navsub" href="#s-ceph-orch-ps" data-target="s-ceph-orch-ps" data-section="s-10-orchestrator-cephadm">ceph orch ps (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-orch-host-ls" data-target="s-ceph-orch-host-ls" data-section="s-10-orchestrator-cephadm">ceph orch host ls</a>
+<a class="nav-l3 navsub" href="#s-ceph-orch-device-ls" data-target="s-ceph-orch-device-ls" data-section="s-10-orchestrator-cephadm">ceph orch device ls (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-orch-upgrade-status" data-target="s-ceph-orch-upgrade-status" data-section="s-10-orchestrator-cephadm">ceph orch upgrade status</a>
+<a class="nav-l3 navsub" href="#s-ceph-cephadm-config-check-ls" data-target="s-ceph-cephadm-config-check-ls" data-section="s-10-orchestrator-cephadm">ceph cephadm config-check ls (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-orch-host-ok-to-stop-scp-osd-03" data-target="s-ceph-orch-host-ok-to-stop-scp-osd-03" data-section="s-10-orchestrator-cephadm">ceph orch host ok-to-stop scp-osd-03</a>
+<a class="nav-l3 navsub" href="#s-cephadm-check-host" data-target="s-cephadm-check-host" data-section="s-10-orchestrator-cephadm">cephadm check-host (호스트 로컬)</a>
+<a class="nav-l3 navsub" href="#s-cephadm-ls" data-target="s-cephadm-ls" data-section="s-10-orchestrator-cephadm">cephadm ls (호스트 로컬, 발췌)</a>
+<a class="nav-l1" href="#s-11-rgw" data-target="s-11-rgw" data-section="s-11-rgw">11. RGW</a>
+<a class="nav-l3 navsub" href="#s-radosgw-admin-realm-list" data-target="s-radosgw-admin-realm-list" data-section="s-11-rgw">radosgw-admin realm list</a>
+<a class="nav-l3 navsub" href="#s-radosgw-admin-zonegroup-list-zone-list" data-target="s-radosgw-admin-zonegroup-list-zone-list" data-section="s-11-rgw">radosgw-admin zonegroup list / zone list</a>
+<a class="nav-l3 navsub" href="#s-radosgw-admin-zonegroup-get" data-target="s-radosgw-admin-zonegroup-get" data-section="s-11-rgw">radosgw-admin zonegroup get (발췌)</a>
+<a class="nav-l3 navsub" href="#s-radosgw-admin-period-get" data-target="s-radosgw-admin-period-get" data-section="s-11-rgw">radosgw-admin period get (발췌)</a>
+<a class="nav-l3 navsub" href="#s-radosgw-admin-sync-status" data-target="s-radosgw-admin-sync-status" data-section="s-11-rgw">radosgw-admin sync status (멀티사이트)</a>
+<a class="nav-l3 navsub" href="#s-radosgw-admin-user-list" data-target="s-radosgw-admin-user-list" data-section="s-11-rgw">radosgw-admin user list</a>
+<a class="nav-l3 navsub" href="#s-radosgw-admin-bucket-list" data-target="s-radosgw-admin-bucket-list" data-section="s-11-rgw">radosgw-admin bucket list</a>
+<a class="nav-l3 navsub" href="#s-radosgw-admin-bucket-stats-bucketapp-logs" data-target="s-radosgw-admin-bucket-stats-bucketapp-logs" data-section="s-11-rgw">radosgw-admin bucket stats --bucket=app-logs (발췌)</a>
+<a class="nav-l3 navsub" href="#s-radosgw-admin-bucket-limit-check" data-target="s-radosgw-admin-bucket-limit-check" data-section="s-11-rgw">radosgw-admin bucket limit check (발췌)</a>
+<a class="nav-l3 navsub" href="#s-radosgw-admin-reshard-list" data-target="s-radosgw-admin-reshard-list" data-section="s-11-rgw">radosgw-admin reshard list</a>
+<a class="nav-l3 navsub" href="#s-radosgw-admin-gc-list" data-target="s-radosgw-admin-gc-list" data-section="s-11-rgw">radosgw-admin gc list</a>
+<a class="nav-l3 navsub" href="#s-radosgw-admin-lc-list" data-target="s-radosgw-admin-lc-list" data-section="s-11-rgw">radosgw-admin lc list</a>
+<a class="nav-l3 navsub" href="#s-radosgw-admin-zone-get" data-target="s-radosgw-admin-zone-get" data-section="s-11-rgw">radosgw-admin zone get (레닥션 후, 발췌)</a>
+<a class="nav-l1" href="#s-12-rbd" data-target="s-12-rbd" data-section="s-12-rbd">12. RBD</a>
+<a class="nav-l3 navsub" href="#s-rbd-ls-p-rbd-long" data-target="s-rbd-ls-p-rbd-long" data-section="s-12-rbd">rbd ls -p rbd --long</a>
+<a class="nav-l3 navsub" href="#s-rbd-info-rbdvm-disk-101" data-target="s-rbd-info-rbdvm-disk-101" data-section="s-12-rbd">rbd info rbd/vm-disk-101</a>
+<a class="nav-l3 navsub" href="#s-rbd-status-rbdvm-disk-102" data-target="s-rbd-status-rbdvm-disk-102" data-section="s-12-rbd">rbd status rbd/vm-disk-102</a>
+<a class="nav-l3 navsub" href="#s-rbd-mirror-pool-status-rbd-verbose-dr" data-target="s-rbd-mirror-pool-status-rbd-verbose-dr" data-section="s-12-rbd">rbd mirror pool status rbd --verbose (미러링/DR 사용 시)</a>
+<a class="nav-l3 navsub" href="#s-rbd-du-p-rbd-object-map" data-target="s-rbd-du-p-rbd-object-map" data-section="s-12-rbd">rbd du -p rbd (object-map 보유 이미지에서만)</a>
+<a class="nav-l1" href="#s-13-cephfs-mds" data-target="s-13-cephfs-mds" data-section="s-13-cephfs-mds">13. CephFS / MDS</a>
+<a class="nav-l3 navsub" href="#s-ceph-fs-ls" data-target="s-ceph-fs-ls" data-section="s-13-cephfs-mds">ceph fs ls</a>
+<a class="nav-l3 navsub" href="#s-ceph-fs-dump" data-target="s-ceph-fs-dump" data-section="s-13-cephfs-mds">ceph fs dump (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-fs-status" data-target="s-ceph-fs-status" data-section="s-13-cephfs-mds">ceph fs status</a>
+<a class="nav-l3 navsub" href="#s-ceph-mds-stat" data-target="s-ceph-mds-stat" data-section="s-13-cephfs-mds">ceph mds stat</a>
+<a class="nav-l3 navsub" href="#s-ceph-mds-metadata" data-target="s-ceph-mds-metadata" data-section="s-13-cephfs-mds">ceph mds metadata (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-tell-mds0-session-ls" data-target="s-ceph-tell-mds0-session-ls" data-section="s-13-cephfs-mds">ceph tell mds.0 session ls (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ceph-tell-mds0-dump_blocked_ops" data-target="s-ceph-tell-mds0-dump_blocked_ops" data-section="s-13-cephfs-mds">ceph tell mds.0 dump_blocked_ops</a>
+<a class="nav-l1" href="#s-14-crash" data-target="s-14-crash" data-section="s-14-crash">14. Crash</a>
+<a class="nav-l3 navsub" href="#s-ceph-crash-ls" data-target="s-ceph-crash-ls" data-section="s-14-crash">ceph crash ls</a>
+<a class="nav-l3 navsub" href="#s-ceph-crash-info-id" data-target="s-ceph-crash-info-id" data-section="s-14-crash">ceph crash info &lt;id&gt; (발췌)</a>
+<a class="nav-l1" href="#s-15" data-target="s-15" data-section="s-15">15. 인증 (레닥션)</a>
+<a class="nav-l3 navsub" href="#s-ceph-auth-ls" data-target="s-ceph-auth-ls" data-section="s-15">ceph auth ls (레닥션 후, 발췌)</a>
+<a class="nav-l1" href="#s-16-host-os" data-target="s-16-host-os" data-section="s-16-host-os">16. Host / OS 컨텍스트</a>
+<a class="nav-l3 navsub" href="#s-podman-ps-a" data-target="s-podman-ps-a" data-section="s-16-host-os">podman ps -a (발췌)</a>
+<a class="nav-l3 navsub" href="#s-systemctl-typeservice-grep-ceph" data-target="s-systemctl-typeservice-grep-ceph" data-section="s-16-host-os">systemctl --type=service | grep ceph</a>
+<a class="nav-l3 navsub" href="#s-ip-s-link" data-target="s-ip-s-link" data-section="s-16-host-os">ip -s link (발췌)</a>
+<a class="nav-l3 navsub" href="#s-ss-s" data-target="s-ss-s" data-section="s-16-host-os">ss -s</a>
+<a class="nav-l3 navsub" href="#s-dmesg-t-grep-ie-cephbluestorenvmescsi" data-target="s-dmesg-t-grep-ie-cephbluestorenvmescsi" data-section="s-16-host-os">dmesg -T | grep -iE &#x27;ceph|bluestore|nvme|scsi&#x27; (발췌)</a>
+<a class="nav-l3 navsub" href="#s-smartctl-a-devsda" data-target="s-smartctl-a-devsda" data-section="s-16-host-os">smartctl -a /dev/sda (발췌)</a>
+<a class="nav-l2" href="#s-vs" data-target="s-vs" data-section="s-vs">부록. 정상 vs 이상 판독 신호집 (공식 문서 기반)</a>
+<a class="nav-l3 navsub" href="#s-a-full" data-target="s-a-full" data-section="s-vs">A. 용량/Full — 쓰기 차단으로 직결 (가장 위험)</a>
+<a class="nav-l3 navsub" href="#s-b-osd" data-target="s-b-osd" data-section="s-vs">B. OSD 상태·플래그·네트워크</a>
+<a class="nav-l3 navsub" href="#s-c-pg-io" data-target="s-c-pg-io" data-section="s-vs">C. PG 상태 — I/O 차단 여부 구분</a>
+<a class="nav-l3 navsub" href="#s-d" data-target="s-d" data-section="s-vs">D. 데이터 안전·이중화</a>
+<a class="nav-l3 navsub" href="#s-e-scrub" data-target="s-e-scrub" data-section="s-vs">E. Scrub / 일관성</a>
+<a class="nav-l3 navsub" href="#s-f-mon" data-target="s-f-mon" data-section="s-vs">F. MON / 시계</a>
+<a class="nav-l3 navsub" href="#s-g-pg" data-target="s-g-pg" data-section="s-vs">G. PG 수 (배치 효율)</a>
+<a class="nav-l3 navsub" href="#s-h-rgw" data-target="s-h-rgw" data-section="s-vs">H. RGW (오브젝트 스토리지)</a>
+<a class="nav-l3 navsub" href="#s-i-bluestore-osd" data-target="s-i-bluestore-osd" data-section="s-vs">I. BlueStore (OSD 백엔드)</a>
+<a class="nav-l3 navsub" href="#s-j-cephfs-mds" data-target="s-j-cephfs-mds" data-section="s-vs">J. CephFS / MDS</a>
+<a class="nav-l3 navsub" href="#s-k" data-target="s-k" data-section="s-vs">K. 디바이스·버전·크래시</a>
+  </nav>
+
+  <main>
+   <div class="inner">
+    <section class="hero">
+      <div class="eyebrow">Operational Reference</div>
+      <h2>운영 클러스터를 멈추지 않고 Ceph의 모든 진단 정보를 모은다</h2>
+      <p>sosreport 스타일의 read-only 수집기 설계와, 각 명령의 실제 출력·진단 의미·부하 등급을 한 곳에 묶었다.
+         상태를 바꾸는 명령은 0건이며, 부하가 있는 필수 명령만 가드 대상으로 분리한다.</p>
+      <div class="stats">
+        <div class="stat"><b>16</b><span>수집 모듈</span></div>
+        <div class="stat"><b>0</b><span>상태 변경 명령</span></div>
+        <div class="stat"><b>3</b><span>부하 등급 (L0/L1/L2)</span></div>
+        <div class="stat"><b>A–K</b><span>장애 신호 영역</span></div>
+      </div>
+    </section>
+
+    <div class="legend">
+      <span><b>신뢰도</b><span class="badge b-hi">High</span> <span class="badge b-mod">Moderate</span> <span class="badge b-low">Low</span></span>
+      <span><b>부하</b><span class="badge b-l0">L0</span> 무시 <span class="badge b-l1">L1</span> 경미 <span class="badge b-l2">L2</span> 주의</span>
+      <span><b>심각도</b><span class="sev-h">차단·정지·유실</span> <span class="sev-m">지연·정체·저하</span></span>
+    </div>
+
+    <div class="doc" id="docDesign">
+      <span class="docband">문서 1 · 설계</span>
+<h1 id="d-ceph-ceph-collector">Ceph 종합 진단 정보 수집 도구 (ceph-collector) 설계 문서</h1>
+<p><strong>대상 Ceph 버전</strong>: 18.2.x (Reef) 이상, cephadm orchestrator 배포 환경 기준
+<strong>실행 환경 전제</strong>: <strong>운영(production) 클러스터에서 수집한다. 수집 중 시스템에 어떤 영향(상태 변경·부하·락)도 주어서는 안 된다.</strong> 본 설계의 모든 명령은 이 제약을 1순위로 검증했다(§4).
+<strong>목적</strong>: Linux <code>sosreport</code> 스타일로 Ceph 클러스터의 상태·구성·성능·장애 원인 분석에 필요한 정보를 read-only로 자동 수집·패키징한다.</p>
+<blockquote>
+<p><strong>신뢰도 표기</strong>: 명령어 끝 <code>[High]</code>/<code>[Moderate]</code>/<code>[Low]</code> = 18.2.x 존재 확신도.
+<strong>부하 등급 표기</strong>: <code>{L0}</code>=무시 가능 / <code>{L1}</code>=경미(N배수·중간) / <code>{L2}</code>=대형 클러스터에서 주의(opt-in·가드 대상). 미표기는 <code>{L0}</code>.
+명령어는 공식 문서·man page 기반이며 라이브 일괄 검증본은 아니다. 도구는 실패를 <code>errors.log</code>로 흡수한다(§5.2).</p>
+</blockquote>
+<hr />
+<h2 id="d-1">1. 설계 원칙</h2>
+<table>
+<thead>
+<tr>
+<th>원칙</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>무영향 최우선</strong></td>
+<td>운영 클러스터 수집이 전제. 상태 변경 명령은 절대 미포함(§4.1). 부하 유발 가능 명령(§4.2 L2)은 기본 비활성·opt-in·상한·비피크 가드</td>
+</tr>
+<tr>
+<td><strong>Read-only</strong></td>
+<td>변경/부하 명령(<code>bench</code>, S3 <code>put/del</code>, <code>device check-health</code>, <code>pg repair/scrub</code>)은 본 도구 범위에서 제외</td>
+</tr>
+<tr>
+<td><strong>부하 통제</strong></td>
+<td>기본 <strong>순차 또는 저병렬(≤4)</strong>. 명령 간 throttle 인터벌(옵션). 모든 외부 프로세스를 <code>nice -n 19</code> + <code>ionice -c3</code>로 래핑. <code>timeout</code>은 hang 방지일 뿐 부하 방지가 아님을 전제</td>
+</tr>
+<tr>
+<td><strong>명령 introspection</strong></td>
+<td>모든 명령을 timeout + try/except로 감싸 종료코드·stderr를 <code>errors.log</code>에 기록. 버전 드리프트는 런타임 캡처로 흡수</td>
+</tr>
+<tr>
+<td><strong>cephadm 인지</strong></td>
+<td><code>ceph daemon</code>(admin socket)은 호스트 로컬이라 중앙 수집기에선 <code>ceph tell</code> 우선</td>
+</tr>
+<tr>
+<td><strong>레닥션 기본 ON</strong></td>
+<td><code>key</code>/<code>secret</code>/token/password 필드 마스킹 후 저장. <code>--no-redact</code>로만 해제(경고)</td>
+</tr>
+<tr>
+<td><strong>이중 포맷</strong></td>
+<td><code>ceph</code>는 <code>-f json-pretty</code> + 텍스트. <code>radosgw-admin</code>은 기본 JSON(<code>--format</code> 미사용)</td>
+</tr>
+<tr>
+<td><strong>멱등성</strong></td>
+<td>출력 = <code>ceph-report-&lt;fsid&gt;-&lt;UTCtimestamp&gt;</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="d-2">2. 아키텍처</h2>
+<h3 id="d-21">2.1 디렉토리 구조</h3>
+<pre><code>ceph-collector/
+├── ceph_collector.py            # CLI 엔트리포인트 (argparse)
+├── core/
+│   ├── collector.py             # 워크플로우 오케스트레이션
+│   ├── command_runner.py        # subprocess + timeout + nice/ionice + throttle + 종료코드 로깅
+│   ├── safety_gate.py           # 변경/부하 명령 차단 allowlist (방어선, §4.4)
+│   ├── redactor.py              # 민감정보 마스킹 (기본 ON)
+│   └── report_packager.py       # tar.gz + manifest.json
+├── modules/
+│   ├── base_module.py
+│   ├── metadata_module.py / cluster_module.py / mon_module.py / mgr_module.py
+│   ├── osd_module.py / pg_module.py / crush_module.py / pool_module.py
+│   ├── orch_module.py / rgw_module.py / rbd_module.py / cephfs_module.py
+│   ├── crash_module.py / host_module.py
+├── config/default.yaml
+└── requirements.txt
+</code></pre>
+<h3 id="d-22">2.2 실행 흐름</h3>
+<ol>
+<li>CLI 파싱 → <code>collect --output-dir /tmp [--use-cephadm-shell] [--no-redact] [--concurrency N] [--throttle-ms 200] [--full-pg-dump] [--all-osds] [--rbd-du] [--rgw-full]</code></li>
+<li>모듈 초기화 → <strong>safety_gate가 각 명령을 read-only allowlist와 대조</strong>(§4.4)</li>
+<li><code>command_runner</code>가 nice/ionice 래핑 + timeout + throttle로 실행</li>
+<li>결과 저장 → 레닥션 적용</li>
+<li><code>manifest.json</code> 생성(성공/실패, health 스냅샷, 명령별 소요·바이트, 적용된 부하 가드)</li>
+<li><code>tar.gz</code>(또는 zstd) 패키징</li>
+</ol>
+<h3 id="d-23">2.3 실행 환경</h3>
+<ul>
+<li>기본: <code>client.admin</code> keyring으로 <code>ceph</code>/<code>radosgw-admin</code>/<code>rbd</code> 동작 가능한 노드(보통 mgr/admin 호스트).</li>
+<li>cephadm: <code>--use-cephadm-shell</code> → <code>cephadm shell -- &lt;cmd&gt;</code> 래핑. <code>[High]</code></li>
+<li><code>radosgw-admin</code>은 RGW keyring/<code>ceph.conf</code> 접근 필요. cephadm에선 <code>cephadm shell</code> 내부 실행 권장.</li>
+</ul>
+<hr />
+<h2 id="d-3">3. 수집 모듈별 명령어</h2>
+<h3 id="d-31-metadata">3.1 Metadata</h3>
+<pre><code class="language-bash">date -u                               # [High] {L0}
+hostname -f                           # [High] {L0}
+ceph --version                        # [High] {L0}
+ceph fsid                             # [High] {L0}
+uname -a                              # [High] {L0}
+</code></pre>
+<h3 id="d-32-cluster">3.2 Cluster (기본 상태)</h3>
+<pre><code class="language-bash">ceph -s -f json-pretty                            # [High] {L0}
+ceph status                                       # [High] {L0}
+ceph health detail -f json-pretty                 # [High] {L0}
+ceph df detail -f json-pretty                     # [High] {L0}
+ceph versions -f json-pretty                      # [High] {L0} 혼합버전 장애 핵심
+ceph features -f json-pretty                      # [Moderate] {L0}
+ceph node ls -f json-pretty                       # [High] {L0}
+ceph log last 2000                                # [High] {L0}
+ceph report                                       # [High] {L2} mgr 전체 직렬화 → 대형 클러스터 부하. §4.3 가드, 별도 파일
+</code></pre>
+<h3 id="d-33-mon">3.3 MON / 쿼럼 / 시계</h3>
+<pre><code class="language-bash">ceph mon stat -f json-pretty                      # [High] {L0}
+ceph mon dump -f json-pretty                      # [High] {L0}
+ceph quorum_status -f json-pretty                 # [High] {L0}
+chronyc tracking                                  # [High] {L0} (호스트 로컬)
+timedatectl                                       # [High] {L0}
+</code></pre>
+<blockquote>
+<p>clock skew는 MON 쿼럼 장애의 단골 원인이므로 반드시 수집.</p>
+</blockquote>
+<h3 id="d-34-mgr">3.4 MGR</h3>
+<pre><code class="language-bash">ceph mgr dump -f json-pretty                      # [High] {L0}
+ceph mgr module ls -f json-pretty                 # [High] {L0}
+ceph mgr services -f json-pretty                  # [High] {L0}
+ceph balancer status -f json-pretty               # [High] {L0} status 조회만, 리밸런스 트리거 안 함
+ceph progress -f json-pretty                      # [Moderate] {L0}
+</code></pre>
+<h3 id="d-35-osd">3.5 OSD / 디바이스</h3>
+<pre><code class="language-bash">ceph osd tree -f json-pretty                      # [High] {L0}
+ceph osd df tree -f json-pretty                   # [High] {L0} 용량/PG분포(plain osd df는 중복이라 제외)
+ceph osd stat -f json-pretty                      # [High] {L0}
+ceph osd dump -f json-pretty                      # [High] {L0}
+ceph osd perf -f json-pretty                      # [High] {L0} commit/apply latency
+ceph osd blocked-by -f json-pretty                # [Moderate] {L0}
+ceph osd pool autoscale-status                    # [High] {L0}
+ceph osd metadata -f json-pretty                  # [High] {L1} 전체 OSD 메타(N배수, mon 읽기)
+ceph device ls -f json-pretty                     # [High] {L0}
+ceph device get-health-metrics &lt;devid&gt;            # [Moderate] {L1} 저장된 SMART 스냅샷 읽기(디바이스 직접 조회 아님)
+</code></pre>
+<p><strong>OSD 심층 (샘플링: 문제 OSD 또는 상한 N개만 — §6)</strong></p>
+<pre><code class="language-bash">ceph tell osd.&lt;id&gt; perf dump                      # [High] {L1} (Reef deprecated, 호환 수집)
+ceph tell osd.&lt;id&gt; counter dump                   # [Moderate] {L1} perf dump 후속(권장)
+ceph tell osd.&lt;id&gt; dump_historic_ops              # [Moderate] {L1} 느린 op 이력
+ceph tell osd.&lt;id&gt; dump_ops_in_flight             # [Moderate] {L1}
+ceph tell osd.&lt;id&gt; dump_blocked_ops               # [Moderate] {L1}
+</code></pre>
+<blockquote>
+<p><code>ceph tell</code>은 asok 명령을 중계하며 개별 호출은 가볍다. 위험은 부하가 아니라 OSD 수 N배수 → 샘플링으로 통제.</p>
+</blockquote>
+<h3 id="d-36-pg">3.6 PG</h3>
+<pre><code class="language-bash">ceph pg stat -f json-pretty                       # [High] {L0}
+ceph pg dump pgs_brief -f json-pretty             # [High] {L1} 경량 버전 (기본)
+ceph pg ls -f json-pretty                         # [High] {L1} 전체 PG 나열(대형 클러스터 중간 부하)
+ceph pg dump_stuck inactive -f json-pretty        # [High] {L0}
+ceph pg dump_stuck unclean  -f json-pretty        # [High] {L0}
+ceph pg dump_stuck stale    -f json-pretty        # [High] {L0}
+ceph pg dump_stuck undersized -f json-pretty      # [Moderate] {L0}
+ceph pg dump_stuck degraded   -f json-pretty      # [Moderate] {L0}
+ceph pg &lt;pgid&gt; query -f json-pretty               # [High] {L1} 문제 PG만 타겟(primary OSD 쿼리)
+ceph pg dump -f json-pretty                       # [High] {L2} --full-pg-dump 에서만. mgr 부하, §4.3
+</code></pre>
+<h3 id="d-37-crush">3.7 CRUSH</h3>
+<pre><code class="language-bash">ceph osd crush dump -f json-pretty                # [High] {L0}
+ceph osd crush tree -f json-pretty                # [High] {L0}
+ceph osd crush class ls -f json-pretty            # [High] {L0}
+ceph osd crush rule ls -f json-pretty             # [High] {L0}
+ceph osd crush rule dump -f json-pretty           # [High] {L0}
+</code></pre>
+<blockquote>
+<p>CRUSH 맵 바이너리(<code>getcrushmap -o</code>)는 오프라인 편집용이라 RCA에 불필요 → 제외. JSON <code>crush dump</code>로 충분.</p>
+</blockquote>
+<h3 id="d-38-pool-ec">3.8 Pool / EC</h3>
+<pre><code class="language-bash">ceph osd pool ls detail -f json-pretty            # [High] {L0}
+ceph osd lspools -f json-pretty                   # [High] {L0}
+ceph osd pool stats -f json-pretty                # [High] {L0}
+ceph osd erasure-code-profile ls                  # [High] {L0}
+ceph osd erasure-code-profile get &lt;profile&gt;       # [High] {L0} (ls 순회)
+</code></pre>
+<blockquote>
+<p><code>ceph osd pool get &lt;pool&gt; all</code>은 <code>pool ls detail</code>과 정보가 대부분 중복되어 RCA 목적상 제외.</p>
+</blockquote>
+<h3 id="d-39-config">3.9 Config</h3>
+<pre><code class="language-bash">ceph config dump -f json-pretty                   # [High] {L0} *비-기본값만 출력*
+ceph config-key dump                              # [High] {L0} 시크릿 포함 가능 → 레닥션
+ceph config show &lt;who&gt;                            # [High] {L0} 예: osd.&lt;id&gt;, client.rgw.&lt;id&gt; (effective 값)
+</code></pre>
+<blockquote>
+<p>제외: <code>config ls</code>(값 없이 옵션명만), <code>config show-with-defaults</code>(기본값 전체 노이즈), <code>config generate-minimal-conf</code>(접속용·RCA무관). 효과적 설정 확인은 <code>config dump</code>+<code>config show</code>로 충분.
+<code>ceph config dump</code>는 명시적 비-기본값만 출력하므로, vault/keystone 등 기본값/env 주입 파라미터는 <code>ceph config show</code>로 effective 값을 확인한다.</p>
+</blockquote>
+<h3 id="d-310-orchestrator-cephadm">3.10 Orchestrator / cephadm</h3>
+<pre><code class="language-bash">ceph orch ls --format yaml                         # [High] {L0}
+ceph orch ps -f json-pretty                        # [High] {L0}
+ceph orch host ls -f json-pretty                   # [High] {L0}
+ceph orch device ls -f json-pretty                 # [High] {L0}
+ceph orch upgrade status                           # [High] {L0}
+ceph cephadm config-check ls                       # [Moderate] {L0}
+ceph orch host ok-to-stop &lt;hostname&gt;               # [High] {L0} **평가(dry-run)만, 실제 중단 안 함**
+cephadm ls                                         # [High] {L0} (호스트 로컬, mgr/orch 불능 시에도 동작)
+cephadm check-host                                 # [High] {L0} (인자 없이, 호스트 점검만)
+</code></pre>
+<blockquote>
+<p>제외: <code>orch status</code>(ls/ps와 중복), <code>cephadm config-check status</code>(config-check ls로 충분).</p>
+</blockquote>
+<h3 id="d-311-rgw-vaultkeystone-multisite">3.11 RGW (vault/keystone 연동 + 메타데이터 + multisite)</h3>
+<p><strong>구성/토폴로지</strong></p>
+<pre><code class="language-bash">radosgw-admin realm list                           # [High] {L0}
+radosgw-admin zonegroup list                       # [High] {L0}
+radosgw-admin zone list                            # [High] {L0}
+radosgw-admin period get                           # [High] {L0}
+radosgw-admin zonegroup get                          # [High] {L0}
+radosgw-admin zone get                              # [High] {L0} sync 키 포함 → 레닥션
+radosgw-admin sync status                           # [High] {L0} 멀티사이트 필수(단일도 무해)
+</code></pre>
+<blockquote>
+<p>제외: <code>mdlog status</code>/<code>datalog status</code>(니치, <code>sync status</code>가 복제 지연을 대표 신호로 보여줌).</p>
+</blockquote>
+<p><strong>사용자 / 버킷 / 샤딩 / GC / lifecycle</strong></p>
+<pre><code class="language-bash">radosgw-admin user list                             # [High] {L1}
+radosgw-admin bucket list                           # [High] {L2} 버킷 수천 개면 부하 → §4.6
+radosgw-admin bucket stats                          # [High] {L2} 전체는 --rgw-full에서만. 기본은 상위 K개·--bucket=&lt;b&gt; (§4.6)
+radosgw-admin bucket limit check                    # [Moderate] {L2} 전체 버킷 순회 → --rgw-full에서만 (§4.6)
+radosgw-admin reshard list                          # [High] {L0} 대기열 나열만(reshard 실행 아님)
+radosgw-admin gc list                               # [High] {L1} 나열만(GC 실행 아님). 대기열 大면 출력 큼(§4.6)
+radosgw-admin lc list                               # [High] {L0} lifecycle 처리 상태(만료 미동작 RCA)
+</code></pre>
+<blockquote>
+<p><code>radosgw-admin</code>은 기본 JSON 출력이며 <code>--format</code> 옵션을 쓰지 않는다.</p>
+</blockquote>
+<p><strong>Vault / Keystone 연동 확인</strong> (config 키 검사)</p>
+<pre><code class="language-bash">ceph config dump -f json-pretty                     # rgw_* 키 필터
+ceph config show client.rgw.&lt;id&gt;                    # [High] {L0} effective 값 (orch ps에서 daemon명 파싱)
+ceph config dump | grep -E 'rgw_crypt_vault|rgw_crypt_s3_kms|rgw_keystone|rgw_s3_auth_use_keystone'
+</code></pre>
+<ul>
+<li><strong>Vault 판정 키</strong>: <code>rgw_crypt_s3_kms_backend=vault</code>, <code>rgw_crypt_vault_addr</code>, <code>rgw_crypt_vault_auth</code>, <code>rgw_crypt_vault_secret_engine</code>, <code>rgw_crypt_vault_prefix</code>, <code>rgw_crypt_vault_token_file</code></li>
+<li><strong>Keystone 판정 키</strong>: <code>rgw_s3_auth_use_keystone=true</code>, <code>rgw_keystone_url</code>, <code>rgw_keystone_api_version</code>, <code>rgw_keystone_admin_*</code> 또는 <code>rgw_keystone_admin_token</code>(레닥션)</li>
+</ul>
+<h3 id="d-312-rbd-pool-ls-rbd-application">3.12 RBD (pool ls 결과에서 rbd application 풀 순회)</h3>
+<pre><code class="language-bash">rbd ls -p &lt;pool&gt; --long --format json               # [High] {L1}
+rbd info &lt;pool&gt;/&lt;image&gt; --format json               # [High] {L1} (features에서 object-map/fast-diff 확인)
+rbd status &lt;pool&gt;/&lt;image&gt; --format json             # [High] {L1} watcher(좀비 매핑 진단)
+rbd mirror pool status &lt;pool&gt; --verbose             # [Moderate] {L1} 미러링(DR) 사용 시에만
+# 부하 주의 — 기본 비활성
+rbd du -p &lt;pool&gt; --format json                      # [High] {L2} --rbd-du 에서만, §4.6 (용량분석 옵션, RCA 핵심 아님)
+</code></pre>
+<blockquote>
+<p>제외: <code>rbd trash ls</code>(휴지통 니치). <strong><code>rbd du</code> 운영 경고</strong>: object-map+fast-diff가 <strong>비활성</strong>인 이미지는 실사용량 계산을 위해 전체 오브젝트를 스캔하여 대용량 이미지에서 수 분 + OSD I/O 부하를 유발한다. 기본 비활성(<code>--rbd-du</code> opt-in)이며, 활성 시에도 <code>rbd info</code>의 features에 <code>object-map</code>,<code>fast-diff</code>가 <strong>모두 있는 이미지에만</strong> 실행한다. 없는 이미지는 건너뛰고 <code>errors.log</code>에 사유 기록.</p>
+</blockquote>
+<h3 id="d-313-cephfs-mds">3.13 CephFS / MDS</h3>
+<pre><code class="language-bash">ceph fs ls -f json-pretty                           # [High] {L0}
+ceph fs status -f json-pretty                       # [High] {L0}
+ceph fs dump -f json-pretty                          # [High] {L0}
+ceph mds stat -f json-pretty                         # [High] {L0}
+ceph mds metadata -f json-pretty                     # [High] {L0}
+ceph tell mds.&lt;rank&gt; session ls                      # [Moderate] {L2} 클라이언트 多면 세션당 1행 → 출력 大(§4.6)
+ceph tell mds.&lt;rank&gt; dump_blocked_ops                 # [Moderate] {L1}
+</code></pre>
+<blockquote>
+<p>제외: <code>tell mds perf dump</code>(deprecated 니치), <code>fs subvolume(group) ls</code>(서브볼륨 관리용, RCA 비핵심).</p>
+</blockquote>
+<h3 id="d-314-crash">3.14 Crash (레닥션 후 저장)</h3>
+<pre><code class="language-bash">ceph crash ls -f json-pretty                         # [High] {L0} (NEW 컬럼으로 신규 크래시 식별)
+ceph crash info &lt;crash_id&gt;                           # [High] {L0} (ls 순회, 최근 N개)
+</code></pre>
+<blockquote>
+<p>제외: <code>crash ls-new</code>/<code>crash stat</code>(<code>crash ls</code>의 NEW 표시와 건수로 대체 가능).</p>
+</blockquote>
+<h3 id="d-315">3.15 인증 (레닥션 필수)</h3>
+<pre><code class="language-bash">ceph auth ls -f json-pretty                          # [High] {L0} key 필드 마스킹, caps만 보존
+</code></pre>
+<h3 id="d-316-host-os">3.16 Host / OS 컨텍스트 (해당 노드 로컬)</h3>
+<pre><code class="language-bash">podman ps -a            # 또는 docker ps -a              # [High] {L0}
+systemctl --type=service | grep ceph                    # [High] {L0}
+ip -s link                                              # [High] {L0} 패킷 드롭/에러
+ss -s                                                   # [High] {L0}
+dmesg -T | grep -iE 'ceph|bluestore|nvme|scsi|ext4|xfs' # [High] {L0}
+smartctl -a &lt;dev&gt;                                       # [High] {L1} 읽기 전용(-a). **-t(테스트 시작) 금지**
+</code></pre>
+<hr />
+<h2 id="d-4">4. 운영 영향 안전성 분석 (핵심)</h2>
+<p>운영 클러스터 수집의 1순위 제약은 "무영향"이다. 본 절은 전 명령을 (1) 상태 변경, (2) 부하, (3) 간접 영향 세 축으로 검증한다.</p>
+<h3 id="d-41-mutating">4.1 상태 변경(mutating) 명령 부재 — 입증</h3>
+<p>본 설계에 포함된 명령의 동사는 전부 read 계열이다: <code>ls/list/dump/stat/status/df/tree/perf/query/info/du/show/get/metadata/versions/features/report/last/tracking/check</code>. 변경 계열 동사(<code>set/rm/create/add/delete/apply/enable/disable/start/stop/restart/reweight/in/out/repair/scrub/deep-scrub/bench/mark/destroy/purge/bootstrap/pull/process</code>)는 <strong>한 건도 사용하지 않는다.</strong></p>
+<p>오해 소지가 있는 명령의 실제 동작:</p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>검증 결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ceph orch host ok-to-stop</code></td>
+<td>호스트 중단 가능 여부 <strong>평가만</strong>. 데몬을 멈추지 않음</td>
+</tr>
+<tr>
+<td><code>radosgw-admin gc list</code> / <code>reshard list</code></td>
+<td>대기열 <strong>나열만</strong>. GC/reshard를 실행하지 않음</td>
+</tr>
+<tr>
+<td><code>ceph balancer status</code></td>
+<td>상태 <strong>조회만</strong>. 리밸런스를 트리거하지 않음</td>
+</tr>
+<tr>
+<td><code>ceph osd dump</code> flags 표시</td>
+<td>osdmap의 noout 등 플래그를 <strong>읽어 표시만</strong> 함. 설정하지 않음</td>
+</tr>
+</tbody>
+</table>
+<h3 id="d-42">4.2 부하 위험 분류</h3>
+<ul>
+<li><strong>{L0} 무시 가능</strong>: mon/mgr/osd map 스냅샷, health, df, tree, config dump/show, crush dump, pool ls, auth ls, crash ls, orch ls/ps, RGW realm/zone/sync status 등 메타데이터 단발 조회. 운영 영향 사실상 없음.</li>
+<li><strong>{L1} 경미</strong>: <code>osd metadata</code>(전체), <code>pg ls</code>(전체), <code>pg dump pgs_brief</code>, per-OSD/MDS <code>tell</code>, <code>rbd ls/info/status</code>, <code>smartctl -a</code> 등. 개별은 가벼우나 N배수·중간 출력 → <strong>샘플링·상한</strong>으로 통제(§6).</li>
+<li><strong>{L2} 주의</strong>: <code>ceph report</code>, <code>ceph pg dump</code>(full), <code>rbd du</code>(object-map 미활성), <code>radosgw-admin bucket stats/list/limit check</code>(전체). 대형 클러스터에서 mgr/RGW 부하 → <strong>기본 비활성·opt-in·상한·비피크</strong>(§4.3).</li>
+</ul>
+<h3 id="d-43-l2">4.3 L2 명령 가드 (필수)</h3>
+<ol>
+<li><strong>기본 비활성</strong>. 명시 플래그에서만 실행: <code>--full-pg-dump</code>, <code>--rbd-du</code>, <code>--rgw-full</code>. <code>ceph report</code>는 별도 파일·1회.</li>
+<li><strong><code>rbd du</code></strong>: <code>rbd info</code> features에 <code>object-map</code>+<code>fast-diff</code> 둘 다 있는 이미지에만. 없으면 skip + 사유 기록.</li>
+<li><strong>RGW 전체 순회</strong>: 기본은 <code>bucket list</code> + 상위 K개(기본 50) <code>bucket stats</code>만. 전체는 <code>--rgw-full</code>.</li>
+<li><strong>비피크 권장</strong>: L2 활성 수집은 운영 피크 시간대를 피하도록 README·실행 시 경고 출력.</li>
+<li><strong>사전 health 확인</strong>: 수집 시작 시 <code>HEALTH_ERR</code> 또는 진행 중 대규모 recovery/backfill 감지되면 L2 명령을 자동 skip(부하 가중 방지).</li>
+</ol>
+<h3 id="d-44">4.4 수집기 자체의 부하 통제</h3>
+<ul>
+<li><strong>동시성 기본 순차</strong> 또는 저병렬(<code>--concurrency</code>, 기본 1~4). mon/mgr는 단일 처리 지점이므로 명령 폭주는 클라이언트 I/O에 간접 영향을 줄 수 있음.</li>
+<li><strong>throttle</strong>: 명령 간 인터벌(<code>--throttle-ms</code>, 기본 0~200ms)로 mon 연결 버스트 완화.</li>
+<li><strong>nice/ionice</strong>: 모든 외부 프로세스를 <code>nice -n 19 ionice -c3</code>로 래핑(특히 <code>rbd du</code>, <code>smartctl</code>, <code>dmesg</code>).</li>
+<li><strong><code>timeout</code>은 부하 방지가 아님</strong>: hang 방지용일 뿐, timeout 만료 전까지 부하는 발생한다. 따라서 부하 통제는 timeout이 아니라 위 가드로 수행한다.</li>
+<li><strong>safety_gate 방어선</strong>: 실행 직전 각 명령을 read-only allowlist와 대조하여, 향후 모듈 확장 시 변경/부하 명령이 실수로 유입되는 것을 코드 레벨에서 차단.</li>
+</ul>
+<h3 id="d-45">4.5 파일시스템 영향</h3>
+<ul>
+<li>모든 출력 파일·패키지는 <strong>수집 디렉토리 외부에 쓰지 않는다</strong>. 시스템 경로 오염 없음.</li>
+<li>읽기 전용 디렉토리 마운트 가정 환경에서도 동작(작업 경로만 쓰기).</li>
+</ul>
+<h3 id="d-46">4.6 "반드시 수집하지만 부하가 있는" 명령 — 메커니즘·필요성·완화</h3>
+<p>아래 명령들은 <strong>RCA에 꼭 필요해서 제외할 수 없지만</strong>, 운영 클러스터에서 부하를 유발할 수 있다. 부하의 원인과 그럼에도 필요한 이유, 완화책을 명시한다. (단순 부하만 있고 RCA 가치가 낮은 명령은 §3에서 이미 제외했다.)</p>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>부하 메커니즘</th>
+<th>왜 반드시 필요한가(어떤 RCA)</th>
+<th>완화책</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ceph report</code></td>
+<td>active mgr가 mon/osd/pg/fs 맵 전체를 한 번에 직렬화 → 대형 클러스터에서 mgr CPU·메모리 순간 점유, 수십 MB 출력</td>
+<td>클러스터 <strong>미접속 상태의 오프라인 전수 분석</strong>(단일 스냅샷). 사후 RCA의 1차 사료</td>
+<td>1회만·별도 파일·<code>HEALTH_ERR</code>나 대규모 recovery 중이면 자동 skip·timeout 180s</td>
+</tr>
+<tr>
+<td><code>ceph pg dump</code>(full)</td>
+<td>mgr가 <strong>전 PG 레코드</strong>(scrub 타임스탬프·OSD별 매핑 포함)를 직렬화 → PG 수 비례 부하</td>
+<td>scrub/deep-scrub 지연, PG별 last_scrub_stamp, OSD↔PG 정밀 분포 RCA(이건 <code>pgs_brief</code>에 없음)</td>
+<td>기본 <code>pgs_brief</code>만. full은 <code>--full-pg-dump</code> opt-in + 비피크</td>
+</tr>
+<tr>
+<td><code>radosgw-admin bucket limit check</code></td>
+<td><strong>모든 버킷</strong>의 인덱스 샤드 채움률을 순회 계산</td>
+<td>인덱스 핫스팟·reshard 필요 판정(RGW 성능 장애의 최빈 원인)</td>
+<td><code>--rgw-full</code>에서만·비피크. 평시엔 상위 버킷만</td>
+</tr>
+<tr>
+<td><code>radosgw-admin bucket stats</code>(전체)</td>
+<td>버킷별 인덱스 메타데이터를 순회 → 버킷 수만큼 RADOS omap 조회</td>
+<td>버킷별 객체 수·사용량·샤드 수 RCA</td>
+<td>기본은 상위 K개(기본 50)+지목 버킷. 전체는 <code>--rgw-full</code></td>
+</tr>
+<tr>
+<td><code>radosgw-admin bucket list</code></td>
+<td>전체 버킷 enumerate(메타데이터 풀 스캔)</td>
+<td>버킷 존재·이름·소유 확인의 기준</td>
+<td>{L2} 가드. 대규모 시 페이지네이션</td>
+</tr>
+<tr>
+<td><code>radosgw-admin gc list</code></td>
+<td>삭제 대기 큐 전체를 출력 → 누적 대량 시 큰 출력</td>
+<td>"삭제했는데 공간 미회수" RCA</td>
+<td>출력 상한(head)·필요 시에만</td>
+</tr>
+<tr>
+<td>per-OSD <code>ceph tell osd.* {perf/counter dump, dump_historic_ops, ...}</code></td>
+<td>개별 호출은 가볍지만 <strong>OSD 수 N배</strong></td>
+<td>느린 OSD의 병목 계층(net/RocksDB/disk)·slow-ops 단계 RCA</td>
+<td><strong>샘플링</strong>: down/near-full/high-latency 우선, 상한 N(기본 20). 전체는 <code>--all-osds</code></td>
+</tr>
+<tr>
+<td><code>ceph tell mds.* session ls</code></td>
+<td>클라이언트 <strong>세션당 1행</strong> → 수천 클라이언트면 큰 출력 + MDS 일시 부하</td>
+<td>caps 폭증 클라이언트 식별(MDS_CLIENT_RECALL·MDS 메모리 압박 RCA)</td>
+<td>CephFS 사용·MDS 경고 존재 시에만. 출력 상한</td>
+</tr>
+<tr>
+<td><code>rbd du</code></td>
+<td>object-map/fast-diff 미보유 이미지는 <strong>전 오브젝트 스캔</strong>(RADOS stat 다발) → OSD I/O 부하</td>
+<td>씬 프로비저닝 실사용량·용량 고갈 분석(용량 이슈)</td>
+<td>기본 비활성·<code>--rbd-du</code>·object-map+fast-diff 보유 이미지만</td>
+</tr>
+<tr>
+<td><code>smartctl -a</code></td>
+<td>SMART 읽기. 일부 RAID/HBA 컨트롤러에서 짧은 stall·슬립 디스크 깨움. 디바이스 N배</td>
+<td>OSD down/slow의 <strong>물리적 근본 원인</strong>(섹터 불량·마모) 확정</td>
+<td><code>nice/ionice</code> 래핑·<code>-a</code>(읽기)만, <code>-t</code>(테스트) 금지·디바이스 순차</td>
+</tr>
+<tr>
+<td><code>dmesg -T</code></td>
+<td>큰 링버퍼 전체를 포매팅(CPU·메모리 경미)</td>
+<td>커널 레벨 I/O error·NVMe timeout 확인(OSD 장애의 물리 원인)</td>
+<td>grep로 필터·<code>nice</code> 래핑</td>
+</tr>
+</tbody>
+</table>
+<p><strong>공통 원칙</strong>: 위 명령은 <em>기능</em>상 read-only라 클러스터 상태를 바꾸지 않지만 <em>부하</em>가 있으므로, ① 기본 비활성(opt-in)·② 샘플링/상한·③ 비피크·④ 수집 시작 시 health/recovery 감지 자동 skip 중 최소 하나 이상을 항상 적용한다.</p>
+<hr />
+<h2 id="d-5">5. 민감정보 레닥션 &amp; 실행 안정성</h2>
+<h3 id="d-51-on">5.1 레닥션 (기본 ON)</h3>
+<p>시크릿 평문 출처와 마스킹 대상:
+- <code>ceph auth ls</code> → <code>key</code>
+- <code>radosgw-admin zone get</code> → <code>system_key.access_key/secret_key</code>, sync 키
+- <code>ceph config-key dump</code> → 전체 값
+- <code>ceph config dump/show</code> → <code>*password*</code>/<code>*token*</code>/<code>*secret*</code>
+- <code>radosgw-admin user info</code> → <code>keys[].secret_key</code></p>
+<p>규칙(예): <code>("key"|"secret_key"|"access_key"|password|token)\s*[:=]\s*\S+</code> → <code>***REDACTED***</code>. <code>--no-redact</code> 시 manifest·stdout 경고.</p>
+<h3 id="d-52">5.2 안정성·실패 흡수</h3>
+<ul>
+<li>모든 명령 timeout(기본 60s). <code>ceph report</code>/<code>pg dump</code>는 별도 상한(예 180s).</li>
+<li>실패 시 중단 없이 <code>errors.log</code>에 <code>{cmd, returncode, stderr, duration}</code> 기록.</li>
+<li><code>[Moderate]</code>/<code>[Low]</code> 명령은 실행 전 <code>--help</code> 존재 확인(선택) 후 실행.</li>
+</ul>
+<hr />
+<h2 id="d-6">6. 수집 범위 / 성능 정책</h2>
+<table>
+<thead>
+<tr>
+<th>명령</th>
+<th>위험</th>
+<th>정책</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ceph report</code></td>
+<td>{L2} mgr 부하</td>
+<td>별도 파일, 1회, health 정상 시에만</td>
+</tr>
+<tr>
+<td><code>ceph pg dump</code>(full)</td>
+<td>{L2} mgr 부하</td>
+<td><code>--full-pg-dump</code>에서만, 기본은 <code>pgs_brief</code></td>
+</tr>
+<tr>
+<td>per-OSD <code>perf/counter dump</code></td>
+<td>{L1} N배수</td>
+<td>샘플링: down/near-full/high-latency 우선, 상한 N(기본 20), <code>--all-osds</code>로 해제</td>
+</tr>
+<tr>
+<td><code>rbd du</code></td>
+<td>{L2} 전체 스캔</td>
+<td><code>--rbd-du</code> + object-map/fast-diff 보유 이미지만</td>
+</tr>
+<tr>
+<td>per-image <code>rbd info/status</code></td>
+<td>{L1} 이미지 수</td>
+<td>pool당 상한 M(기본 200), 초과 시 <code>rbd ls</code>만</td>
+</tr>
+<tr>
+<td><code>radosgw-admin bucket stats/list/limit check</code>(전체)</td>
+<td>{L2} RGW 부하</td>
+<td>기본 상위 K개(기본 50), 전체는 <code>--rgw-full</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="d-7">7. 출력 패키징</h2>
+<pre><code>ceph-report-&lt;fsid&gt;-&lt;UTCtimestamp&gt;/
+├── reports/
+│   ├── 00-metadata/ 01-cluster/ 02-mon/ 03-mgr/
+│   ├── 04-osd/ 05-pg/ 06-crush/ 07-pools/
+│   ├── 08-config/(redacted) 09-orch/
+│   ├── 10-rgw/ 11-rbd/ 12-cephfs/
+│   ├── 13-crash/ 14-auth/(redacted) 15-host/
+├── manifest.json   # tool/ceph 버전, health 스냅샷, 모듈별 성공/실패, 적용된 부하 가드, 명령별 소요·바이트
+├── errors.log
+├── collection.log
+└── README.txt
+</code></pre>
+<h3 id="d-manifestjson">manifest.json (예)</h3>
+<pre><code class="language-json">{
+  &quot;tool_version&quot;: &quot;1.0&quot;,
+  &quot;ceph_version&quot;: &quot;18.2.x&quot;,
+  &quot;fsid&quot;: &quot;....&quot;,
+  &quot;collection_time_utc&quot;: &quot;2026-06-25T05:20:00Z&quot;,
+  &quot;redacted&quot;: true,
+  &quot;load_guards&quot;: {&quot;l2_enabled&quot;: false, &quot;concurrency&quot;: 1, &quot;throttle_ms&quot;: 0, &quot;nice_ionice&quot;: true},
+  &quot;health_snapshot&quot;: &quot;HEALTH_WARN&quot;,
+  &quot;modules&quot;: {&quot;osd&quot;: {&quot;commands&quot;: 12, &quot;success&quot;: 11, &quot;failed&quot;: 1}}
+}
+</code></pre>
+<hr />
+<h2 id="d-8-s3-listputgetdel">8. 기능 테스트(S3 list/put/get/del) 범위 정의</h2>
+<p>S3 list/put/get/del 동작 검증은 <code>tester</code> 계정을 통한 <strong>별도 절차</strong>로 분리하며 본 collector에 포함하지 않는다. collector는 운영 무영향을 위해 RGW read-only 메타데이터(§3.11)만 수집한다. 외부 기능 테스트는 전용 버킷 allowlist·작업 후 자가 정리·운영 버킷 PUT/DEL 코드 차단을 전제로 별도 실행한다.</p>
+<hr />
+<h2 id="d-9">9. 구현 로드맵</h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>범위</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1 (Core)</strong></td>
+<td>command_runner(nice/ionice/throttle) + safety_gate + redactor + packager / metadata·cluster·mon·mgr·osd·pg·pool·crush</td>
+</tr>
+<tr>
+<td><strong>2 (Orch+RGW)</strong></td>
+<td>orch / rgw + vault·keystone(<code>config dump</code>+<code>config show</code>) + multisite sync status</td>
+</tr>
+<tr>
+<td><strong>3 (Advanced)</strong></td>
+<td>crash·cephfs·rbd(du 가드)·host / 분석 헬퍼(health 요약, vault/keystone 판정)</td>
+</tr>
+<tr>
+<td><strong>4 (고도화)</strong></td>
+<td>YAML 커스텀 명령 / HTML 리포트 / 샘플링·가드 튜닝</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="d-10">10. 클러스터 검증 권장 항목</h2>
+<p>마이너 버전 간 변동 이력이 있어 대상 18.2.x에서 <code>--help</code> 1회 확인 권장(실패는 <code>errors.log</code>로 흡수):
+<code>ceph progress</code> / <code>ceph cephadm config-check ls</code> / <code>ceph device get-health-metrics</code> / <code>radosgw-admin bucket limit check</code> / <code>ceph features</code> / <code>ceph osd blocked-by</code> / per-daemon <code>counter dump</code>.</p>
+<hr />
+<h2 id="d-11">11. 결론</h2>
+<p>본 설계는 <strong>운영 클러스터 무영향</strong>을 1순위 제약으로 검증되었다. (1) 상태 변경 명령은 전 모듈에 0건이며(§4.1), (2) read-only이지만 부하를 줄 수 있는 명령 4개군(<code>ceph report</code>, <code>pg dump</code> full, <code>rbd du</code>, RGW 전체 버킷 순회)은 기본 비활성·opt-in·상한·비피크·health 사전확인으로 가드했고(§4.3), (3) 수집기 자체 부하는 저병렬·throttle·nice/ionice·safety_gate로 통제한다(§4.4). 특히 <code>rbd du</code>는 object-map/fast-diff 보유 이미지에만 제한해 전체 오브젝트 스캔을 차단한다. 민감정보 레닥션은 기본 동작이다.</p>
+<p><strong>한계 명시</strong>: 명령어는 공식 문서·man page 기반이며 라이브 18.2.x 일괄 검증본은 아니다. 부하 등급({L1}/{L2})은 클러스터 규모·구성(버킷 수, 이미지 object-map 여부, PG 수)에 따라 달라지므로, 첫 도입 시 <strong>비운영 또는 저부하 시간대에 1회 시범 수집</strong>하여 <code>manifest.json</code>의 명령별 소요·바이트를 확인한 뒤 운영 적용을 권한다.</p>
+    </div>
+
+    <div class="doc" id="docSample">
+      <span class="docband">문서 2 · 예시 출력 &amp; 해설</span>
+<h1 id="s-ceph-collector">ceph-collector 예시 출력 &amp; 해설집</h1>
+<p><strong>대상</strong>: Ceph 18.2.x (Reef), cephadm 배포
+<strong>용도</strong>: 수집기 각 명령의 실제 출력 형식과, 그 출력에서 무엇을 진단·확인할 수 있는지 정리.
+<strong>짝 문서</strong>: <code>ceph-collector-design-final.md</code>(설계). 본 문서의 명령 집합·신뢰도·부하 가드는 설계 문서와 1:1 대응하며, <code>⚠️ 운영 부하</code> 표기는 설계 §4.6(반드시 수집하지만 부하가 있는 명령)을 참조한다.</p>
+<blockquote>
+<p><strong>읽는 법 / 신뢰 고지</strong>
+- 모든 출력의 <strong>값(수치·이름·UUID)은 합성(synthetic)</strong> 이다. <strong>형식(컬럼·필드명·구조)은 18.2.x 실제 출력 기준</strong>이며, 형식이 확실치 않은 명령은 텍스트 기본 출력으로 제시했다(수집기는 추가로 <code>-f json-pretty</code>를 함께 저장).
+- 대형 JSON(<code>ceph report</code>, <code>pg query</code>, <code>perf dump</code>, <code>zone get</code> 등)은 <strong>핵심 필드만 발췌</strong>하고 <code>…</code>로 생략했다. 생략 부분의 필드명을 추측해 채우지 않았다.
+- 시크릿 필드는 수집기 레닥션을 반영해 <code>***REDACTED***</code>로 표기했다.
+- 일부 명령 예시 묶음(예: <code>pg dump_stuck</code>은 inactive 1개로 unclean/stale/undersized/degraded 변형 대표, <code>counter dump</code>는 <code>perf dump</code> 항목에 병합)은 동일 형식이므로 대표 1개로 해설했다.
+- <code>ceph osd perf</code>/<code>balancer status</code>/<code>osd df tree</code>/<code>features</code>/<code>radosgw-admin sync status</code> 형식은 공식·실사용 출력으로 교차검증했다.</p>
+</blockquote>
+<hr />
+<h1 id="s-1-metadata">1. Metadata</h1>
+<h3 id="s-ceph-version"><code>ceph --version</code></h3>
+<pre><code>ceph version 18.2.4 (e7ad5345525c7aa95470c26863873b581076945d) reef (stable)
+</code></pre>
+<p><strong>확인 내용</strong>: 수집 시점의 정확한 패치 버전. 버그/CVE 해당 여부, 데몬 간 버전 일치(§3 <code>ceph versions</code>와 대조)의 기준점.</p>
+<h3 id="s-ceph-fsid"><code>ceph fsid</code></h3>
+<pre><code>3a5f8b2c-1d4e-4f9a-9c7b-2e6a1f0d8b34
+</code></pre>
+<p><strong>확인 내용</strong>: 클러스터 고유 ID. 수집물 네이밍·다중 클러스터 식별. 호스트의 <code>/var/lib/ceph/&lt;fsid&gt;</code> 경로와 일치 여부.</p>
+<h3 id="s-uname-a"><code>uname -a</code></h3>
+<pre><code>Linux scp-osd-01 5.15.0-117-generic #127-Ubuntu SMP ... x86_64 GNU/Linux
+</code></pre>
+<p><strong>확인 내용</strong>: 커널 버전(RBD krbd feature 호환, 알려진 커널 버그), 아키텍처.</p>
+<hr />
+<h1 id="s-2-cluster">2. Cluster (기본 상태)</h1>
+<h3 id="s-ceph-s"><code>ceph -s</code></h3>
+<pre><code>  cluster:
+    id:     3a5f8b2c-1d4e-4f9a-9c7b-2e6a1f0d8b34
+    health: HEALTH_WARN
+            1 osds down
+            Degraded data redundancy: 12030/3601342 objects degraded (0.334%), 3 pgs degraded
+
+  services:
+    mon: 3 daemons, quorum scp-mon-01,scp-mon-02,scp-mon-03 (age 2w)
+    mgr: scp-mon-01.aqwxyz(active, since 2w), standbys: scp-mon-02.bcdefg
+    osd: 24 osds: 23 up (since 4m), 24 in (since 3d)
+    rgw: 2 daemons active (2 hosts, 1 zones)
+
+  data:
+    pools:   7 pools, 193 pgs
+    objects: 1.20M objects, 4.5 TiB
+    usage:   14 TiB used, 86 TiB / 100 TiB avail
+    pgs:     190 active+clean
+             3   active+undersized+degraded
+
+  io:
+    client:   12 MiB/s rd, 3.4 MiB/s wr, 410 op/s rd, 88 op/s wr
+    recovery: 45 MiB/s, 11 objects/s
+</code></pre>
+<p><strong>확인 내용</strong>: 클러스터 한 화면 요약. health 등급, mon 쿼럼 구성·age, mgr active/standby, <strong>osd up/in 불일치(여기선 23 up / 24 in → 1개 down)</strong>, PG 상태 분포(active+clean 외 항목이 장애 신호), 클라이언트 I/O 및 recovery 진행 여부. RCA의 출발점.</p>
+<h3 id="s-ceph-health-detail"><code>ceph health detail</code></h3>
+<pre><code>HEALTH_WARN 1 osds down; Degraded data redundancy: 12030/3601342 objects degraded (0.334%), 3 pgs degraded
+[WRN] OSD_DOWN: 1 osds down
+    osd.7 (root=default,host=scp-osd-03) is down
+[WRN] PG_DEGRADED: Degraded data redundancy: 12030/3601342 objects degraded (0.334%), 3 pgs degraded
+    pg 4.1a is active+undersized+degraded, acting [12,5,2147483647]
+    pg 4.2c is active+undersized+degraded, acting [9,18,2147483647]
+    pg 7.05 is active+undersized+degraded, acting [3,21,2147483647]
+</code></pre>
+<p><strong>확인 내용</strong>: 각 health 체크의 <strong>구체 대상</strong>. 어떤 OSD가 어느 host에서 down인지, 어떤 PG가 degraded이고 acting set의 결손 위치(<code>2147483647</code>=NONE, 복제본 1개 누락). HEALTH_WARN/ERR의 직접 원인 목록.</p>
+<h3 id="s-ceph-df-detail"><code>ceph df detail</code></h3>
+<pre><code>--- RAW STORAGE ---
+CLASS     SIZE    AVAIL     USED  RAW USED  %RAW USED
+hdd     90 TiB   78 TiB   12 TiB    12 TiB      13.33
+ssd     10 TiB    8 TiB    2 TiB     2 TiB      20.00
+TOTAL  100 TiB   86 TiB   14 TiB    14 TiB      14.00
+
+--- POOLS ---
+POOL                   ID  PGS   STORED  OBJECTS     USED  %USED  MAX AVAIL  QUOTA OBJECTS  QUOTA BYTES  DIRTY  USED COMPR  UNDER COMPR
+.mgr                    1    1  449 KiB        2  1.3 MiB      0     24 TiB              0            0      0          0 B          0 B
+.rgw.root               2   32   1.3 KiB        4   48 KiB      0     24 TiB              0            0      0          0 B          0 B
+default.rgw.meta        6   32   2.1 KiB       11   96 KiB      0     24 TiB              0            0      0          0 B          0 B
+default.rgw.buckets.data 8  128   4.4 TiB    1.19M   13 TiB  15.34     24 TiB              0            0      0          0 B          0 B
+cephfs_data            10   32   120 GiB    31.0k  360 GiB   0.49     24 TiB              0            0      0          0 B          0 B
+</code></pre>
+<p><strong>확인 내용</strong>: 클래스별 raw 용량/사용률, <strong>풀별 STORED(논리)/USED(복제 포함 물리)/%USED/MAX AVAIL</strong>. near-full 임박 풀, EC vs 3-replica의 USED:STORED 비율, 쿼터 설정, 압축 효과 확인. 용량 장애·MAX AVAIL 고갈 진단.</p>
+<h3 id="s-ceph-versions"><code>ceph versions</code></h3>
+<pre><code class="language-json">{
+    &quot;mon&quot;: { &quot;ceph version 18.2.4 (...) reef (stable)&quot;: 3 },
+    &quot;mgr&quot;: { &quot;ceph version 18.2.4 (...) reef (stable)&quot;: 2 },
+    &quot;osd&quot;: {
+        &quot;ceph version 18.2.4 (...) reef (stable)&quot;: 23,
+        &quot;ceph version 18.2.2 (...) reef (stable)&quot;: 1
+    },
+    &quot;mds&quot;: { &quot;ceph version 18.2.4 (...) reef (stable)&quot;: 2 },
+    &quot;rgw&quot;: { &quot;ceph version 18.2.4 (...) reef (stable)&quot;: 2 },
+    &quot;overall&quot;: {
+        &quot;ceph version 18.2.4 (...) reef (stable)&quot;: 32,
+        &quot;ceph version 18.2.2 (...) reef (stable)&quot;: 1
+    }
+}
+</code></pre>
+<p><strong>확인 내용</strong>: 데몬 종류별 버전 분포. <strong>혼합 버전(여기선 osd 1개가 18.2.2)</strong> 은 미완료 업그레이드·롤백 흔적이며, 호환성/성능 이상의 단서. 업그레이드 중단 장애 진단 핵심.</p>
+<h3 id="s-ceph-features"><code>ceph features</code></h3>
+<pre><code class="language-json">{
+    &quot;mon&quot;: [ { &quot;features&quot;: &quot;0x3f01cfbffffdffff&quot;, &quot;release&quot;: &quot;luminous&quot;, &quot;num&quot;: 3 } ],
+    &quot;osd&quot;: [ { &quot;features&quot;: &quot;0x3f01cfbffffdffff&quot;, &quot;release&quot;: &quot;luminous&quot;, &quot;num&quot;: 24 } ],
+    &quot;client&quot;: [
+        { &quot;features&quot;: &quot;0x2f018fb87aa4aafe&quot;, &quot;release&quot;: &quot;luminous&quot;, &quot;num&quot;: 5 },
+        { &quot;features&quot;: &quot;0x3f01cfbffffdffff&quot;, &quot;release&quot;: &quot;luminous&quot;, &quot;num&quot;: 12 }
+    ],
+    &quot;mgr&quot;: [ { &quot;features&quot;: &quot;0x3f01cfbffffdffff&quot;, &quot;release&quot;: &quot;luminous&quot;, &quot;num&quot;: 2 } ]
+}
+</code></pre>
+<p><strong>확인 내용</strong>: 연결 주체별 feature bit/최소 릴리스. <code>upmap-read</code> 등 신기능 사용 전제(모든 client가 특정 릴리스 이상)를 충족하는지, 구버전 클라이언트 잔존 여부 확인.</p>
+<h3 id="s-ceph-node-ls"><code>ceph node ls</code></h3>
+<pre><code class="language-json">{
+    &quot;mon&quot;: { &quot;scp-mon-01&quot;: [&quot;scp-mon-01&quot;], &quot;scp-mon-02&quot;: [&quot;scp-mon-02&quot;], &quot;scp-mon-03&quot;: [&quot;scp-mon-03&quot;] },
+    &quot;osd&quot;: { &quot;scp-osd-01&quot;: [0,1,2,3], &quot;scp-osd-02&quot;: [4,5,6,7], &quot;scp-osd-03&quot;: [8,9,10,11] },
+    &quot;mds&quot;: { &quot;scp-mds-01&quot;: [&quot;scp-mds-01&quot;] },
+    &quot;mgr&quot;: { &quot;scp-mon-01&quot;: [&quot;scp-mon-01&quot;], &quot;scp-mon-02&quot;: [&quot;scp-mon-02&quot;] }
+}
+</code></pre>
+<p><strong>확인 내용</strong>: 데몬↔호스트 매핑. 특정 호스트에 OSD/데몬이 몰려 있는지(장애 도메인 위험), 호스트 단위 장애 시 영향 범위 산정.</p>
+<h3 id="s-ceph-log-last-2000"><code>ceph log last 2000</code></h3>
+<pre><code>2026-06-25T05:18:42.114+0900 mon.scp-mon-01 (mon.0) 882003 : cluster [WRN] Health check failed: 1 osds down (OSD_DOWN)
+2026-06-25T05:18:42.660+0900 osd.7 (osd.7) 12 : cluster [WRN] Monitor daemon marked osd.7 down, but it is still running
+2026-06-25T05:18:55.901+0900 mon.scp-mon-01 (mon.0) 882010 : cluster [INF] osd.7 failed (root=default,host=scp-osd-03) ...
+</code></pre>
+<p><strong>확인 내용</strong>: 최근 클러스터 이벤트 타임라인. 장애 발생 순간(누가 언제 down/up, flag set, health 전이)을 시계열로 재구성. RCA의 1차 사료.</p>
+<h3 id="s-ceph-report"><code>ceph report</code> (발췌)</h3>
+<pre><code class="language-json">{
+    &quot;cluster_fingerprint&quot;: &quot;…&quot;,
+    &quot;version&quot;: &quot;18.2.4&quot;,
+    &quot;commit&quot;: &quot;…&quot;,
+    &quot;timestamp&quot;: &quot;2026-06-25T05:20:00.123456&quot;,
+    &quot;health&quot;: { &quot;status&quot;: &quot;HEALTH_WARN&quot;, &quot;checks&quot;: { &quot;OSD_DOWN&quot;: { … } } },
+    &quot;monmap&quot;: { … }, &quot;osdmap&quot;: { … }, &quot;pgmap&quot;: { … }, &quot;fsmap&quot;: { … },
+    &quot;crashes&quot;: { … }
+    …
+}
+</code></pre>
+<p><strong>확인 내용</strong>: monmap/osdmap/pgmap/fsmap/health/crash를 <strong>단일 JSON으로 통합</strong>한 오프라인 분석용 스냅샷. 클러스터 미접속 상태에서 전체 상태를 한 파일로 재구성.
+<strong>⚠️ 운영 부하(§4.6) {L2}</strong>: active mgr가 전체 맵을 한 번에 직렬화 → 대형 클러스터에서 mgr CPU/메모리 순간 점유, 수십 MB. 1회·별도 파일·<code>HEALTH_ERR</code>나 대규모 recovery 중이면 자동 skip.</p>
+<hr />
+<h1 id="s-3-mon">3. MON / 쿼럼 / 시계</h1>
+<h3 id="s-ceph-mon-stat"><code>ceph mon stat</code></h3>
+<pre><code>e3: 3 mons at {scp-mon-01=[v2:10.0.0.11:3300/0,v1:10.0.0.11:6789/0],scp-mon-02=[v2:10.0.0.12:3300/0,v1:10.0.0.12:6789/0],scp-mon-03=[v2:10.0.0.13:3300/0,v1:10.0.0.13:6789/0]}, election epoch 48, leader 0 scp-mon-01, quorum 0,1,2 scp-mon-01,scp-mon-02,scp-mon-03
+</code></pre>
+<p><strong>확인 내용</strong>: monmap epoch, mon 주소(v2/v1 포트), election epoch, <strong>현재 리더와 쿼럼 멤버</strong>. 쿼럼 결손(예: 3개 중 2개만 quorum) 즉시 식별.</p>
+<h3 id="s-ceph-mon-dump"><code>ceph mon dump</code></h3>
+<pre><code>epoch 3
+fsid 3a5f8b2c-1d4e-4f9a-9c7b-2e6a1f0d8b34
+last_changed 2026-06-01T09:12:33.481122+0900
+created 2025-11-02T01:00:10.002001+0900
+min_mon_release 18 (reef)
+0: [v2:10.0.0.11:3300/0,v1:10.0.0.11:6789/0] mon.scp-mon-01
+1: [v2:10.0.0.12:3300/0,v1:10.0.0.12:6789/0] mon.scp-mon-02
+2: [v2:10.0.0.13:3300/0,v1:10.0.0.13:6789/0] mon.scp-mon-03
+</code></pre>
+<p><strong>확인 내용</strong>: monmap 상세. <code>min_mon_release</code>(업그레이드 완료 수준), mon 추가/제거 이력(<code>last_changed</code>), 각 mon의 rank·주소.</p>
+<h3 id="s-ceph-quorum_status"><code>ceph quorum_status</code></h3>
+<pre><code class="language-json">{
+    &quot;election_epoch&quot;: 48,
+    &quot;quorum&quot;: [0, 1, 2],
+    &quot;quorum_names&quot;: [&quot;scp-mon-01&quot;, &quot;scp-mon-02&quot;, &quot;scp-mon-03&quot;],
+    &quot;quorum_leader_name&quot;: &quot;scp-mon-01&quot;,
+    &quot;monmap&quot;: { &quot;epoch&quot;: 3, &quot;min_mon_release_name&quot;: &quot;reef&quot;, &quot;mons&quot;: [ … ] }
+}
+</code></pre>
+<p><strong>확인 내용</strong>: 쿼럼 멤버·리더의 기계 판독본. mon down 시 <code>quorum</code> 배열이 줄어듦 → 쿼럼 손실 위험(과반 미달 시 클러스터 정지) 판정.</p>
+<h3 id="s-chronyc-tracking"><code>chronyc tracking</code></h3>
+<pre><code>Reference ID    : 0A000001 (ntp.internal)
+Stratum         : 3
+System time     : 0.000031 seconds slow of NTP time
+Last offset     : -0.000012 seconds
+RMS offset      : 0.000045 seconds
+</code></pre>
+<p><strong>확인 내용</strong>: 호스트 시계 동기 상태. <strong>System time/offset이 수십~수백 ms로 벌어지면 <code>MON_CLOCK_SKEW</code> 유발</strong> → mon 쿼럼 불안정. 시계 원인 장애 판별.</p>
+<h3 id="s-timedatectl"><code>timedatectl</code></h3>
+<pre><code>               Local time: Thu 2026-06-25 05:20:01 KST
+           Universal time: Wed 2026-06-24 20:20:01 UTC
+                 NTP service: active
+System clock synchronized: yes
+</code></pre>
+<p><strong>확인 내용</strong>: NTP 동기 활성/동기화 여부, 타임존. <code>synchronized: no</code>면 skew 위험 선제 식별.</p>
+<hr />
+<h1 id="s-4-mgr">4. MGR</h1>
+<h3 id="s-ceph-mgr-dump"><code>ceph mgr dump</code> (발췌)</h3>
+<pre><code class="language-json">{
+    &quot;epoch&quot;: 102,
+    &quot;active_gid&quot;: 814052,
+    &quot;active_name&quot;: &quot;scp-mon-01.aqwxyz&quot;,
+    &quot;active_addrs&quot;: { &quot;addrvec&quot;: [ { &quot;type&quot;: &quot;v2&quot;, &quot;addr&quot;: &quot;10.0.0.11:6800/123&quot;, … } ] },
+    &quot;available&quot;: true,
+    &quot;standbys&quot;: [ { &quot;gid&quot;: 814060, &quot;name&quot;: &quot;scp-mon-02.bcdefg&quot;, … } ],
+    &quot;modules&quot;: [&quot;balancer&quot;, &quot;cephadm&quot;, &quot;dashboard&quot;, &quot;iostat&quot;, &quot;rgw&quot;],
+    &quot;services&quot;: { &quot;dashboard&quot;: &quot;https://10.0.0.11:8443/&quot;, &quot;prometheus&quot;: &quot;http://10.0.0.11:9283/&quot; }
+    …
+}
+</code></pre>
+<p><strong>확인 내용</strong>: active mgr와 standby 목록, <strong><code>available: true</code>(mgr 정상)</strong>, 활성 모듈, 노출 서비스 URL. mgr 페일오버·모듈 로드 이상 진단.</p>
+<h3 id="s-ceph-mgr-module-ls"><code>ceph mgr module ls</code> (요약)</h3>
+<pre><code>MODULE              
+balancer    on (always on)
+cephadm     on
+dashboard   on
+rgw         on
+iostat      on
+...
+nfs         -
+</code></pre>
+<p><strong>확인 내용</strong>: 어떤 mgr 모듈이 활성인지. cephadm/dashboard/rgw 등 운영 핵심 모듈 활성 여부, 장애 시 비활성 모듈 확인.</p>
+<h3 id="s-ceph-mgr-services"><code>ceph mgr services</code></h3>
+<pre><code class="language-json">{ &quot;dashboard&quot;: &quot;https://10.0.0.11:8443/&quot;, &quot;prometheus&quot;: &quot;http://10.0.0.11:9283/&quot; }
+</code></pre>
+<p><strong>확인 내용</strong>: mgr가 노출하는 엔드포인트 실제 주소. 모니터링(Prometheus) 연동·대시보드 접근 경로 확인.</p>
+<h3 id="s-ceph-balancer-status"><code>ceph balancer status</code></h3>
+<pre><code class="language-json">{
+    &quot;active&quot;: true,
+    &quot;last_optimize_duration&quot;: &quot;0:00:00.001174&quot;,
+    &quot;last_optimize_started&quot;: &quot;Wed Jun 25 05:10:18 2026&quot;,
+    &quot;mode&quot;: &quot;upmap&quot;,
+    &quot;no_optimization_needed&quot;: true,
+    &quot;optimize_result&quot;: &quot;Unable to find further optimization, or pool(s) pg_num is decreasing, or distribution is already perfect&quot;,
+    &quot;plans&quot;: []
+}
+</code></pre>
+<p><strong>확인 내용</strong>: 밸런서 on/off, 모드(upmap 등), 마지막 최적화 결과. <strong><code>Too many objects ... are misplaced</code></strong> 류 메시지는 진행 중 리밸런스를, "distribution is already perfect"는 균형 상태를 의미. PG 편중 원인 진단.</p>
+<h3 id="s-ceph-progress"><code>ceph progress</code></h3>
+<pre><code>Global Recovery Event (33s)
+    [=========================...................] (remaining: 18s)
+</code></pre>
+<p>(이벤트 없을 때)</p>
+<pre><code>No events in progress
+</code></pre>
+<p><strong>확인 내용</strong>: recovery/backfill/업그레이드 등 진행 중 작업과 진척률·예상 잔여시간. 부하·지연의 원인이 진행 중 작업인지 식별.</p>
+<hr />
+<h1 id="s-5-osd">5. OSD / 디바이스</h1>
+<h3 id="s-ceph-osd-tree"><code>ceph osd tree</code></h3>
+<pre><code>ID   CLASS  WEIGHT    TYPE NAME            STATUS  REWEIGHT  PRI-AFF
+ -1         100.0000  root default
+ -3          33.3333      host scp-osd-01
+  0    hdd    8.3333          osd.0            up   1.00000  1.00000
+  1    hdd    8.3333          osd.1            up   1.00000  1.00000
+ -5          33.3333      host scp-osd-03
+  7    hdd    8.3333          osd.7          down   1.00000  1.00000
+</code></pre>
+<p><strong>확인 내용</strong>: CRUSH 계층(root→host→osd), 각 OSD의 <strong>STATUS(up/down)</strong>, REWEIGHT, weight. down OSD의 위치, host 단위 결손, weight 이상 즉시 파악.</p>
+<h3 id="s-ceph-osd-df-tree"><code>ceph osd df tree</code></h3>
+<pre><code>ID  CLASS  WEIGHT   REWEIGHT  SIZE     RAW USE  DATA     OMAP    META    AVAIL    %USE   VAR   PGS  STATUS  TYPE NAME
+-1         100.000         -  100 TiB   14 TiB   14 TiB  120 MiB  60 GiB   86 TiB  14.00  1.00    -          root default
+ 0    hdd   8.3333   1.00000  8.3 TiB  1.4 TiB  1.4 TiB   12 MiB  6.0 GiB  6.9 TiB  16.80  1.20   45      up      osd.0
+ 7    hdd   8.3333   1.00000  8.3 TiB  0.9 TiB  0.9 TiB    8 MiB  4.0 GiB  7.4 TiB  10.80  0.77   38    down      osd.7
+</code></pre>
+<p><strong>확인 내용</strong>: OSD별 사용률(%USE)·편차(VAR)·PG 수. <strong>near-full 임박 OSD, 분포 불균형(VAR 1.0에서 크게 벗어남), OMAP/META 비대(RGW 인덱스 폭증 신호)</strong> 진단.</p>
+<h3 id="s-ceph-osd-perf"><code>ceph osd perf</code></h3>
+<pre><code>osd  commit_latency(ms)  apply_latency(ms)
+  0                   2                   2
+  1                   3                   3
+  7                 178                 178
+ 12                 151                 151
+</code></pre>
+<p><strong>확인 내용</strong>: OSD별 commit/apply 레이턴시(ms). <strong>수십~수백 ms로 튀는 OSD = 느린/노후 디스크 후보</strong>(여기선 osd.7, osd.12). 단일 느린 디스크가 클러스터 전체를 끌어내리는 slow-ops 원인 특정.</p>
+<h3 id="s-ceph-osd-stat"><code>ceph osd stat</code></h3>
+<pre><code>24 osds: 23 up (since 4m), 24 in (since 3d); epoch: e88421
+</code></pre>
+<p><strong>확인 내용</strong>: up/in 카운트와 osdmap epoch. up≠in이면 down OSD 존재. epoch 급증은 잦은 up/down(flapping) 의심.</p>
+<h3 id="s-ceph-osd-dump"><code>ceph osd dump</code> (발췌)</h3>
+<pre><code>epoch 88421
+fsid 3a5f8b2c-...
+flags sortbitwise,recovery_deletes,purged_snapdirs,pglog_hardlimit
+pool 8 'default.rgw.buckets.data' replicated size 3 min_size 2 crush_rule 0 object_hash rjenkins pg_num 128 pgp_num 128 autoscale_mode on last_change 84102 application rgw
+max_osd 24
+osd.7 down in weight 1 up_from 88100 up_thru 88400 down_at 88419 ... 
+</code></pre>
+<p><strong>확인 내용</strong>: osdmap 상세. <strong>클러스터 flags(noout/norecover 등 운영 플래그 잔존 여부)</strong>, 풀별 size/min_size/pg_num/autoscale/application, OSD별 up/down 상태와 epoch 이력. 설정 오류·잔존 플래그 진단.</p>
+<h3 id="s-ceph-osd-blocked-by"><code>ceph osd blocked-by</code></h3>
+<pre><code>osd  num_blocked
+  7            3
+</code></pre>
+<p>(차단 없을 때는 빈 출력)
+<strong>확인 내용</strong>: peering을 막고 있는 OSD와 그 영향 PG 수. PG가 inactive/peering에 갇힌 직접 원인 OSD 특정.</p>
+<h3 id="s-ceph-osd-pool-autoscale-status"><code>ceph osd pool autoscale-status</code></h3>
+<pre><code>POOL                      SIZE  TARGET SIZE  RATE  RAW CAPACITY  RATIO  TARGET RATIO  EFFECTIVE RATIO  BIAS  PG_NUM  NEW PG_NUM  AUTOSCALE  BULK
+default.rgw.buckets.data  4.4T               3.0   100.0T        0.132                                 1.0   128                 on         False
+cephfs_data               120G               3.0   100.0T        0.003                                 1.0    32                 on         False
+</code></pre>
+<p><strong>확인 내용</strong>: 풀별 자동 PG 스케일러 판단. <strong>NEW PG_NUM이 채워져 있으면 PG 수 조정 예정</strong>(향후 리밸런스 부하 예고), autoscale on/off, target ratio 설정 확인.</p>
+<h3 id="s-ceph-osd-metadata-osd0"><code>ceph osd metadata</code> (osd.0 발췌)</h3>
+<pre><code class="language-json">{
+    &quot;id&quot;: 0,
+    &quot;hostname&quot;: &quot;scp-osd-01&quot;,
+    &quot;osd_objectstore&quot;: &quot;bluestore&quot;,
+    &quot;bluestore_bdev_type&quot;: &quot;ssd&quot;,
+    &quot;devices&quot;: &quot;nvme0n1&quot;,
+    &quot;device_ids&quot;: &quot;nvme0n1=SAMSUNG_MZQL21T9_S64...&quot;,
+    &quot;default_device_class&quot;: &quot;ssd&quot;,
+    &quot;ceph_version&quot;: &quot;ceph version 18.2.4 (...) reef (stable)&quot;
+}
+</code></pre>
+<p><strong>확인 내용</strong>: OSD별 백엔드(bluestore), 물리 디바이스명·모델·시리얼, device class, 데몬 버전. <strong>느린 OSD(앞 perf)와 디스크 모델 대조</strong>, WAL/DB 분리 여부 추적.</p>
+<h3 id="s-ceph-device-ls"><code>ceph device ls</code></h3>
+<pre><code>DEVICE                     HOST:DEV         DAEMONS  WEAR  LIFE EXPECTANCY
+SAMSUNG_MZQL2_S64A...       scp-osd-01:nvme0n1  osd.0   1%
+SEAGATE_ST8000_ZA1...       scp-osd-03:sda      osd.7   -    2026-08-10
+</code></pre>
+<p><strong>확인 내용</strong>: 디바이스↔데몬 매핑, WEAR(SSD 마모도), <strong>LIFE EXPECTANCY(예측 수명, 날짜가 가까우면 교체 경고)</strong>. 디스크 노후로 인한 잠재 장애 선제 식별.</p>
+<h3 id="s-ceph-device-get-health-metrics-devid"><code>ceph device get-health-metrics &lt;devid&gt;</code> (발췌)</h3>
+<pre><code class="language-json">{
+    &quot;20260625-051000&quot;: {
+        &quot;dev&quot;: &quot;/dev/sda&quot;,
+        &quot;scsi_grown_defect_list&quot;: 0,
+        &quot;scsi_error_counter_log&quot;: { &quot;read&quot;: { &quot;total_uncorrected_errors&quot;: 0 }, &quot;write&quot;: { &quot;total_uncorrected_errors&quot;: 0 } },
+        &quot;temperature&quot;: { &quot;current&quot;: 38 }
+        …
+    }
+}
+</code></pre>
+<p><strong>확인 내용</strong>: 저장된 SMART 스냅샷(시간별). uncorrected error 증가, defect list 증가, 온도 이상 → 디스크 물리 열화 추적. (디바이스를 직접 두드리지 않고 저장값 읽기)</p>
+<h3 id="s-ceph-tell-osd7-perf-dump"><code>ceph tell osd.7 perf dump</code> (발췌)</h3>
+<pre><code class="language-json">{
+    &quot;osd&quot;: {
+        &quot;op_latency&quot;: { &quot;avgcount&quot;: 1820345, &quot;sum&quot;: 4521.3, &quot;avgtime&quot;: 0.00248 },
+        &quot;op_w_latency&quot;: { &quot;avgcount&quot;: 502311, &quot;sum&quot;: 3110.8, &quot;avgtime&quot;: 0.00619 },
+        &quot;numpg&quot;: 38
+    },
+    &quot;bluestore&quot;: {
+        &quot;kv_sync_lat&quot;: { &quot;avgcount&quot;: 990221, &quot;sum&quot;: 88.4, &quot;avgtime&quot;: 0.0000893 },
+        &quot;state_kv_commiting_lat&quot;: { &quot;avgcount&quot;: 990221, &quot;sum&quot;: 60.1, &quot;avgtime&quot;: 0.0000607 }
+    }
+    …
+}
+</code></pre>
+<p><strong>확인 내용</strong>: 해당 OSD 내부 성능 카운터(op 레이턴시, BlueStore KV/커밋 지연 등). 느린 OSD의 <strong>병목 계층(네트워크 vs RocksDB vs 디바이스)</strong> 분해. Reef에서 <code>perf dump</code>는 deprecated이므로 후속 명령 <code>ceph tell osd.7 counter dump</code>(라벨 기반 카운터)를 함께 수집한다.
+<strong>⚠️ 운영 부하(§4.6) {L1}</strong>: 개별 호출은 가볍지만 OSD 수 N배. down/near-full/high-latency OSD 우선 <strong>샘플링</strong>(상한 N=20). 전체는 <code>--all-osds</code>. (dump_historic_ops/ops_in_flight/blocked_ops도 동일 샘플링)</p>
+<h3 id="s-ceph-tell-osd7-dump_historic_ops"><code>ceph tell osd.7 dump_historic_ops</code> (발췌)</h3>
+<pre><code class="language-json">{
+    &quot;size&quot;: 20,
+    &quot;duration&quot;: 600,
+    &quot;ops&quot;: [
+        {
+            &quot;description&quot;: &quot;osd_op(client.4471.0:99 8.1a ...)&quot;,
+            &quot;initiated_at&quot;: &quot;2026-06-25T05:17:01.221+0900&quot;,
+            &quot;age&quot;: 179.4,
+            &quot;duration&quot;: 5.213,
+            &quot;type_data&quot;: { &quot;flag_point&quot;: &quot;waiting for sub ops&quot;, … }
+        }
+    ]
+}
+</code></pre>
+<p><strong>확인 내용</strong>: 최근 느린 op 표본과 각 op의 <strong>체류 단계(flag_point)</strong>. "waiting for sub ops"=복제본 OSD 대기, "waiting for rw locks" 등으로 지연 지점 특정.</p>
+<h3 id="s-ceph-tell-osd7-dump_ops_in_flight"><code>ceph tell osd.7 dump_ops_in_flight</code></h3>
+<pre><code class="language-json">{ &quot;ops&quot;: [], &quot;num_ops&quot;: 0 }
+</code></pre>
+<p><strong>확인 내용</strong>: 현재 처리 중 op. num_ops가 높고 오래 머무는 op이 있으면 해당 OSD 정체. (dump_blocked_ops도 동일 형식, 차단된 op만)</p>
+<hr />
+<h1 id="s-6-pg">6. PG</h1>
+<h3 id="s-ceph-pg-stat"><code>ceph pg stat</code></h3>
+<pre><code>193 pgs: 190 active+clean, 3 active+undersized+degraded; 4.5 TiB data, 14 TiB used, 86 TiB / 100 TiB avail; 12030/3601342 objects degraded (0.334%)
+</code></pre>
+<p><strong>확인 내용</strong>: 전체 PG 수와 상태 분포 1줄 요약. active+clean 외 상태 비중으로 건강도 즉시 판정.</p>
+<h3 id="s-ceph-pg-dump-pgs_brief"><code>ceph pg dump pgs_brief</code> (발췌)</h3>
+<pre><code>PG_STAT  STATE                          UP        UP_PRIMARY  ACTING       ACTING_PRIMARY
+4.1a     active+undersized+degraded     [12,5]    12          [12,5]       12
+4.2c     active+undersized+degraded     [9,18]    9           [9,18]       9
+8.05     active+clean                   [3,21,11] 3           [3,21,11]    3
+</code></pre>
+<p><strong>확인 내용</strong>: PG별 상태와 UP/ACTING set. <strong>acting set 멤버 수가 size보다 적으면 undersized</strong>(복제본 부족), UP≠ACTING이면 데이터 이동 중. 데이터 redundancy 위험 PG 목록화.</p>
+<h3 L2="L2" id="s-ceph-pg-dump-full"><code>ceph pg dump</code> (full, 발췌)  ⚠️</h3>
+<pre><code>PG_STAT  OBJECTS  ...  STATE         ...  LAST_SCRUB           SCRUB_STAMP                  LAST_DEEP_SCRUB      DEEP_SCRUB_STAMP
+8.05        9210  ...  active+clean  ...  84021'120            2026-06-18T02:11:09.4+0900   84001'118            2026-06-12T01:50:33.1+0900
+...
+OSD_STAT  USED     AVAIL    USED_RAW  TOTAL
+0         1.4 TiB  6.9 TiB  1.4 TiB   8.3 TiB
+</code></pre>
+<p><strong>확인 내용</strong>: 전 PG의 <strong>scrub/deep-scrub 타임스탬프</strong>(scrub 지연·PG_NOT_SCRUBBED RCA), OSD별 PG 분포 정밀표. <code>pgs_brief</code>엔 없는 데이터.
+<strong>⚠️ 운영 부하(§4.6)</strong>: mgr가 전 PG 레코드를 직렬화 → PG 수 비례 부하. 기본 비활성, <code>--full-pg-dump</code>로만, 비피크 권장.</p>
+<h3 id="s-ceph-pg-ls"><code>ceph pg ls</code> (발췌)</h3>
+<pre><code>PG    OBJECTS  DEGRADED  MISPLACED  BYTES        OMAP_BYTES*  LOG   STATE                       SINCE  ...
+8.05    9210         0          0  38654705664           0  3021  active+clean                  2w
+4.1a    1003      4010          0   4203741184           0  1880  active+undersized+degraded    5m
+</code></pre>
+<p><strong>확인 내용</strong>: PG별 객체 수·degraded/misplaced 객체 수·바이트·로그 길이·상태와 지속시간. 큰 PG, log 비대(복구 지연 신호), 오래된 비정상 상태(SINCE) 식별.</p>
+<h3 id="s-ceph-pg-dump_stuck-inactive"><code>ceph pg dump_stuck inactive</code> (예: 정상 시)</h3>
+<pre><code>ok
+</code></pre>
+<p>(갇힌 PG 존재 시)</p>
+<pre><code>PG_STAT  STATE     UP    UP_PRIMARY  ACTING  ACTING_PRIMARY
+4.7f     peering   [3,9] 3           [3,9]   3
+</code></pre>
+<p><strong>확인 내용</strong>: inactive/unclean/stale 상태로 <strong>갇힌 PG</strong>(클라이언트 I/O 차단 원인). peering/down/stale의 대상 PG와 관련 OSD를 좁혀 RCA.</p>
+<h3 id="s-ceph-pg-41a-query"><code>ceph pg 4.1a query</code> (발췌)</h3>
+<pre><code class="language-json">{
+    &quot;snap_trimq&quot;: &quot;[]&quot;,
+    &quot;state&quot;: &quot;active+undersized+degraded&quot;,
+    &quot;up&quot;: [12, 5],
+    &quot;acting&quot;: [12, 5],
+    &quot;info&quot;: { &quot;stats&quot;: { &quot;stat_sum&quot;: { &quot;num_objects_degraded&quot;: 4010, … } } },
+    &quot;recovery_state&quot;: [
+        { &quot;name&quot;: &quot;Started/Primary/Active&quot;, &quot;enter_time&quot;: &quot;2026-06-25T05:17:00.123+0900&quot;,
+          &quot;might_have_unfound&quot;: [ { &quot;osd&quot;: &quot;7&quot;, &quot;status&quot;: &quot;osd is down&quot; } ] }
+    ]
+}
+</code></pre>
+<p><strong>확인 내용</strong>: 특정 PG의 상세 진단. recovery_state로 <strong>복구 진행 단계</strong>, <code>might_have_unfound</code>로 데이터가 어느 down OSD에 있는지(unfound object 원인) 추적. 가장 깊은 PG 단위 RCA.</p>
+<hr />
+<h1 id="s-7-crush">7. CRUSH</h1>
+<h3 id="s-ceph-osd-crush-tree"><code>ceph osd crush tree</code></h3>
+<pre><code>ID   CLASS  WEIGHT    TYPE NAME
+ -1         100.0000  root default
+ -3          33.3333      host scp-osd-01
+  0    ssd    8.3333          osd.0
+ -7          33.3333      rack rack-a
+ -5          33.3333          host scp-osd-03
+  7    hdd    8.3333              osd.7
+</code></pre>
+<p><strong>확인 내용</strong>: CRUSH 계층 구조와 device class 배치. 장애 도메인(host/rack) 구성, class 혼재, weight 합계 검증.</p>
+<h3 id="s-ceph-osd-crush-class-ls"><code>ceph osd crush class ls</code></h3>
+<pre><code class="language-json">[&quot;hdd&quot;, &quot;ssd&quot;]
+</code></pre>
+<p><strong>확인 내용</strong>: 정의된 device class. 풀의 crush rule이 의도한 class로 매핑되는지 대조.</p>
+<h3 id="s-ceph-osd-crush-rule-ls"><code>ceph osd crush rule ls</code></h3>
+<pre><code class="language-json">[&quot;replicated_rule&quot;, &quot;rgw-ec-rule&quot;, &quot;ssd-rule&quot;]
+</code></pre>
+<p><strong>확인 내용</strong>: CRUSH 룰 목록. 풀이 참조하는 룰 존재 여부.</p>
+<h3 id="s-ceph-osd-crush-rule-dump-rgw-ec-rule"><code>ceph osd crush rule dump rgw-ec-rule</code> (발췌)</h3>
+<pre><code class="language-json">{
+    &quot;rule_id&quot;: 1,
+    &quot;rule_name&quot;: &quot;rgw-ec-rule&quot;,
+    &quot;type&quot;: 3,
+    &quot;steps&quot;: [
+        { &quot;op&quot;: &quot;take&quot;, &quot;item&quot;: -1, &quot;item_name&quot;: &quot;default~hdd&quot; },
+        { &quot;op&quot;: &quot;chooseleaf_indep&quot;, &quot;num&quot;: 0, &quot;type&quot;: &quot;host&quot; },
+        { &quot;op&quot;: &quot;emit&quot; }
+    ]
+}
+</code></pre>
+<p><strong>확인 내용</strong>: 룰의 배치 알고리즘(take 대상 class, choose 도메인 type). <strong>장애 도메인이 host인지 osd인지</strong>(host면 호스트 단위 내고장성), EC/replica용 chooseleaf 모드 검증. 데이터 안전성 설계 확인.</p>
+<h3 id="s-ceph-osd-crush-dump"><code>ceph osd crush dump</code> (발췌)</h3>
+<pre><code class="language-json">{
+    &quot;devices&quot;: [ { &quot;id&quot;: 0, &quot;name&quot;: &quot;osd.0&quot;, &quot;class&quot;: &quot;ssd&quot; }, … ],
+    &quot;types&quot;: [ { &quot;type_id&quot;: 1, &quot;name&quot;: &quot;host&quot; }, { &quot;type_id&quot;: 3, &quot;name&quot;: &quot;rack&quot; }, … ],
+    &quot;buckets&quot;: [ … ], &quot;rules&quot;: [ … ],
+    &quot;tunables&quot;: { &quot;profile&quot;: &quot;jewel&quot;, &quot;chooseleaf_vary_r&quot;: 1, &quot;straw_calc_version&quot;: 1 }
+}
+</code></pre>
+<p><strong>확인 내용</strong>: 전체 CRUSH 맵(JSON). tunables 프로파일(구버전 tunable 잔존 시 데이터 이동·호환 이슈), 버킷/룰 전수.</p>
+<hr />
+<h1 id="s-8-pool-ec">8. Pool / EC</h1>
+<h3 id="s-ceph-osd-pool-ls-detail"><code>ceph osd pool ls detail</code> (발췌)</h3>
+<pre><code>pool 8 'default.rgw.buckets.data' replicated size 3 min_size 2 crush_rule 0 object_hash rjenkins pg_num 128 pgp_num 128 autoscale_mode on last_change 84102 lfor 0/0/0 flags hashpspool,selfmanaged_snaps stripe_width 0 application rgw
+pool 12 'cephfs_ec' erasure profile standard_8_2 size 10 min_size 9 crush_rule 1 pg_num 64 pgp_num 64 autoscale_mode on flags hashpspool,ec_overwrites stripe_width 32768 application cephfs
+</code></pre>
+<p><strong>확인 내용</strong>: 풀별 핵심 설정. <strong>size/min_size(min_size=1이면 데이터 안전 위험), replicated vs erasure, EC 프로파일, ec_overwrites/selfmanaged_snaps flags, application 태그</strong>. 설정 오류·내고장성 정책 검증.</p>
+<h3 id="s-ceph-osd-lspools"><code>ceph osd lspools</code></h3>
+<pre><code>1 .mgr
+2 .rgw.root
+8 default.rgw.buckets.data
+10 cephfs_data
+12 cephfs_ec
+</code></pre>
+<p><strong>확인 내용</strong>: 풀 ID↔이름 매핑. 다른 출력의 풀 ID 해석 기준.</p>
+<h3 id="s-ceph-osd-pool-stats"><code>ceph osd pool stats</code></h3>
+<pre><code>pool .mgr id 1
+  nothing is going on
+
+pool default.rgw.buckets.data id 8
+  client io 12 MiB/s rd, 3.4 MiB/s wr, 410 op/s rd, 88 op/s wr
+
+pool cephfs_data id 10
+  client io 2.1 MiB/s wr, 14 op/s wr
+  recovery io 45 MiB/s, 11 objects/s
+</code></pre>
+<p><strong>확인 내용</strong>: <strong>풀별 클라이언트 I/O·복구 I/O 분해</strong>. 어느 풀이 핫스팟인지(<code>ceph -s</code>의 전체 I/O를 풀 단위로 쪼갬), 특정 풀에서만 진행 중인 recovery 식별.</p>
+<h3 id="s-ceph-osd-erasure-code-profile-get-standard_8_2"><code>ceph osd erasure-code-profile get standard_8_2</code></h3>
+<pre><code>crush-device-class=hdd
+crush-failure-domain=host
+k=8
+m=2
+plugin=jerasure
+technique=reed_sol_van
+</code></pre>
+<p><strong>확인 내용</strong>: EC 프로파일의 k/m(8+2=오버헤드 1.25x, 2개 결손 허용), <strong>failure-domain(host면 호스트 2개까지 손실 견딤)</strong>, 플러그인(jerasure/isa 등). EC 내고장성·효율 검증. (<code>erasure-code-profile ls</code>로 프로파일 목록 먼저 확인)</p>
+<hr />
+<h1 id="s-9-config">9. Config</h1>
+<h3 id="s-ceph-config-dump"><code>ceph config dump</code> (발췌)</h3>
+<pre><code>WHO              MASK  LEVEL     OPTION                              VALUE                        RO
+global                 advanced  osd_pool_default_size               3
+global                 basic     container_image                     quay.io/ceph/ceph:v18.2.4    *
+client.rgw             advanced  rgw_keystone_url                    https://keystone.local:5000
+client.rgw             advanced  rgw_s3_auth_use_keystone            true
+client.rgw             advanced  rgw_crypt_s3_kms_backend            vault
+client.rgw             advanced  rgw_crypt_vault_addr                https://vault.local:8200
+mgr                    advanced  mgr/balancer/active                 true
+</code></pre>
+<p><strong>확인 내용</strong>: <strong>명시적으로 설정된 비-기본값만</strong> 표시. RGW의 keystone/vault 연동 키, 기본 풀 size, container_image(배포 버전) 등 운영 커스터마이즈 전수. (기본값 파라미터는 안 보이므로 §<code>config show</code> 병행)</p>
+<h3 id="s-ceph-config-key-dump"><code>ceph config-key dump</code> (레닥션 후)</h3>
+<pre><code class="language-json">{
+    &quot;config/global/osd_pool_default_size&quot;: &quot;3&quot;,
+    &quot;mgr/cephadm/inventory&quot;: &quot;…&quot;,
+    &quot;rgw/keystone/admin_password&quot;: &quot;***REDACTED***&quot;
+}
+</code></pre>
+<p><strong>확인 내용</strong>: mgr 모듈·cephadm이 사용하는 KV 저장소. 시크릿은 마스킹. cephadm 인벤토리/스펙 저장값 확인.</p>
+<h3 id="s-ceph-config-show-clientrgwscp-rgw-01"><code>ceph config show client.rgw.scp-rgw-01</code> (발췌)</h3>
+<pre><code>NAME                          VALUE                       SOURCE
+rgw_crypt_s3_kms_backend      vault                       mon
+rgw_crypt_vault_addr          https://vault.local:8200    mon
+rgw_crypt_vault_auth          token                       mon
+rgw_s3_auth_use_keystone      true                        mon
+rgw_keystone_url              https://keystone.local:5000 mon
+</code></pre>
+<p><strong>확인 내용</strong>: 해당 RGW 데몬의 <strong>effective 값</strong>(기본값 포함). <code>config dump</code>에 안 잡히는 vault/keystone 파라미터까지 실제 적용값으로 확인 → 연동 여부 확정.</p>
+<hr />
+<h1 id="s-10-orchestrator-cephadm">10. Orchestrator / cephadm</h1>
+<h3 id="s-ceph-orch-ls"><code>ceph orch ls</code></h3>
+<pre><code>NAME                       PORTS        RUNNING  REFRESHED  AGE  PLACEMENT
+mgr                                          2/2  5m ago     7M   count:2
+mon                                          3/3  5m ago     7M   count:3
+osd                                         23/24 5m ago     7M
+rgw.default                ?:80             2/2  5m ago     6M   count:2
+mds.cephfs                                   2/2  5m ago     5M   count:2
+</code></pre>
+<p><strong>확인 내용</strong>: 서비스별 <strong>목표 대비 실행 수(RUNNING 23/24 → OSD 1개 미기동)</strong>, 포트, 배치 정책, 마지막 갱신. 데몬 배포 정합성·미기동 서비스 식별.</p>
+<h3 id="s-ceph-orch-ps"><code>ceph orch ps</code> (발췌)</h3>
+<pre><code>NAME                   HOST         PORTS   STATUS         REFRESHED  AGE  MEM USE  VERSION  IMAGE ID
+osd.7                  scp-osd-03           error          5m ago     3d   -        18.2.2   &lt;unknown&gt;
+rgw.default.scp-rgw-01 scp-rgw-01   *:80    running (6M)   5m ago     6M   210M     18.2.4   2bc0b0f4d3a1
+mon.scp-mon-01         scp-mon-01           running (2w)   5m ago     7M   512M     18.2.4   2bc0b0f4d3a1
+</code></pre>
+<p><strong>확인 내용</strong>: 데몬 단위 상태/호스트/버전/메모리/이미지. <strong>error/stopped 데몬, 버전 불일치(osd.7=18.2.2), 이미지 ID 불일치</strong>를 데몬 레벨로 특정.</p>
+<h3 id="s-ceph-orch-host-ls"><code>ceph orch host ls</code></h3>
+<pre><code>HOST         ADDR        LABELS           STATUS
+scp-mon-01   10.0.0.11   _admin mon mgr
+scp-osd-03   10.0.0.23   osd              Offline
+</code></pre>
+<p><strong>확인 내용</strong>: 호스트 인벤토리와 라벨(_admin/mon/osd), <strong>STATUS(Offline이면 cephadm이 해당 호스트 접근 불가)</strong>. 호스트 단위 관리 연결성 진단.</p>
+<h3 id="s-ceph-orch-device-ls"><code>ceph orch device ls</code> (발췌)</h3>
+<pre><code>HOST        PATH      TYPE  DEVICE ID            SIZE  AVAILABLE  REJECT REASONS
+scp-osd-03  /dev/sdb  hdd   SEAGATE_ST8000_...   8.0T  No         Insufficient space / locked
+scp-osd-04  /dev/sdc  hdd   SEAGATE_ST8000_...   8.0T  Yes
+</code></pre>
+<p><strong>확인 내용</strong>: 물리 디바이스 인벤토리와 OSD 배치 가능 여부(AVAILABLE), 거부 사유. 신규 OSD 배치 실패·미사용 디스크 원인 파악.</p>
+<h3 id="s-ceph-orch-upgrade-status"><code>ceph orch upgrade status</code></h3>
+<pre><code class="language-json">{ &quot;target_image&quot;: null, &quot;in_progress&quot;: false, &quot;services_complete&quot;: [], &quot;message&quot;: &quot;&quot; }
+</code></pre>
+<p>(진행 중)</p>
+<pre><code class="language-json">{ &quot;target_image&quot;: &quot;quay.io/ceph/ceph:v18.2.4&quot;, &quot;in_progress&quot;: true, &quot;services_complete&quot;: [&quot;mgr&quot;,&quot;mon&quot;], &quot;message&quot;: &quot;Currently upgrading osd daemons&quot; }
+</code></pre>
+<p><strong>확인 내용</strong>: 업그레이드 진행 여부와 단계. <strong>혼합 버전(§ceph versions)의 원인이 미완료 업그레이드인지</strong> 확정.</p>
+<h3 id="s-ceph-cephadm-config-check-ls"><code>ceph cephadm config-check ls</code> (발췌)</h3>
+<pre><code>NAME              HEALTHCHECK                   STATUS   DESCRIPTION
+kernel_security   CEPHADM_CHECK_KERNEL_LSM      enabled  check SELinux/AppArmor consistency
+public_network    CEPHADM_CHECK_PUBLIC_MEMBERSHIP enabled check host public network membership
+os_subscription   CEPHADM_CHECK_SUBSCRIPTION    enabled  check subscription state
+</code></pre>
+<p><strong>확인 내용</strong>: cephadm 자동 점검 항목과 활성 여부. 호스트 간 커널/네트워크/시간 정합성 점검이 켜져 있는지 확인.</p>
+<h3 id="s-ceph-orch-host-ok-to-stop-scp-osd-03"><code>ceph orch host ok-to-stop scp-osd-03</code></h3>
+<pre><code>It is NOT safe to stop host scp-osd-03: 3 PGs would become unavailable
+</code></pre>
+<p>(안전 시)</p>
+<pre><code>It is presently safe to stop host: scp-osd-03
+</code></pre>
+<p><strong>확인 내용</strong>: 해당 호스트 중단 시 데이터 가용성 영향 <strong>평가만</strong>(실제 중단 없음). 유지보수 가능 시점 판단. (수집 시 정보로만 활용)</p>
+<h3 id="s-cephadm-check-host"><code>cephadm check-host</code> (호스트 로컬)</h3>
+<pre><code>podman (/usr/bin/podman) version 4.6.1 is present
+systemctl is present
+lvcreate is present
+chrony is active
+Hostname &quot;scp-osd-03&quot; matches what is expected.
+Host looks OK
+</code></pre>
+<p><strong>확인 내용</strong>: 노드의 cephadm 전제(컨테이너 런타임, lvm, 시간동기, hostname) 충족 여부. 호스트가 Offline/배포 실패인 근본 원인(런타임 누락 등) 식별.</p>
+<h3 id="s-cephadm-ls"><code>cephadm ls</code> (호스트 로컬, 발췌)</h3>
+<pre><code class="language-json">[
+  { &quot;style&quot;: &quot;cephadm:v1&quot;, &quot;name&quot;: &quot;osd.7&quot;, &quot;fsid&quot;: &quot;3a5f8b2c-...&quot;,
+    &quot;systemd_unit&quot;: &quot;ceph-3a5f8b2c@osd.7&quot;, &quot;enabled&quot;: true, &quot;state&quot;: &quot;error&quot;,
+    &quot;container_id&quot;: null, &quot;version&quot;: &quot;18.2.2&quot;, &quot;started&quot;: null },
+  { &quot;style&quot;: &quot;cephadm:v1&quot;, &quot;name&quot;: &quot;mon.scp-mon-01&quot;, &quot;state&quot;: &quot;running&quot;,
+    &quot;version&quot;: &quot;18.2.4&quot;, &quot;started&quot;: &quot;2026-06-11T01:02:03Z&quot; }
+]
+</code></pre>
+<p><strong>확인 내용</strong>: 해당 호스트의 Ceph 데몬을 <strong>mgr/orchestrator 없이 직접</strong> 열거. <code>ceph orch ps</code>가 mgr 장애로 안 될 때의 대체 수단. 데몬별 systemd 유닛·state·버전·기동시각으로 로컬 장애 진단.</p>
+<hr />
+<h1 id="s-11-rgw">11. RGW</h1>
+<h3 id="s-radosgw-admin-realm-list"><code>radosgw-admin realm list</code></h3>
+<pre><code class="language-json">{ &quot;default_info&quot;: &quot;16c78bd1-1920-4e23-8c7b-ebf15d982458&quot;, &quot;realms&quot;: [&quot;scp-realm&quot;] }
+</code></pre>
+<p><strong>확인 내용</strong>: realm 목록과 기본 realm. multisite 구성의 최상위 엔터티 존재 확인.</p>
+<h3 id="s-radosgw-admin-zonegroup-list-zone-list"><code>radosgw-admin zonegroup list</code> / <code>zone list</code></h3>
+<pre><code class="language-json">{ &quot;default_info&quot;: &quot;2761ad42-...&quot;, &quot;zonegroups&quot;: [&quot;scp-zg&quot;] }
+{ &quot;default_info&quot;: &quot;66df8c0a-...&quot;, &quot;zones&quot;: [&quot;scp-zone1&quot;] }
+</code></pre>
+<p><strong>확인 내용</strong>: zonegroup/zone 구성. 단일/멀티사이트 여부와 기본 zone 식별.</p>
+<h3 id="s-radosgw-admin-zonegroup-get"><code>radosgw-admin zonegroup get</code> (발췌)</h3>
+<pre><code class="language-json">{
+    &quot;id&quot;: &quot;2761ad42-...&quot;,
+    &quot;name&quot;: &quot;scp-zg&quot;,
+    &quot;is_master&quot;: &quot;true&quot;,
+    &quot;endpoints&quot;: [&quot;http://scp-rgw-01:80&quot;],
+    &quot;hostnames&quot;: [&quot;s3.scp.local&quot;],
+    &quot;master_zone&quot;: &quot;66df8c0a-...&quot;,
+    &quot;zones&quot;: [ { &quot;name&quot;: &quot;scp-zone1&quot;, &quot;endpoints&quot;: [&quot;http://scp-rgw-01:80&quot;] } ]
+}
+</code></pre>
+<p><strong>확인 내용</strong>: zonegroup의 <strong>엔드포인트·접속 hostname·마스터 zone·소속 zone 목록</strong>. S3 가상호스트 도메인(hostnames) 설정 오류, 마스터 zone 지정 확인. multisite 토폴로지 RCA.</p>
+<h3 id="s-radosgw-admin-period-get"><code>radosgw-admin period get</code> (발췌)</h3>
+<pre><code class="language-json">{
+    &quot;id&quot;: &quot;a1b2c3d4-...&quot;,
+    &quot;epoch&quot;: 3,
+    &quot;realm_id&quot;: &quot;16c78bd1-...&quot;,
+    &quot;realm_name&quot;: &quot;scp-realm&quot;,
+    &quot;master_zonegroup&quot;: &quot;2761ad42-...&quot;,
+    &quot;master_zone&quot;: &quot;66df8c0a-...&quot;
+}
+</code></pre>
+<p><strong>확인 내용</strong>: 커밋된 period(멀티사이트 설정 버전)와 epoch, 마스터 zonegroup/zone. <strong>period가 사이트 간 어긋나면(epoch 불일치) 설정 전파 실패</strong> → sync 중단 RCA의 단서.</p>
+<h3 id="s-radosgw-admin-sync-status"><code>radosgw-admin sync status</code> (멀티사이트)</h3>
+<pre><code>          realm beeea955-8341-41cc-a046-46de2d5ddeb9 (scp-realm)
+      zonegroup 2761ad42-fd71-4170-87c6-74c20dd1e334 (scp-zg)
+           zone 66df8c0a-c67d-4bd7-9975-bc02a549f13e (scp-zone1)
+  metadata sync no sync (zone is master)
+      data sync source: 7b9273a9-eb59-413d-a465-3029664c73d7 (scp-zone2)
+                        syncing
+                        full sync: 0/128 shards
+                        incremental sync: 128/128 shards
+                        data is caught up with source
+</code></pre>
+<p><strong>확인 내용</strong>: 멀티사이트 복제 상태. 마스터/세컨더리 역할, <strong>metadata/data sync 진행률(shards), "caught up" 여부 또는 지연(behind shards)</strong>. 사이트 간 복제 지연·중단 진단. (단일 사이트면 "no sync" 표시)</p>
+<h3 id="s-radosgw-admin-user-list"><code>radosgw-admin user list</code></h3>
+<pre><code class="language-json">[&quot;dashboard&quot;, &quot;tester&quot;, &quot;sync-user&quot;]
+</code></pre>
+<p><strong>확인 내용</strong>: RGW 사용자 목록. 기능 테스트용 <code>tester</code>, multisite sync 시스템 유저 존재 확인.</p>
+<h3 id="s-radosgw-admin-bucket-list"><code>radosgw-admin bucket list</code></h3>
+<pre><code class="language-json">[&quot;tester-bucket&quot;, &quot;app-logs&quot;, &quot;backup-2026&quot;]
+</code></pre>
+<p><strong>확인 내용</strong>: 버킷 목록. 예상 버킷 존재 여부, 비정상 버킷 식별.
+<strong>⚠️ 운영 부하(§4.6) {L2}</strong>: 전체 버킷 enumerate → 버킷 수천 개면 메타데이터 풀 부하. <code>--rgw-full</code> 가드.</p>
+<h3 id="s-radosgw-admin-bucket-stats-bucketapp-logs"><code>radosgw-admin bucket stats --bucket=app-logs</code> (발췌)</h3>
+<pre><code class="language-json">{
+    &quot;bucket&quot;: &quot;app-logs&quot;,
+    &quot;num_shards&quot;: 11,
+    &quot;zonegroup&quot;: &quot;2761ad42-...&quot;,
+    &quot;placement_rule&quot;: &quot;default-placement&quot;,
+    &quot;usage&quot;: {
+        &quot;rgw.main&quot;: { &quot;size&quot;: 4521987654, &quot;size_actual&quot;: 4530000000, &quot;num_objects&quot;: 120345 }
+    },
+    &quot;bucket_quota&quot;: { &quot;enabled&quot;: false, &quot;max_objects&quot;: -1, &quot;max_size&quot;: -1 }
+}
+</code></pre>
+<p><strong>확인 내용</strong>: 버킷별 샤드 수·객체 수·사용량·쿼터·placement. <strong>num_objects 대비 num_shards 부족 = 인덱스 핫스팟/성능 저하 신호</strong>, placement_rule로 저장 위치 확인.
+<strong>⚠️ 운영 부하(§4.6) {L2}</strong>: 버킷 전체 stats는 버킷 수만큼 omap 조회. 기본은 지목 버킷·상위 K개만, 전체는 <code>--rgw-full</code>.</p>
+<h3 id="s-radosgw-admin-bucket-limit-check"><code>radosgw-admin bucket limit check</code> (발췌)</h3>
+<pre><code class="language-json">[
+    { &quot;bucket&quot;: &quot;app-logs&quot;, &quot;num_objects&quot;: 120345, &quot;num_shards&quot;: 11,
+      &quot;objects_per_shard&quot;: 10940, &quot;fill_status&quot;: &quot;OK&quot; },
+    { &quot;bucket&quot;: &quot;backup-2026&quot;, &quot;num_objects&quot;: 2200000, &quot;num_shards&quot;: 11,
+      &quot;objects_per_shard&quot;: 200000, &quot;fill_status&quot;: &quot;OVER&quot; }
+]
+</code></pre>
+<p><strong>확인 내용</strong>: 버킷별 샤드 채움률. <strong>fill_status가 OVER/WARN이면 reshard 필요</strong>(샤드당 객체 과다 → 인덱스 OSD OMAP 비대·지연). RGW 성능 장애 예방 핵심.
+<strong>⚠️ 운영 부하(§4.6) {L2}</strong>: 모든 버킷 인덱스 순회. <code>--rgw-full</code>·비피크.</p>
+<h3 id="s-radosgw-admin-reshard-list"><code>radosgw-admin reshard list</code></h3>
+<pre><code class="language-json">[]
+</code></pre>
+<p><strong>확인 내용</strong>: 대기 중 reshard 작업(나열만, 실행 아님). 비어 있으면 진행 중 reshard 없음. 항목이 있으면 인덱스 재배치 진행 예정.</p>
+<h3 id="s-radosgw-admin-gc-list"><code>radosgw-admin gc list</code></h3>
+<pre><code class="language-json">[]
+</code></pre>
+<p><strong>확인 내용</strong>: 삭제 대기(garbage collection) 객체 목록(나열만). 대량 누적 시 삭제 처리 지연 → 공간 미회수 진단.
+<strong>⚠️ 운영 부하(§4.6) {L1}</strong>: 큐가 크게 쌓이면 출력이 매우 길어짐. 필요 시 head로 상한.</p>
+<h3 id="s-radosgw-admin-lc-list"><code>radosgw-admin lc list</code></h3>
+<pre><code class="language-json">[
+    { &quot;bucket&quot;: &quot;:app-logs:66df8c0a...&quot;, &quot;started&quot;: &quot;Thu, 25 Jun 2026 00:10:00 GMT&quot;, &quot;status&quot;: &quot;COMPLETE&quot; },
+    { &quot;bucket&quot;: &quot;:backup-2026:66df8c0a...&quot;, &quot;started&quot;: &quot;Thu, 25 Jun 2026 00:10:00 GMT&quot;, &quot;status&quot;: &quot;PROCESSING&quot; }
+]
+</code></pre>
+<p><strong>확인 내용</strong>: 버킷별 lifecycle(만료/이행) 처리 상태. <strong>status가 계속 PROCESSING이거나 오래된 started면 LC 미동작</strong> → "객체가 만료 정책대로 삭제되지 않음" RCA.</p>
+<h3 id="s-radosgw-admin-zone-get"><code>radosgw-admin zone get</code> (레닥션 후, 발췌)</h3>
+<pre><code class="language-json">{
+    &quot;id&quot;: &quot;66df8c0a-...&quot;,
+    &quot;name&quot;: &quot;scp-zone1&quot;,
+    &quot;system_key&quot;: { &quot;access_key&quot;: &quot;***REDACTED***&quot;, &quot;secret_key&quot;: &quot;***REDACTED***&quot; },
+    &quot;placement_pools&quot;: [
+        { &quot;key&quot;: &quot;default-placement&quot;,
+          &quot;val&quot;: { &quot;index_pool&quot;: &quot;default.rgw.buckets.index&quot;,
+                   &quot;data_pool&quot;: &quot;default.rgw.buckets.data&quot;,
+                   &quot;data_extra_pool&quot;: &quot;default.rgw.buckets.non-ec&quot; } }
+    ]
+}
+</code></pre>
+<p><strong>확인 내용</strong>: zone의 풀 매핑(index/data/non-ec 풀)과 sync 키(마스킹). <strong>버킷 데이터가 실제 어느 RADOS 풀에 저장되는지</strong> 확정, placement 오설정 진단.</p>
+<hr />
+<h1 id="s-12-rbd">12. RBD</h1>
+<h3 id="s-rbd-ls-p-rbd-long"><code>rbd ls -p rbd --long</code></h3>
+<pre><code>NAME          SIZE     PARENT  FMT  PROT  LOCK
+vm-disk-101   200 GiB            2
+vm-disk-102   500 GiB            2         excl
+</code></pre>
+<p><strong>확인 내용</strong>: 풀 내 이미지 목록·크기·포맷·락. 예상 이미지 존재, exclusive-lock 보유 이미지 확인.</p>
+<h3 id="s-rbd-info-rbdvm-disk-101"><code>rbd info rbd/vm-disk-101</code></h3>
+<pre><code>rbd image 'vm-disk-101':
+        size 200 GiB in 51200 objects
+        order 22 (4 MiB objects)
+        snapshot_count: 1
+        id: 5e9a3b1c2d4f
+        block_name_prefix: rbd_data.5e9a3b1c2d4f
+        format: 2
+        features: layering, exclusive-lock, object-map, fast-diff, deep-flatten
+        op_features:
+        flags:
+</code></pre>
+<p><strong>확인 내용</strong>: 이미지 메타와 <strong>features</strong>. <code>object-map</code>+<code>fast-diff</code> 보유 → <code>rbd du</code>를 안전하게 실행 가능(없으면 du가 전체 스캔). 스냅샷 수, 4MiB object order 확인.</p>
+<h3 id="s-rbd-status-rbdvm-disk-102"><code>rbd status rbd/vm-disk-102</code></h3>
+<pre><code>Watchers:
+        watcher=10.0.0.51:0/2998447 client.44127 cookie=140423...
+</code></pre>
+<p>(워처 없을 때)</p>
+<pre><code>Watchers: none
+</code></pre>
+<p><strong>확인 내용</strong>: 이미지를 현재 매핑/사용 중인 클라이언트(watcher). <strong>워처가 남았는데 VM은 죽은 경우 = 좀비 매핑</strong>(이미지 삭제/이동 차단 원인) 진단.</p>
+<h3 id="s-rbd-mirror-pool-status-rbd-verbose-dr"><code>rbd mirror pool status rbd --verbose</code> (미러링/DR 사용 시)</h3>
+<pre><code>health: OK
+daemon health: OK
+image health: OK
+images: 2 total
+    2 replaying
+
+vm-disk-101:
+  global_id:   3a1f...
+  state:       up+replaying
+  description: replaying, {&quot;bytes_per_second&quot;:1048576.0,&quot;entries_behind_primary&quot;:0}
+</code></pre>
+<p><strong>확인 내용</strong>: RBD 미러링(원격 DR 복제) 상태. <strong>state가 up+replaying이 아니거나 entries_behind_primary가 계속 증가하면 복제 지연/중단</strong> → DR RTO 위반 RCA. (미러링 미사용 풀에선 수집 안 함)</p>
+<h3 id="s-rbd-du-p-rbd-object-map"><code>rbd du -p rbd</code> (object-map 보유 이미지에서만)</h3>
+<pre><code>NAME         PROVISIONED  USED
+vm-disk-101      200 GiB  84 GiB
+vm-disk-102      500 GiB  121 GiB
+&lt;TOTAL&gt;          700 GiB  205 GiB
+</code></pre>
+<p><strong>확인 내용</strong>: 이미지별 프로비저닝 대비 실사용량(씬 프로비저닝 효율). 풀 용량 산정·과대 프로비저닝 식별.
+<strong>⚠️ 운영 부하(§4.6) {L2}</strong>: object-map+fast-diff 미보유 이미지는 전 오브젝트 스캔 → OSD I/O 부하. 기본 비활성(<code>--rbd-du</code>), 보유 이미지만 실행하고 나머지는 skip. (용량 분석 옵션이며 장애 RCA 핵심은 아님)</p>
+<hr />
+<h1 id="s-13-cephfs-mds">13. CephFS / MDS</h1>
+<h3 id="s-ceph-fs-ls"><code>ceph fs ls</code></h3>
+<pre><code>name: cephfs, metadata pool: cephfs_metadata, data pools: [cephfs_data cephfs_ec ]
+</code></pre>
+<p><strong>확인 내용</strong>: 파일시스템과 메타/데이터 풀 매핑. EC 데이터 풀 사용 여부 확인.</p>
+<h3 id="s-ceph-fs-dump"><code>ceph fs dump</code> (발췌)</h3>
+<pre><code>e42
+enable_multiple, ever_enabled_multiple: 1,1
+default compat: compat={},rocompat={},incompat={1=base v0.20,2=client writeable ranges,...,10=snaprealm v2}
+legacy client fscid: 1
+
+Filesystem 'cephfs' (1)
+fs_name cephfs
+epoch   41
+flags   12 joinable allow_snaps allow_multimds_snaps
+max_mds 1
+in      0
+up      {0=44128}
+failed
+damaged
+stopped
+data_pools      [10,12]
+metadata_pool   9
+</code></pre>
+<p><strong>확인 내용</strong>: FSMap 전체(권위 소스). <strong>max_mds vs in/up(다중 active rank 구성), failed/damaged/stopped rank(메타데이터 손상·MDS 장애), flags(snapshot 허용 등), compat 비트</strong>. <code>fs status</code>보다 깊은 MDS 클러스터 상태 RCA.</p>
+<h3 id="s-ceph-fs-status"><code>ceph fs status</code></h3>
+<pre><code>cephfs - 12 clients
+======
+RANK  STATE        MDS            ACTIVITY     DNS    INOS   DIRS   CAPS
+ 0    active   cephfs.scp-mds-01  Reqs:  12 /s  85.2k  84.1k  9210   45.0k
+      POOL          TYPE     USED  AVAIL
+cephfs_metadata  metadata  2400M   24T
+  cephfs_data       data    120G   24T
+STANDBY MDS
+cephfs.scp-mds-02
+</code></pre>
+<p><strong>확인 내용</strong>: MDS rank별 상태(active/standby), <strong>요청률·캐시(DNS/INOS/CAPS)</strong>, 풀 사용량, standby 존재 여부. MDS 과부하(CAPS·Reqs 급증), standby 부재(페일오버 불가) 진단.</p>
+<h3 id="s-ceph-mds-stat"><code>ceph mds stat</code></h3>
+<pre><code>cephfs:1 {0=cephfs.scp-mds-01=up:active} 1 up:standby
+</code></pre>
+<p><strong>확인 내용</strong>: 한 줄 MDS 요약. active rank 수와 standby 수. degraded/failed rank 즉시 식별.</p>
+<h3 id="s-ceph-mds-metadata"><code>ceph mds metadata</code> (발췌)</h3>
+<pre><code class="language-json">[ { &quot;name&quot;: &quot;cephfs.scp-mds-01&quot;, &quot;hostname&quot;: &quot;scp-mds-01&quot;,
+    &quot;ceph_version&quot;: &quot;ceph version 18.2.4 (...) reef (stable)&quot;,
+    &quot;mem_total_kb&quot;: &quot;16400000&quot;, &quot;mem_swap_kb&quot;: &quot;0&quot; } ]
+</code></pre>
+<p><strong>확인 내용</strong>: MDS 데몬의 호스트·버전·메모리. MDS OOM/버전 불일치 추적.</p>
+<h3 id="s-ceph-tell-mds0-session-ls"><code>ceph tell mds.0 session ls</code> (발췌)</h3>
+<pre><code class="language-json">[ { &quot;id&quot;: 44127, &quot;client_metadata&quot;: { &quot;hostname&quot;: &quot;app-node-1&quot;, &quot;root&quot;: &quot;/&quot; },
+    &quot;num_leases&quot;: 0, &quot;num_caps&quot;: 12044, &quot;state&quot;: &quot;open&quot; } ]
+</code></pre>
+<p><strong>확인 내용</strong>: MDS에 붙은 클라이언트 세션과 <strong>보유 caps 수</strong>. 특정 클라이언트의 caps 폭증(MDS 메모리 압박·MDS_CLIENT_RECALL 경고 원인) 식별.
+<strong>⚠️ 운영 부하(§4.6) {L2}</strong>: 클라이언트 세션당 1행 → 수천 클라이언트면 출력 大 + MDS 일시 부하. CephFS·MDS 경고 존재 시에만.</p>
+<h3 id="s-ceph-tell-mds0-dump_blocked_ops"><code>ceph tell mds.0 dump_blocked_ops</code></h3>
+<pre><code class="language-json">{ &quot;ops&quot;: [], &quot;num_ops&quot;: 0 }
+</code></pre>
+<p><strong>확인 내용</strong>: MDS에서 막혀 있는 메타데이터 op. num_ops가 높으면 MDS가 특정 op(예: 잠금 대기)에 정체 → CephFS 응답 지연 RCA. (op 없으면 빈 목록)</p>
+<hr />
+<h1 id="s-14-crash">14. Crash</h1>
+<h3 id="s-ceph-crash-ls"><code>ceph crash ls</code></h3>
+<pre><code>ID                                                                ENTITY     NEW
+2026-06-20T11:02:33.123456Z_a1b2c3d4-...                          osd.12      *
+2026-05-30T03:44:10.987654Z_f9e8d7c6-...                          mgr.scp-mon-01
+</code></pre>
+<p><strong>확인 내용</strong>: 최근 크래시 목록과 발생 데몬, <strong>NEW 표시(아직 확인 안 한 신규 크래시)</strong>. 반복 크래시 데몬·시점 파악.</p>
+<h3 id="s-ceph-crash-info-id"><code>ceph crash info &lt;id&gt;</code> (발췌)</h3>
+<pre><code class="language-json">{
+    &quot;crash_id&quot;: &quot;2026-06-20T11:02:33.123456Z_a1b2c3d4-...&quot;,
+    &quot;entity_name&quot;: &quot;osd.12&quot;,
+    &quot;ceph_version&quot;: &quot;18.2.4&quot;,
+    &quot;utsname_hostname&quot;: &quot;scp-osd-04&quot;,
+    &quot;process_name&quot;: &quot;ceph-osd&quot;,
+    &quot;stack_sig&quot;: &quot;…&quot;,
+    &quot;backtrace&quot;: [ &quot;(ceph::__ceph_assert_fail()+0x...)&quot;, &quot;…&quot; ]
+}
+</code></pre>
+<p><strong>확인 내용</strong>: 크래시의 데몬·호스트·버전·<strong>백트레이스/assert 시그니처</strong>. 동일 stack_sig 반복 여부로 알려진 버그 매칭, 크래시 RCA.</p>
+<hr />
+<h1 id="s-15">15. 인증 (레닥션)</h1>
+<h3 id="s-ceph-auth-ls"><code>ceph auth ls</code> (레닥션 후, 발췌)</h3>
+<pre><code>osd.0
+        key: ***REDACTED***
+        caps: [mgr] allow profile osd
+        caps: [mon] allow profile osd
+        caps: [osd] allow *
+client.admin
+        key: ***REDACTED***
+        caps: [mon] allow *
+        caps: [osd] allow *
+client.rgw.scp-rgw-01
+        key: ***REDACTED***
+        caps: [mon] allow rw
+        caps: [osd] allow rwx ...
+</code></pre>
+<p><strong>확인 내용</strong>: 엔터티별 권한(caps). key는 마스킹. <strong>과도하거나 부족한 권한</strong>(예: client가 <code>allow *</code>), RGW/MDS 클라이언트 caps 적정성 검증. 권한 부족으로 인한 접근 장애 진단.</p>
+<hr />
+<h1 id="s-16-host-os">16. Host / OS 컨텍스트</h1>
+<h3 id="s-podman-ps-a"><code>podman ps -a</code> (발췌)</h3>
+<pre><code>CONTAINER ID  IMAGE                          COMMAND      STATUS                   NAMES
+2bc0b0f4d3a1  quay.io/ceph/ceph:v18.2.4     -n osd.7 ...  Exited (1) 4 minutes ago  ceph-3a5f8b2c-osd-7
+9f1e2d3c4b5a  quay.io/ceph/ceph:v18.2.4     -n mon ...    Up 2 weeks                ceph-3a5f8b2c-mon-scp-mon-01
+</code></pre>
+<p><strong>확인 내용</strong>: 노드의 Ceph 컨테이너 상태. <strong>Exited 컨테이너(osd.7)와 종료코드·시각</strong>으로 데몬 다운이 컨테이너 크래시/재시작 루프인지 확인.</p>
+<h3 id="s-systemctl-typeservice-grep-ceph"><code>systemctl --type=service | grep ceph</code></h3>
+<pre><code>ceph-3a5f8b2c@mon.scp-mon-01.service   loaded active   running
+ceph-3a5f8b2c@osd.7.service            loaded failed   failed
+</code></pre>
+<p><strong>확인 내용</strong>: systemd 레벨 데몬 상태. <strong>failed 유닛</strong>(osd.7)과 재시작 정책. 컨테이너↔systemd 일관성 확인.</p>
+<h3 id="s-ip-s-link"><code>ip -s link</code> (발췌)</h3>
+<pre><code>2: ens1f0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 9000 ...
+    RX:  bytes      packets  errors  dropped
+      4821374651234  ...      0       1203
+    TX:  bytes      packets  errors  dropped
+      3910847120023  ...      0       0
+</code></pre>
+<p><strong>확인 내용</strong>: 클러스터/퍼블릭 NIC의 <strong>MTU(9000 점보프레임 일치 여부), errors/dropped 카운트</strong>. 패킷 드롭=네트워크 원인 slow-ops/OSD flapping 단서.</p>
+<h3 id="s-ss-s"><code>ss -s</code></h3>
+<pre><code>Total: 1843
+TCP:   1620 (estab 1402, closed 180, orphaned 2, timewait 178)
+</code></pre>
+<p><strong>확인 내용</strong>: 소켓/연결 총량. estab 과다·timewait 급증으로 연결 누수·포트 고갈 징후 확인.</p>
+<h3 id="s-dmesg-t-grep-ie-cephbluestorenvmescsi"><code>dmesg -T | grep -iE 'ceph|bluestore|nvme|scsi'</code> (발췌)</h3>
+<pre><code>[Wed Jun 25 05:16:40 2026] nvme nvme0: I/O 384 QID 4 timeout, aborting
+[Wed Jun 25 05:16:42 2026] blk_update_request: I/O error, dev sda, sector 19283746
+</code></pre>
+<p><strong>확인 내용</strong>: 커널 레벨 디스크/드라이버 오류. <strong>NVMe timeout·I/O error·SCSI reset</strong>이 느린 OSD(§perf)·OSD down의 물리적 근본 원인임을 입증.</p>
+<h3 id="s-smartctl-a-devsda"><code>smartctl -a /dev/sda</code> (발췌)</h3>
+<pre><code>Model Family:     Seagate Exos
+SMART overall-health self-assessment test result: PASSED
+  5 Reallocated_Sector_Ct   0x0033   100   100   010    -    0
+197 Current_Pending_Sector  0x0012   100   100   000    -    8
+Temperature_Celsius                                       -    42
+</code></pre>
+<p><strong>확인 내용</strong>: 디스크 SMART 속성. <strong>Reallocated/Pending Sector 증가, 온도 이상</strong>으로 디스크 물리 열화 확정.
+<strong>⚠️ 운영 부하(§4.6) {L1}</strong>: 기능상 읽기(<code>-a</code>)지만 일부 RAID/HBA 컨트롤러에서 짧은 stall·슬립 디스크 깨움 가능 + 디바이스 N배. <code>nice/ionice</code> 래핑·순차 실행. <strong><code>-t</code>(self-test 시작) 절대 금지.</strong></p>
+<hr />
+<h2 id="s-vs">부록. 정상 vs 이상 판독 신호집 (공식 문서 기반)</h2>
+<blockquote>
+<p>임계값은 <strong>Ceph Reef 공식 health-checks/troubleshooting 문서 기준 기본값</strong>이며 <code>ceph config set</code>으로 조정 가능하다(따라서 값 자체보다 "어떤 조건에서 무엇이 막히는가"의 인과가 더 중요). 출처: docs.ceph.com/en/reef (Health checks, Troubleshooting OSDs, Monitoring a Cluster, RGW Dynamic Resharding).</p>
+</blockquote>
+<h3 id="s-a-full">A. 용량/Full — 쓰기 차단으로 직결 (가장 위험)</h3>
+<p>Ceph는 용량 임계를 <strong>nearfull &lt; backfillfull &lt; full &lt; failsafe_full</strong> 오름차순으로 강제하며, 역전 시 <code>OSD_OUT_OF_ORDER_FULL</code>로 경고한다.</p>
+<table>
+<thead>
+<tr>
+<th>health check</th>
+<th>임계(기본)</th>
+<th>정상</th>
+<th>이상 시 발생하는 장애</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OSD_NEARFULL</code></td>
+<td><code>mon_osd_nearfull_ratio</code> 0.85</td>
+<td>최대 OSD &lt; 85%</td>
+<td>조기 경고. 1개 OSD라도 초과하면 그 OSD를 쓰는 풀 전체가 위험</td>
+</tr>
+<tr>
+<td><code>OSD_BACKFILLFULL</code></td>
+<td><code>mon_osd_backfillfull_ratio</code> 0.90</td>
+<td>&lt; 90%</td>
+<td><strong>복구/리밸런스(backfill)가 멈춤</strong> → PG가 <code>backfill_toofull</code>로 정체, 복구 지연</td>
+</tr>
+<tr>
+<td><code>OSD_FULL</code></td>
+<td><code>mon_osd_full_ratio</code> 0.95</td>
+<td>&lt; 95%</td>
+<td><strong>클러스터가 쓰기를 거부</strong>(읽기만). 단 하나의 OSD가 full이면 그 OSD를 포함한 풀의 쓰기가 모두 차단</td>
+</tr>
+<tr>
+<td><code>POOL_FULL</code>/<code>POOL_NEAR_FULL</code></td>
+<td>풀 쿼터(<code>max_bytes/max_objects</code>) 또는 위 ratio</td>
+<td>쿼터 여유</td>
+<td>풀이 쿼터 도달 시 <strong>해당 풀 쓰기 차단</strong></td>
+</tr>
+</tbody>
+</table>
+<p>판독 포인트: <code>ceph df detail</code>에서 <strong>개별 OSD %USE의 최댓값</strong>(평균이 아님)과 풀 <code>MAX AVAIL</code>을 본다. 평균 50%여도 편중으로 한 OSD가 95%면 full이 발동한다(<code>ceph osd df tree</code>의 VAR로 편중 확인).</p>
+<h3 id="s-b-osd">B. OSD 상태·플래그·네트워크</h3>
+<table>
+<thead>
+<tr>
+<th>신호</th>
+<th>정상</th>
+<th>이상</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ceph -s</code> osd up/in</td>
+<td>up == in</td>
+<td>up &lt; in</td>
+<td>in이지만 up 아님 = <strong>down OSD 존재</strong>(아직 out 안 됨, <code>mon_osd_down_out_interval</code> 기본 600s 후 out)</td>
+</tr>
+<tr>
+<td><code>OSDMAP_FLAGS</code> (<code>ceph osd dump</code> flags)</td>
+<td>운영 플래그 없음</td>
+<td><code>noout/noup/nodown/noin/norecover/nobackfill/norebalance/noscrub/nodeep-scrub/pause*</code></td>
+<td>유지보수용 플래그 <strong>잔존</strong>이 장애 원인일 수 있음(예: <code>noout</code> 잔존 → down OSD가 out 안 돼 복구 지연; <code>pausewr</code> → 쓰기 정지)</td>
+</tr>
+<tr>
+<td>OSD flapping</td>
+<td>up/down 안정</td>
+<td>osdmap epoch 급증, 로그에 반복 up/down</td>
+<td>"wrongly marked down" — 보통 <strong>네트워크/스위치</strong> 문제</td>
+</tr>
+<tr>
+<td>Slow OSD heartbeats</td>
+<td>핑 지연 낮음</td>
+<td><code>ceph health detail</code>에 <code>Slow OSD heartbeats on back/front (longest &gt;1000ms)</code></td>
+<td>단일=바쁜 OSD일 수 있으나, <strong>여러 OSD 쌍에서 동시 지연 = 스위치/NIC/L1 장애</strong>(공식 문서 명시)</td>
+</tr>
+<tr>
+<td><code>SLOW_OPS</code></td>
+<td>없음</td>
+<td><code>N slow ops, oldest is ...</code></td>
+<td>op이 <code>osd_op_complaint_time</code>(기본 30s) 초과 체류. 느린 디스크·peering 정체·네트워크</td>
+</tr>
+<tr>
+<td><code>osd perf</code> latency</td>
+<td>SSD/NVMe 0~5ms, HDD 20~50ms도 정상</td>
+<td><strong>특정 OSD만</strong> 100ms+ 지속(또는 200ms+)</td>
+<td>디바이스별 baseline이 다르므로 절대값보다 <strong>이상치 OSD 1~2개</strong>가 핵심. 그 OSD가 느린 디스크 → 전체 클러스터 slow ops 유발(가장 느린 디스크가 속도 결정)</td>
+</tr>
+<tr>
+<td><code>ip -s link</code></td>
+<td>dropped/errors 0, MTU 일치</td>
+<td>dropped/errors 증가, MTU 불일치</td>
+<td>패킷 드롭→재전송→slow heartbeat/slow ops. 점보프레임 한쪽만 9000이면 단편화 장애</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-c-pg-io">C. PG 상태 — I/O 차단 여부 구분</h3>
+<table>
+<thead>
+<tr>
+<th>PG 상태</th>
+<th>I/O</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>active+clean</code></td>
+<td>정상</td>
+<td>모든 복제본 정상</td>
+</tr>
+<tr>
+<td><code>degraded</code></td>
+<td>가능</td>
+<td>복제본 수 부족(중복도 저하). 데이터 안전성↓이나 접근은 됨</td>
+</tr>
+<tr>
+<td><code>undersized</code></td>
+<td>가능</td>
+<td>acting set이 size보다 작음(둘 자리 OSD 부족)</td>
+</tr>
+<tr>
+<td><code>remapped</code>/<code>backfilling</code>/<code>recovering</code></td>
+<td>가능</td>
+<td>데이터 이동 중. 그 자체는 정상 과정</td>
+</tr>
+<tr>
+<td><code>backfill_toofull</code></td>
+<td>복구 정지</td>
+<td>대상 OSD가 backfillfull → 복구 진행 불가(B 참조)</td>
+</tr>
+<tr>
+<td><code>inactive</code>/<code>peering</code>/<code>down</code>/<code>stale</code>/<code>incomplete</code></td>
+<td><strong>차단</strong></td>
+<td>해당 PG의 클라이언트 I/O <strong>불가</strong>. <code>down</code>은 필요한 OSD가 죽어 데이터 접근 불가, <code>stale</code>은 primary 보고 끊김</td>
+</tr>
+<tr>
+<td><code>inconsistent</code></td>
+<td>가능하나 위험</td>
+<td>scrub이 <strong>복제본 불일치(손상)</strong> 발견 → E 참조</td>
+</tr>
+<tr>
+<td><code>recovery_unfound</code>/<code>OBJECT_UNFOUND</code></td>
+<td><strong>차단(해당 객체)</strong></td>
+<td>최신 복제본을 찾을 수 없음. 데이터 유실 위험</td>
+</tr>
+</tbody>
+</table>
+<p>핵심 구분(공식 문서): <strong><code>misplaced</code>(OBJECT_MISPLACED)는 위험하지 않다</strong> — 데이터 일관성은 보장되며 단지 CRUSH가 선호하는 위치가 아닐 뿐. 반면 <strong><code>degraded</code>는 중복도 저하</strong>, <strong><code>inconsistent</code>는 손상</strong>으로 의미가 전혀 다르다. 세 가지를 혼동하면 오진한다.</p>
+<h3 id="s-d">D. 데이터 안전·이중화</h3>
+<table>
+<thead>
+<tr>
+<th>신호</th>
+<th>정상</th>
+<th>이상</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>min_size</code> (pool ls detail)</td>
+<td>가용 복제본 ≥ min_size</td>
+<td>가용 복제본 &lt; min_size</td>
+<td><strong>PG가 inactive로 전환 → I/O 차단.</strong> 예: replicated size=3,min_size=2에서 2개 동시 손실 시 차단(데이터 보호 목적)</td>
+</tr>
+<tr>
+<td><code>POOL_NO_REDUNDANCY</code></td>
+<td>size ≥ 2 (EC k+m, m≥1)</td>
+<td>replicated size=1</td>
+<td>이중화 없음 → OSD 1개 손실로 데이터 유실</td>
+</tr>
+<tr>
+<td><code>size</code>:<code>STORED</code>/<code>USED</code> 비율 (<code>ceph df</code>)</td>
+<td>설계값(3x 또는 EC 비율)</td>
+<td>예상과 다름</td>
+<td>풀 size/EC 설정 오류 가능</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>주의: <code>min_size=1</code> 설정은 다운 시 쓰기를 계속 받게 하지만, <strong>추가 장애 시 데이터 유실</strong> 위험이 크므로 권장되지 않는다(복제 풀 기본 min_size=2 유지 권장).</p>
+</blockquote>
+<h3 id="s-e-scrub">E. Scrub / 일관성</h3>
+<table>
+<thead>
+<tr>
+<th>health check</th>
+<th>임계(기본)</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PG_NOT_DEEP_SCRUBBED</code></td>
+<td><code>osd_deep_scrub_interval</code> 1주(604800s) 초과</td>
+<td>정기 deep-scrub 누락 → <strong>비트로트(silent corruption) 미검출</strong> 위험 누적</td>
+</tr>
+<tr>
+<td><code>PG_NOT_SCRUBBED</code></td>
+<td><code>osd_scrub_max_interval</code> 초과</td>
+<td>일반 scrub 누락</td>
+</tr>
+<tr>
+<td><code>OSD_SCRUB_ERRORS</code>/<code>PG_DAMAGED</code></td>
+<td>inconsistent/snaptrim_error/repair 플래그</td>
+<td>deep-scrub이 <strong>복제본 불일치(손상)</strong> 발견. 대상 PG에 <code>ceph pg repair</code> 필요(공식). 디스크 불량의 신호일 수 있음</td>
+</tr>
+<tr>
+<td><code>OSD_TOO_MANY_REPAIRS</code></td>
+<td><code>mon_osd_warn_num_repaired</code> 10</td>
+<td>읽기 오류를 복제본에서 복구한 횟수 과다 → <strong>특정 디스크 열화</strong> 강한 신호</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-f-mon">F. MON / 시계</h3>
+<table>
+<thead>
+<tr>
+<th>신호</th>
+<th>임계(기본)</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MON_CLOCK_SKEW</code></td>
+<td>skew &gt; <code>mon_clock_drift_allowed</code> 0.05s(50ms)</td>
+<td>mon 간 시계 차 → <strong>쿼럼 불안정</strong>. (skew는 반드시 <code>mon_lease</code>보다 충분히 작아야 함)</td>
+</tr>
+<tr>
+<td><code>MON_DOWN</code></td>
+<td>—</td>
+<td>mon 1개 down=WARN. 단 <strong>과반(⌊N/2⌋+1) 미달 시 클러스터 정지</strong>. 예: 3개 중 2개 down=정지, 5개 중 2개 down=동작(WARN)</td>
+</tr>
+<tr>
+<td><code>MON_DISK_LOW</code>/<code>MON_DISK_CRIT</code></td>
+<td><code>mon_data_avail_warn</code> 30% / <code>_crit</code> 5%</td>
+<td>mon 저장소 디스크 부족 → mon 다운 위험. 대형 osdmap 누적 시 mon store(rocksdb) 비대</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-g-pg">G. PG 수 (배치 효율)</h3>
+<table>
+<thead>
+<tr>
+<th>health check</th>
+<th>임계(기본)</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>TOO_MANY_PGS</code></td>
+<td>OSD당 PG &gt; <code>mon_max_pg_per_osd</code> 250</td>
+<td>PG 과다 → mon/osd 메모리·peering 부하, OSD 기동 지연</td>
+</tr>
+<tr>
+<td><code>TOO_FEW_PGS</code></td>
+<td>권고치 미달</td>
+<td>PG 부족 → 데이터 분포 불균형, 편중</td>
+</tr>
+<tr>
+<td><code>POOL_PG_NUM_NOT_POWER_OF_TWO</code></td>
+<td>2의 거듭제곱 아님</td>
+<td>분포 비효율(경고성)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-h-rgw">H. RGW (오브젝트 스토리지)</h3>
+<table>
+<thead>
+<tr>
+<th>신호</th>
+<th>임계(기본)</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LARGE_OMAP_OBJECTS</code></td>
+<td><code>osd_deep_scrub_large_omap_object_key_threshold</code> 20만 keys 또는 value 합 1GiB</td>
+<td><strong>버킷 인덱스 미샤딩</strong>(권장 <code>rgw_max_objs_per_shard</code> 10만/샤드의 약 2배 초과 시 경고), 한 유저가 버킷 과다 보유(.rgw.meta), CephFS 대형 디렉터리, RGW usage log 누적. RocksDB 압박→OSD 느려짐. deep-scrub 시 <code>cluster [WRN] Large omap object found</code>로 로그</td>
+</tr>
+<tr>
+<td><code>bucket limit check</code> fill_status</td>
+<td>OK/WARN/OVER</td>
+<td>OVER=샤드당 객체 과다 → <strong>reshard 필요</strong></td>
+</tr>
+<tr>
+<td><code>sync status</code></td>
+<td>data caught up</td>
+<td><code>behind</code>/<code>recovering shards</code>가 진척 없이 지속 = <strong>멀티사이트 복제 정체</strong>(bilog 미트림→large omap 동반 가능)</td>
+</tr>
+<tr>
+<td><code>reshard list</code></td>
+<td>비어 있음</td>
+<td>항목 잔존+진척 없음 = 리샤딩 정체</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-i-bluestore-osd">I. BlueStore (OSD 백엔드)</h3>
+<table>
+<thead>
+<tr>
+<th>health check</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BLUEFS_SPILLOVER</code>/<code>BLUESTORE_SPILLOVER</code></td>
+<td>block.db(빠른 장치)가 가득 차 메타데이터가 <strong>느린 데이터 장치로 spill</strong> → OSD 성능 급락. <code>osd metadata</code>로 db 분리 여부·<code>ceph health detail</code>로 spill 용량 확인</td>
+</tr>
+<tr>
+<td><code>BLUESTORE_FRAGMENTATION</code></td>
+<td>단편화 점수 0~1, <strong>1.0=심각</strong>. BlueFS가 공간 확보 곤란 → 성능 저하</td>
+</tr>
+<tr>
+<td><code>BLUESTORE_NO_PER_POOL_OMAP</code>/<code>NO_PER_PG_OMAP</code></td>
+<td>Nautilus/Pacific 이전 생성 볼륨 → omap 사용량 <strong>근사치만 보고</strong>(정확 통계 불가). repair로 갱신 가능</td>
+</tr>
+<tr>
+<td><code>BLUESTORE_LEGACY_STATFS</code> 등</td>
+<td>구버전 포맷 잔존 → 통계 부정확</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-j-cephfs-mds">J. CephFS / MDS</h3>
+<table>
+<thead>
+<tr>
+<th>health check</th>
+<th>의미</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MDS_CLIENT_RECALL</code></td>
+<td>특정 클라이언트가 caps를 반납하지 않음 → MDS 메모리 압박(<code>tell mds session ls</code>의 num_caps로 범인 특정)</td>
+</tr>
+<tr>
+<td><code>MDS_CACHE_OVERSIZED</code></td>
+<td>MDS 캐시가 <code>mds_cache_memory_limit</code> 초과 → OOM 위험</td>
+</tr>
+<tr>
+<td><code>MDS_SLOW_REQUEST</code>/<code>MDS_SLOW_METADATA_IO</code></td>
+<td>메타데이터 op 정체(메타데이터 풀 OSD 느림 또는 잠금 경합)</td>
+</tr>
+<tr>
+<td><code>MDS_INSUFFICIENT_STANDBY</code></td>
+<td>standby MDS 부족 → <strong>페일오버 불가</strong>(active rank 죽으면 FS 마비)</td>
+</tr>
+<tr>
+<td><code>FS_DEGRADED</code>/<code>MDS_ALL_DOWN</code>/<code>FS_WITH_FAILED_MDS</code></td>
+<td>rank failed/down → <strong>CephFS 접근 차단</strong></td>
+</tr>
+<tr>
+<td><code>MDS_DAMAGE</code></td>
+<td>메타데이터 손상 감지 → 복구 작업 필요</td>
+</tr>
+</tbody>
+</table>
+<h3 id="s-k">K. 디바이스·버전·크래시</h3>
+<table>
+<thead>
+<tr>
+<th>신호</th>
+<th>정상</th>
+<th>이상</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SMART (<code>smartctl -a</code>, <code>device get-health-metrics</code>)</td>
+<td>PASSED, Reallocated/Pending=0</td>
+<td>Pending/Reallocated/Uncorrected 증가, 온도 이상 → <strong>물리 열화</strong>(OSD slow/down의 근본 원인)</td>
+</tr>
+<tr>
+<td><code>DEVICE_HEALTH</code>/<code>DEVICE_HEALTH_TOOMANY</code></td>
+<td>예측 없음</td>
+<td>디바이스 <strong>고장 예측</strong>(<code>ceph device ls</code>의 LIFE EXPECTANCY) → 사전 교체</td>
+</tr>
+<tr>
+<td><code>dmesg</code></td>
+<td>디스크/드라이버 오류 없음</td>
+<td><code>nvme timeout</code>, <code>blk_update_request: I/O error</code>, SCSI reset → OSD 장애의 커널 레벨 물증</td>
+</tr>
+<tr>
+<td><code>DAEMON_OLD_VERSION</code></td>
+<td>단일 버전</td>
+<td>데몬 간 혼합 버전 지속(미완료 업그레이드)→호환·성능 이상</td>
+</tr>
+<tr>
+<td><code>RECENT_CRASH</code></td>
+<td>없음</td>
+<td>신규 크래시(<code>crash ls</code>의 NEW)→ 반복 시 데몬 안정성 문제</td>
+</tr>
+<tr>
+<td><code>AUTH_INSECURE_GLOBAL_ID_RECLAIM</code></td>
+<td>비활성</td>
+<td>안전하지 않은 global_id 재요청 허용(구 클라이언트 잔존)→보안 경고</td>
+</tr>
+</tbody>
+</table>
+<p><strong>검증·한계 고지</strong>: 위 임계값은 Reef 공식 문서 기준 기본값이며 마이너 버전·운영자 튜닝으로 달라질 수 있다. health check 코드명·임계값(nearfull 0.85 / backfillfull 0.90 / full 0.95, clock skew 50ms, slow heartbeat 1000ms, large omap 20만 keys/1GiB, rgw 10만/샤드, deep-scrub 1주)은 공식 문서·트래커로 교차검증했다. 실제 대응 전에는 <code>ceph health detail</code>로 해당 클러스터의 실제 임계·대상을 반드시 확인하라.</p>
+<p><strong>한계 명시</strong>: 위 출력의 값은 합성이며 형식은 18.2.x 기준이다. 마이너 버전·빌드·플러그인(jerasure/isa-l, 텔레메트리 등)에 따라 일부 필드가 가감될 수 있으므로, 실제 클러스터 1회 시범 수집으로 형식을 대조한 뒤 파서를 확정할 것을 권한다.</p>
+    </div>
+   </div>
+  </main>
+</div>
+
+<button class="backtop" id="backtop" title="맨 위로">&uarr;</button>
+
+<script>
+(function(){
+  var content = document.querySelectorAll('.doc');
+
+  /* ---- 1. badge tokens in text ---- */
+  var badgeMap = [
+    [/\[High\]/g,'<span class="badge b-hi">High</span>'],
+    [/\[Moderate\]/g,'<span class="badge b-mod">Moderate</span>'],
+    [/\[Low\]/g,'<span class="badge b-low">Low</span>'],
+    [/\{L0\}/g,'<span class="badge b-l0">L0</span>'],
+    [/\{L1\}/g,'<span class="badge b-l1">L1</span>'],
+    [/\{L2\}/g,'<span class="badge b-l2">L2</span>'],
+    [/\u26A0\uFE0F?\s*\uC6B4\uC601\s*\uBD80\uD558/g,'<span class="warnpill">\u26A0 \uC6B4\uC601 \uBD80\uD558</span>']
+  ];
+  content.forEach(function(root){
+    var h = root.innerHTML;
+    badgeMap.forEach(function(p){ h = h.replace(p[0],p[1]); });
+    root.innerHTML = h;
+  });
+
+  /* ---- 2. dim "# ..." comments inside <pre> ---- */
+  document.querySelectorAll('.doc pre code').forEach(function(code){
+    var lines = code.innerHTML.split('\n');
+    lines = lines.map(function(ln){
+      // wrap a trailing  # comment (keep any badge spans already injected)
+      return ln.replace(/(#\s[^\n]*)$/,'<span class="cmt">$1<\/span>');
+    });
+    code.innerHTML = lines.join('\n');
+  });
+
+  /* ---- 3. mark "제외:" callouts ---- */
+  document.querySelectorAll('.doc blockquote').forEach(function(bq){
+    if(/\uC81C\uC678\s*:/.test(bq.textContent)) bq.classList.add('excl');
+  });
+
+  /* ---- 4. appendix severity coloring (scoped to tables) ---- */
+  var sevHigh = ['\uCC28\uB2E8','\uC815\uC9C0','\uC720\uC2E4','\uB9C8\uBE44','\uC190\uC0C1','\uAC70\uBD80'];   // 차단 정지 유실 마비 손상 거부
+  var sevMid  = ['\uC9C0\uC5F0','\uC815\uCCB4','\uC800\uD558','\uACBD\uACE0','\uC555\uBC15','\uBD80\uD558','\uB204\uB77D']; // 지연 정체 저하 경고 압박 부하 누락
+  document.querySelectorAll('.doc table td').forEach(function(td){
+    if(td.querySelector('code,span')) {/* still ok */}
+    var t = td.innerHTML;
+    sevHigh.forEach(function(w){ t = t.replace(new RegExp(w,'g'),'<span class="sev-h">'+w+'<\/span>'); });
+    sevMid.forEach(function(w){ t = t.replace(new RegExp(w,'g'),'<span class="sev-m">'+w+'<\/span>'); });
+    td.innerHTML = t;
+  });
+
+  /* ---- 5. nav scroll-spy + reveal sub items ---- */
+  var rail = document.getElementById('rail');
+  var links = Array.prototype.slice.call(rail.querySelectorAll('a'));
+  var byId = {};
+  links.forEach(function(a){ byId[a.getAttribute('data-target')] = a; });
+  var targets = links.map(function(a){
+    var el = document.getElementById(a.getAttribute('data-target'));
+    return el ? {a:a, el:el, sect:a.getAttribute('data-section')} : null;
+  }).filter(Boolean);
+
+  function revealSection(sect){
+    links.forEach(function(a){
+      if(a.classList.contains('navsub')){
+        if(a.getAttribute('data-section')===sect) a.classList.add('show');
+        else a.classList.remove('show');
+      }
+    });
+  }
+  var activeSect=null;
+  function spy(){
+    var pos = window.scrollY + 90;
+    var cur = targets[0];
+    for(var i=0;i<targets.length;i++){
+      if(targets[i].el.offsetTop <= pos) cur = targets[i]; else break;
+    }
+    links.forEach(function(a){a.classList.remove('active');});
+    if(cur){
+      cur.a.classList.add('active');
+      if(cur.sect!==activeSect){ activeSect=cur.sect; revealSection(cur.sect); }
+      // keep active in view
+      var r=cur.a.getBoundingClientRect(), nr=rail.getBoundingClientRect();
+      if(r.top<nr.top+40||r.bottom>nr.bottom-20) cur.a.scrollIntoView({block:'nearest'});
+    }
+  }
+  var tick=false;
+  window.addEventListener('scroll',function(){
+    if(!tick){requestAnimationFrame(function(){spy();tick=false;});tick=true;}
+  });
+  spy();
+
+  /* ---- 6. filter (command search) ---- */
+  var fi = document.getElementById('filter');
+  fi.addEventListener('input',function(){
+    var q = fi.value.trim().toLowerCase();
+    if(!q){
+      links.forEach(function(a){
+        if(a.classList.contains('navsub')) a.classList.remove('show');
+        a.style.display='';
+      });
+      activeSect=null; spy(); return;
+    }
+    links.forEach(function(a){
+      var hit = a.textContent.toLowerCase().indexOf(q)>=0;
+      a.style.display = hit ? 'block' : 'none';
+      if(a.classList.contains('navsub')) a.classList.toggle('show',hit);
+    });
+  });
+  fi.addEventListener('keydown',function(e){
+    if(e.key==='Enter'){
+      var first = links.filter(function(a){return a.style.display!=='none';})[0];
+      if(first){ document.getElementById(first.getAttribute('data-target')).scrollIntoView(); }
+    }
+  });
+
+  /* ---- 7. smooth nav click ---- */
+  links.forEach(function(a){
+    a.addEventListener('click',function(e){
+      var el=document.getElementById(a.getAttribute('data-target'));
+      if(el){e.preventDefault();el.scrollIntoView();history.replaceState(null,'',a.getAttribute('href'));}
+    });
+  });
+
+  /* ---- 8. back to top ---- */
+  var bt=document.getElementById('backtop');
+  window.addEventListener('scroll',function(){bt.classList.toggle('show',window.scrollY>600);});
+  bt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+})();
+</script>
+</body>
+</html>
