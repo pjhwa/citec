@@ -1,0 +1,92 @@
+2026-07-14T09:43:43.265Z [wiki-mcp] [info] Initializing server... { metadata: undefined }
+2026-07-14T09:43:43.744Z [wiki-mcp] [info] Using MCP server command: C:\WINDOWS\System32\cmd.exe with path: {
+  metadata: {
+    paths: [
+      'C:\\Program Files\\nodejs',
+      'C:\\Python314',
+      'C:\\Program Files\\Git\\cmd',
+      'C:\\Program Files\\Git\\mingw64\\bin',
+      'C:\\Python314\\Scripts\\',
+      'C:\\Python314\\',
+      'C:\\WINDOWS\\system32',
+      'C:\\WINDOWS',
+      'C:\\WINDOWS\\System32\\Wbem',
+      'C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\',
+      'C:\\WINDOWS\\System32\\OpenSSH\\',
+      'C:\\Program Files (x86)\\Citrix\\HDX\\bin\\',
+      'C:\\Program Files\\Citrix\\HDX\\bin\\',
+      'C:\\windows\\System32\\WindowsPowerShell\\v1.0\\',
+      'C:\\windows\\System32\\Wbem',
+      'C:\\Program Files\\Zulu\\zulu-8\\bin\\',
+      'C:\\Program Files\\dotnet\\',
+      'C:\\Knox Drive',
+      'C:\\Knox Drive\\vcredist64',
+      'C:\\Program Files\\nodejs\\',
+      'C:\\ProgramData\\chocolatey\\bin',
+      'C:\\Program Files\\GitHub CLI\\',
+      'C:\\Users\\jooksan.park\\AppData\\Local\\Microsoft\\WindowsApps',
+      'C:\\Users\\jooksan.park\\AppData\\Local\\Python\\bin',
+      'C:\\Users\\jooksan.park\\AppData\\Roaming\\npm',
+      'C:\\Users\\jooksan.park\\.local\\bin',
+      'C:\\Users\\jooksan.park\\AppData\\Local\\Programs\\Microsoft VS Code\\bin',
+      'C:\\Users\\jooksan.park\\AppData\\Local\\Microsoft\\WinGet\\Links',
+      [length]: 28
+    ]
+  }
+} %o
+2026-07-14T09:43:43.817Z [wiki-mcp] [info] Server started and connected successfully { metadata: undefined }
+2026-07-14T09:43:43.962Z [wiki-mcp] [info] Message from client: method="initialize" id=0 params { metadata: undefined }
+[10744] Error: Non-HTTPS URLs are only allowed for localhost or when --allow-http flag is provided
+[10744] Usage: npx tsx proxy.ts <https://server-url> [callback-port] [--debug]
+2026-07-14T09:43:59.512Z [wiki-mcp] [info] Server transport closed { metadata: undefined }
+2026-07-14T09:43:59.513Z [wiki-mcp] [info] Server transport closed unexpectedly, this is likely due to the process exiting early. If you are developing this MCP server you can add output to stderr (i.e. `console.error('...')` in JavaScript, `print('...', file=sys.stderr)` in python) and it will appear in this log. { metadata: undefined }
+2026-07-14T09:43:59.513Z [wiki-mcp] [error] Server disconnected. For troubleshooting guidance, please visit our [debugging documentation](https://modelcontextprotocol.io/docs/tools/debugging) { metadata: { context: 'connection', stack: undefined } }
+2026-07-14T09:43:59.513Z [wiki-mcp] [info] Client transport closed { metadata: undefined }
+2026-07-14T09:43:59.513Z [wiki-mcp] [info] Client transport closed { metadata: undefined }
+2026-07-15T00:37:30.710Z [wiki-mcp] [info] Shutting down server... { metadata: undefined }
+2026-07-15T00:37:30.710Z [wiki-mcp] [info] Client transport closed { metadata: undefined }
+2026-07-15T00:37:49.012Z [wiki-mcp] [info] Initializing server... { metadata: undefined }
+2026-07-15T00:37:49.475Z [wiki-mcp] [info] Using MCP server command: C:\WINDOWS\System32\cmd.exe with path: {
+  metadata: {
+    paths: [
+      'C:\\Program Files\\nodejs',
+      'C:\\Python314',
+      'C:\\Program Files\\Git\\cmd',
+      'C:\\Program Files\\Git\\mingw64\\bin',
+      'C:\\Python314\\Scripts\\',
+      'C:\\Python314\\',
+      'C:\\WINDOWS\\system32',
+      'C:\\WINDOWS',
+      'C:\\WINDOWS\\System32\\Wbem',
+      'C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\',
+      'C:\\WINDOWS\\System32\\OpenSSH\\',
+      'C:\\Program Files (x86)\\Citrix\\HDX\\bin\\',
+      'C:\\Program Files\\Citrix\\HDX\\bin\\',
+      'C:\\windows\\System32\\WindowsPowerShell\\v1.0\\',
+      'C:\\windows\\System32\\Wbem',
+      'C:\\Program Files\\Zulu\\zulu-8\\bin\\',
+      'C:\\Program Files\\dotnet\\',
+      'C:\\Knox Drive',
+      'C:\\Knox Drive\\vcredist64',
+      'C:\\Program Files\\nodejs\\',
+      'C:\\ProgramData\\chocolatey\\bin',
+      'C:\\Program Files\\GitHub CLI\\',
+      'C:\\Users\\jooksan.park\\AppData\\Local\\Microsoft\\WindowsApps',
+      'C:\\Users\\jooksan.park\\AppData\\Local\\Python\\bin',
+      'C:\\Users\\jooksan.park\\AppData\\Roaming\\npm',
+      'C:\\Users\\jooksan.park\\.local\\bin',
+      'C:\\Users\\jooksan.park\\AppData\\Local\\Programs\\Microsoft VS Code\\bin',
+      'C:\\Users\\jooksan.park\\AppData\\Local\\Microsoft\\WinGet\\Links',
+      [length]: 28
+    ]
+  }
+} %o
+2026-07-15T00:37:49.551Z [wiki-mcp] [info] Server started and connected successfully { metadata: undefined }
+2026-07-15T00:37:50.691Z [wiki-mcp] [info] Message from client: method="initialize" id=0 params { metadata: undefined }
+[16916] Error: Non-HTTPS URLs are only allowed for localhost or when --allow-http flag is provided
+[16916] Usage: npx tsx proxy.ts <https://server-url> [callback-port] [--debug]
+2026-07-15T00:38:06.534Z [wiki-mcp] [info] Server transport closed { metadata: undefined }
+2026-07-15T00:38:06.534Z [wiki-mcp] [info] Server transport closed unexpectedly, this is likely due to the process exiting early. If you are developing this MCP server you can add output to stderr (i.e. `console.error('...')` in JavaScript, `print('...', file=sys.stderr)` in python) and it will appear in this log. { metadata: undefined }
+2026-07-15T00:38:06.534Z [wiki-mcp] [error] Server disconnected. For troubleshooting guidance, please visit our [debugging documentation](https://modelcontextprotocol.io/docs/tools/debugging) { metadata: { context: 'connection', stack: undefined } }
+2026-07-15T00:38:06.535Z [wiki-mcp] [info] Client transport closed { metadata: undefined }
+2026-07-15T00:38:06.535Z [wiki-mcp] [info] Client transport closed { metadata: undefined }
