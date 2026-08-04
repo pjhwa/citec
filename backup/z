@@ -1,16 +1,4 @@
- "Diagram attachment access error: cannot display diagram" 여전히 오류나는데?
-
-media_type는 이제 일치하는데도 똑같은 오류라면, list_diagrams가 보여주는 media_type 값이 실제 Confluence에 저장된 값이 아니라 citec-kb API가 "이렇게 요청했다"고 자체적으로 기록해둔 값일 가능성을 의심해봐야 합니다. 즉 업로드 요청에는 application/vnd.jgraph.mxfile을 Content-Type으로 넣었지만, Confluence 서버가 실제로 그 값을 저장하지 않고 자기 방식대로(예: 파일 확장자 기반) 다시 판단해서 다른 media type으로 저장했을 수 있습니다.
-
-의심되는 지점 — 파일명(확장자):
-전에 매칭 실패를 디버깅할 때 나온 원본 페이지의 실제 첨부파일명 목록을 기억하시면:
-'MAZ 가용성 테스트 물리 구성도'          ← 확장자 없음
-'MAZ 가용성 테스트 물리 구성도.png'
-'~MAZ 가용성 테스트 물리 구성도.tmp'
-즉 정상 렌더링되는 원본 다이어그램은 첨부파일명에 확장자가 없습니다. 반면 저희가 citec-kb로 올린 파일은 diagram_name 뒤에 .xml이나 .drawio 같은 확장자가 붙어 있을 가능성이 있습니다. Confluence는 다운로드/렌더링 시 저장된 Content-Type 헤더보다 파일명 확장자를 우선해서 media type을 재판단하는 경우가 있어서, Content-Type을 아무리 application/vnd.jgraph.mxfile로 보내도 파일명에 .xml 확장자가 붙어 있으면 Confluence가 그걸 다시 application/xml로 덮어써버릴 수 있습니다.
-
-citec-kb 쪽에 확인 요청할 두 가지:
-1. 방금 업로드한 첨부파일들의 실제 파일명(확장자 포함 여부) — diagram_name과 정확히 같은지, 아니면 .xml/.drawio가 붙는지
-2. list_diagrams가 보여주는 media_type이 Confluence REST API 응답(GET /rest/api/content/{id}/child/attachment)의 metadata.mediaType을 그대로 읽어온 값인지, 아니면 citec-kb 자체 DB/요청 파라미터를 그대로 되돌려주는 값인지 — 후자라면 "우리가 보낸 값"과 "실제 저장된 값"이 다를 수 있어서 지금 보고 있는 media_type이 신뢰할 수 없는 지표입니다.
-
-이 두 가지를 확인하면 지금 막힌 지점을 확실히 좁힐 수 있을 것 같습니다.
+PIXEL Station의 앱 창 안에 내용이 모두 표시되지 않아서 화면을 넘어가 보이지 않게 되는 부분이 있다. 특히 사용자가이드 버튼위치부터는 안보임. 전 메뉴에서 동일한 현상 발생. 
+샘플데이터는 심화분석수행 화면에서 ERR 이 표시되지 않는 완전한 샘플데이터를 선택해서 화면을 캡춰하자.
+회차비교시 2회차에는 여러 건들을 OK 처리하여 비교할 수 있도록 하자. 
+각 담당자의 이름을 PM이 번들로 취합할때 표시되도록 하자. 그냥 AIX 담당자가 아니라 AIX 홍길동 이런식으로...
