@@ -1,0 +1,63 @@
+테스트 페이지에 실제로 넣은 매크로 3개의 원문 그대로입니다.
+
+① 신규 작성 다이어그램
+<ac:structured-macro ac:name="drawio" ac:schema-version="1" ac:macro-id="6aaee7b5-8d5f-435d-baea-5ff31c67d6af">
+  <ac:parameter ac:name="border">true</ac:parameter>
+  <ac:parameter ac:name="diagramName">draw.io MCP 테스트 다이어그램</ac:parameter>
+  <ac:parameter ac:name="simpleViewer">false</ac:parameter>
+  <ac:parameter ac:name="links">auto</ac:parameter>
+  <ac:parameter ac:name="tbstyle">top</ac:parameter>
+  <ac:parameter ac:name="lbox">true</ac:parameter>
+  <ac:parameter ac:name="diagramWidth">400</ac:parameter>
+  <ac:parameter ac:name="height">200</ac:parameter>
+  <ac:parameter ac:name="revision">4</ac:parameter>
+</ac:structured-macro>
+
+② 읽어온 다이어그램 사본
+<ac:structured-macro ac:name="drawio" ac:schema-version="1" ac:macro-id="copy-diagram-002">
+  <ac:parameter ac:name="border">true</ac:parameter>
+  <ac:parameter ac:name="diagramName">MAZ 가용성 테스트 구성도 (사본)</ac:parameter>
+  <ac:parameter ac:name="simpleViewer">false</ac:parameter>
+  <ac:parameter ac:name="links">auto</ac:parameter>
+  <ac:parameter ac:name="tbstyle">top</ac:parameter>
+  <ac:parameter ac:name="lbox">true</ac:parameter>
+  <ac:parameter ac:name="diagramWidth">600</ac:parameter>
+  <ac:parameter ac:name="height">400</ac:parameter>
+  <ac:parameter ac:name="revision">1</ac:parameter>
+</ac:structured-macro>
+
+③ 신규 흐름도
+<ac:structured-macro ac:name="drawio" ac:schema-version="1" ac:macro-id="new-flow-diagram-003">
+  <ac:parameter ac:name="border">true</ac:parameter>
+  <ac:parameter ac:name="diagramName">신규 흐름도 예시</ac:parameter>
+  <ac:parameter ac:name="simpleViewer">false</ac:parameter>
+  <ac:parameter ac:name="links">auto</ac:parameter>
+  <ac:parameter ac:name="tbstyle">top</ac:parameter>
+  <ac:parameter ac:name="lbox">true</ac:parameter>
+  <ac:parameter ac:name="diagramWidth">600</ac:parameter>
+  <ac:parameter ac:name="height">200</ac:parameter>
+  <ac:parameter ac:name="revision">1</ac:parameter>
+</ac:structured-macro>
+
+이건 3주 전에 읽어온 실제 운영 페이지(02.네트워크)의 원본 매크로와 비교하면 두 가지 차이가 있습니다:
+
+<!-- 원본 (02. 네트워크 페이지, 실제로 렌더링되는 매크로) -->
+<ac:structured-macro ac:name="drawio" ac:schema-version="1" ac:macro-id="96d82066-f426-46b3-9255-a02fbcbc006c">
+  <ac:parameter ac:name="border">true</ac:parameter>
+  <ac:parameter ac:name="diagramName">MAZ 가용성 테스트 구성도</ac:parameter>
+  <ac:parameter ac:name="simpleViewer">false</ac:parameter>
+  <ac:parameter ac:name="width" />              <!-- ← 제 매크로엔 이 파라미터가 없음 -->
+  <ac:parameter ac:name="links">auto</ac:parameter>
+  <ac:parameter ac:name="tbstyle">top</ac:parameter>
+  <ac:parameter ac:name="lbox">true</ac:parameter>
+  <ac:parameter ac:name="diagramWidth">582</ac:parameter>
+  <ac:parameter ac:name="height">539</ac:parameter>
+  <ac:parameter ac:name="revision">14</ac:parameter>
+  <ac:parameter ac:name="" />                    <!-- ← 제 매크로엔 이 빈 파라미터도 없음 -->
+</ac:structured-macro>
+
+1. ac:parameter ac:name="width" (빈 값) 누락 — 저는 diagramWidth만 넣고 width는 아예 안 넣었습니다.
+2. 이름 없는 빈 ac:parameter 누락 — Confluence 편집기가 자동으로 붙이는 것으로 보이는 흔적인데, 저는 손으로 매크로를 작성해서 이게 빠졌습니다.
+3. ac:macro-id도 제가 임의의 문자열(copy-diagram-002 등)로 넣었는데, 원본은 Confluence가 생성한 UUID 형식입니다 — 이건 페이지 내 매크로 인스턴스 식별자라 렌더링에 영향 줄 가능성은 낮아 보이지만 확실친 않습니다.
+
+다만 오류가 "파싱 실패"가 아니라 "attachment access error"라는 점을 감안하면, 이 매크로 파라미터 차이보다는 **citec-kb가 업로드한 첨부파일 자체의 속성(예: content-type, 혹은 앱이 별도로 관리하는 diagram-attachment 매핑 테이블)**이 UI로 만든 첨부파일과 다를 가능성이 여전히 더 유력해 보입니다. 그래도 위 매크로 구조 차이는 눈에 보이는 실제 차이니, width 파라미터를 추가하고 macro-id를 Confluence가 생성하는 형식(UUID)으로 맞춰서 한 번 테스트해볼까요?
