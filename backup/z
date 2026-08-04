@@ -61,3 +61,22 @@
 3. ac:macro-id도 제가 임의의 문자열(copy-diagram-002 등)로 넣었는데, 원본은 Confluence가 생성한 UUID 형식입니다 — 이건 페이지 내 매크로 인스턴스 식별자라 렌더링에 영향 줄 가능성은 낮아 보이지만 확실친 않습니다.
 
 다만 오류가 "파싱 실패"가 아니라 "attachment access error"라는 점을 감안하면, 이 매크로 파라미터 차이보다는 **citec-kb가 업로드한 첨부파일 자체의 속성(예: content-type, 혹은 앱이 별도로 관리하는 diagram-attachment 매핑 테이블)**이 UI로 만든 첨부파일과 다를 가능성이 여전히 더 유력해 보입니다. 그래도 위 매크로 구조 차이는 눈에 보이는 실제 차이니, width 파라미터를 추가하고 macro-id를 Confluence가 생성하는 형식(UUID)으로 맞춰서 한 번 테스트해볼까요?
+
+----
+list_diagrams를 다시 호출한 원문 그대로입니다.
+
+다이어그램 3건:
+- draw.io MCP 테스트 다이어그램 (attachment_id=2446932874, version=None, inline=True)
+- MAZ 가용성 테스트 구성도 (사본) (attachment_id=2446936734, version=None, inline=True)
+- 신규 흐름도 예시 (attachment_id=2446936735, version=None, inline=True)
+
+문제를 발견했습니다: version 필드가 세 건 모두 None입니다. 즉 list_diagrams는 지금도 실제 Confluence 첨부파일 버전 번호를 반환하지 않습니다 — attachment_id 매칭은 고쳐졌지만 version 필드는 여전히 채워지지 않는 상태입니다.
+
+그래서 제가 지금 매크로에 넣은 revision 값(4 / 1 / 1)은 list_diagrams가 알려준 게 아니라, 그 이전에 put_diagram 호출이 반환한 version 값을 그대로 믿고 쓴 것입니다:
+- draw.io MCP 테스트 다이어그램: put_diagram 응답 version=4 → 매크로 revision=4
+- MAZ 가용성 테스트 구성도 (사본): put_diagram 응답 version=1 (신규 생성) → 매크로 revision=1
+- 신규 흐름도 예시: put_diagram 응답 version=1 (신규 생성) → 매크로 revision=1
+
+말씀하신 가설대로라면, put_diagram이 응답하는 version 숫자가 실제 Confluence 첨부파일 버전 번호와 다르게 채번되고 있을 가능성이 있습니다 (예: API 내부 카운터일 뿐 실제 Confluence 버전이 아니거나, 오프바이원 등). list_diagrams가 version=None만 주는 한 저는 이걸 독립적으로 검증할 방법이 없습니다.
+
+확인 요청: citec-kb 쪽에 list_diagrams가 version=None을 반환하는 버그도 같이 고쳐달라고 하면, 그 결과를 매크로의 revision과 직접 비교해 진짜 원인인지 확정할 수 있을 것 같습니다.
