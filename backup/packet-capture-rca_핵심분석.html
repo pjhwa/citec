@@ -1,0 +1,644 @@
+<title>packet-capture-rca 심층 분석</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1: #fcfcfb;
+    --surface-page: #f9f9f7;
+    --surface-card: #ffffff;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --grid: #e1e0d9;
+    --border: rgba(11,11,11,0.10);
+    --series-1: #2a78d6; /* 온프레미스/레거시 */
+    --series-2: #eb6834; /* 대규모 클라우드 */
+    --good: #0ca30c;
+    --warning: #fab219;
+    --serious: #ec835a;
+    --critical: #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --surface-1: #1a1a19;
+      --surface-page: #0d0d0d;
+      --surface-card: #202020;
+      --text-primary: #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted: #898781;
+      --grid: #2c2c2a;
+      --border: rgba(255,255,255,0.10);
+      --series-1: #3987e5;
+      --series-2: #d95926;
+      --good: #0ca30c;
+      --warning: #fab219;
+      --serious: #ec835a;
+      --critical: #d03b3b;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1: #1a1a19;
+    --surface-page: #0d0d0d;
+    --surface-card: #202020;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+    --grid: #2c2c2a;
+    --border: rgba(255,255,255,0.10);
+    --series-1: #3987e5;
+    --series-2: #d95926;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    background: var(--surface-page);
+    color: var(--text-primary);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 20px 80px; }
+
+  header.hero {
+    padding: 40px 20px 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+  header.hero h1 { font-size: 1.7rem; margin: 0 0 8px; letter-spacing: -0.01em; }
+  header.hero p.sub { color: var(--text-secondary); margin: 0; font-size: 0.95rem; max-width: 760px; }
+  header.hero .scope {
+    margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .pill {
+    font-size: 0.78rem; padding: 4px 10px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--text-secondary);
+    background: var(--surface-card);
+  }
+  .pill.in { color: var(--good); border-color: var(--good); }
+  .pill.out { color: var(--critical); border-color: var(--critical); text-decoration: line-through; }
+
+  nav.tabs {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--surface-page);
+    display: flex; gap: 4px; overflow-x: auto;
+    padding: 10px 20px; border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+  }
+  nav.tabs button {
+    font: inherit; font-size: 0.85rem; white-space: nowrap;
+    padding: 8px 14px; border-radius: 8px; border: 1px solid transparent;
+    background: transparent; color: var(--text-secondary); cursor: pointer;
+  }
+  nav.tabs button:hover { background: var(--surface-card); }
+  nav.tabs button.active {
+    background: var(--surface-card); color: var(--text-primary);
+    border-color: var(--border); font-weight: 600;
+  }
+
+  section.tabpanel { display: none; }
+  section.tabpanel.active { display: block; animation: fade .15s ease; }
+  @keyframes fade { from { opacity: 0 } to { opacity: 1 } }
+
+  h2 { font-size: 1.25rem; margin: 0 0 6px; }
+  h3 { font-size: 1.02rem; margin: 26px 0 8px; }
+  .lede { color: var(--text-secondary); margin: 0 0 20px; font-size: 0.93rem; }
+
+  .card {
+    background: var(--surface-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 22px; margin-bottom: 18px;
+  }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  caption { text-align: left; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  th { color: var(--text-secondary); font-weight: 600; font-size: 0.78rem; text-transform: none; }
+  tr:last-child td { border-bottom: none; }
+  td.num, th.num { font-variant-numeric: tabular-nums; }
+  .tablewrap { overflow-x: auto; }
+
+  code {
+    background: var(--surface-1); border: 1px solid var(--border);
+    padding: 1px 6px; border-radius: 5px; font-size: 0.85em;
+  }
+  .cite { color: var(--text-muted); font-size: 0.78rem; }
+
+  .status { display: inline-flex; align-items: center; gap: 5px; font-size: 0.82rem; white-space: nowrap; }
+  .status .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .status.good .dot { background: var(--good); }
+  .status.warning .dot { background: var(--warning); }
+  .status.serious .dot { background: var(--serious); }
+  .status.critical .dot { background: var(--critical); }
+  .status.na .dot { background: var(--text-muted); }
+
+  .conf { display:inline-block; font-size: 0.72rem; padding: 2px 7px; border-radius: 6px; border: 1px solid var(--border); color: var(--text-secondary); margin-left: 6px;}
+  .conf.high { color: var(--good); border-color: var(--good); }
+  .conf.medium { color: var(--warning); border-color: var(--warning); }
+  .conf.low { color: var(--text-muted); }
+
+  .kill { color: var(--text-muted); font-size: 0.82rem; }
+
+  /* dot-plot comparison */
+  .dotplot { margin-top: 6px; }
+  .dotrow { display: grid; grid-template-columns: 220px 1fr; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--grid); }
+  .dotrow:last-child { border-bottom: none; }
+  .dotrow .label { font-size: 0.85rem; color: var(--text-primary); }
+  .track { position: relative; height: 28px; }
+  .track .baseline { position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--grid); transform: translateY(-50%); }
+  .track .tick { position: absolute; top: 50%; width: 1px; height: 8px; background: var(--grid); transform: translate(-50%, -50%); }
+  .track .marker { position: absolute; top: 50%; width: 13px; height: 13px; border-radius: 50%; transform: translate(-50%, -50%); border: 2px solid var(--surface-card); }
+  .track .marker.m1 { background: var(--series-1); }
+  .track .marker.m2 { background: var(--series-2); }
+  .scalelabels { display: grid; grid-template-columns: 220px 1fr; margin-top: 4px; }
+  .scalelabels .axis { grid-column: 2; display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); }
+
+  .legend { display: flex; gap: 18px; margin: 10px 0 4px; font-size: 0.82rem; }
+  .legend .item { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); }
+  .legend .swatch { width: 12px; height: 12px; border-radius: 3px; }
+  .legend .swatch.s1 { background: var(--series-1); }
+  .legend .swatch.s2 { background: var(--series-2); }
+
+  .glossary dt { font-weight: 600; margin-top: 14px; }
+  .glossary dd { margin: 4px 0 0; color: var(--text-secondary); font-size: 0.88rem; }
+
+  .footnote { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; }
+
+  .swimlanes { margin-top: 10px; }
+  .swimlane { display: grid; grid-template-columns: 130px 1fr; border-bottom: 1px solid var(--grid); }
+  .swimlane .actor { padding: 10px 8px; font-size: 0.8rem; color: var(--text-secondary); }
+  .swimlane .lane { position: relative; height: 44px; }
+  .swimlane .lane .evt {
+    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .swimlane .lane .evt .marker { width: 10px; height: 10px; border-radius: 50%; }
+  .swimlane .lane .evt .tlabel { font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; }
+</style>
+
+<div class="wrap">
+<header class="hero">
+  <h1>packet-capture-rca 플러그인 심층 분석</h1>
+  <p class="sub">장애·성능 근본원인분석(RCA) 방법론을 대상으로, 공개 tcpdump/Wireshark 생태계 및 RCA 방법론과
+  비교해 가치·한계·개선 방향을 관측(observed)과 추론(inferred)을 구분해 서술한다. 모든 추론 주장은
+  신뢰도(High/Medium/Low)와 반증 신호(kill signal)를 동반한다.</p>
+  <div class="scope">
+    <span class="pill in">포함: 장애/성능 RCA 방법론</span>
+    <span class="pill in">포함: HTML 시각화 보고서 요건</span>
+    <span class="pill out">제외: Confluence 발행 메커니즘</span>
+    <span class="pill out">제외: 첨부파일 hand-off</span>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="summary" class="active">개요</button>
+  <button data-tab="method">핵심 방법론</button>
+  <button data-tab="compare">생태계 비교</button>
+  <button data-tab="value">클라우드 vs 온프렘</button>
+  <button data-tab="gaps">개선 과제</button>
+  <button data-tab="amplify">강점 증폭</button>
+  <button data-tab="appendix">부록·용어</button>
+</nav>
+
+<!-- ============ TAB: 개요 ============ -->
+<section class="tabpanel active" id="tab-summary">
+  <h2>결론 요약</h2>
+  <p class="lede">packet-capture-rca는 패킷 캡처·저장 도구가 아니라, 이미 확보된 pcap을 <strong>반박 불가능한
+  근본원인 서술</strong>로 조립하는 <strong>추론 규율 계층</strong>이다. 가치는 환경에 따라 비대칭적이다.</p>
+
+  <div class="card">
+    <h3 style="margin-top:0">한눈에 보는 판단</h3>
+    <div class="tablewrap">
+    <table>
+      <tr><th style="width:220px">환경</th><th>가치 판단</th><th style="width:110px">신뢰도</th></tr>
+      <tr>
+        <td><strong>레거시 / 온프레미스</strong><br><span class="cite">블랙박스 어플라이언스 LB, 벤더 책임 공방</span></td>
+        <td><span class="status good"><span class="dot"></span>강점이 거의 그대로 적중 — 스킬이 파생된 원 시나리오</span></td>
+        <td><span class="conf high">High</span></td>
+      </tr>
+      <tr>
+        <td><strong>대규모 클라우드 (단순 인그레스)</strong><br><span class="cite">L7 프록시 + 평문 백엔드 + HTTP/1.1</span></td>
+        <td><span class="status warning"><span class="dot"></span>온프레미스와 거의 동등한 가치 유지</span></td>
+        <td><span class="conf medium">Medium</span></td>
+      </tr>
+      <tr>
+        <td><strong>대규모 클라우드 (서비스 메시)</strong><br><span class="cite">mTLS + gRPC/HTTP2 + 파드 IP churn</span></td>
+        <td><span class="status critical"><span class="dot"></span>3대 핵심 레버(앵커링·L7진실레버·스트림=트랜잭션)가 동시 약화</span></td>
+        <td><span class="conf high">High</span></td>
+      </tr>
+    </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">가장 큰 공백</h3>
+    <p style="margin:0 0 6px"><strong>캡처 확보(acquisition) 자체가 방법론 범위 밖이다.</strong>
+    <code>SKILL.md:99–105</code>는 "캡처 폴더의 절대 경로"를 이미 주어진 입력으로 취급한다. 온프레미스에서는
+    SPAN 포트 하나로 끝나는 일이, 클라우드에서는 그 자체로 별도 엔지니어링 과제(사이드카 삽입, eBPF 후킹,
+    다중 노드 시각 동기화)가 된다.</p>
+    <span class="conf high">신뢰도 High</span>
+    <span class="kill">— 반증 신호: 조직에 상시 가동 중인 클러스터 전역 패킷 미러링 인프라가 있어 캡처 확보가
+    실질적으로 무비용이라면, 해당 조직에 한해 이 공백은 사라진다.</span>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">문서 읽는 법</h3>
+    <p style="margin:0">이 문서는 분석 대상 플러그인이 요구하는 규율을 스스로에게 적용한다. 플러그인 자체에
+    대한 주장은 <span class="status good"><span class="dot"></span>관측</span>으로 <code>파일:줄번호</code>를
+    인용하고, 가치·격차·개선안은 모두 <span class="status warning"><span class="dot"></span>추론</span>으로
+    표시해 신뢰도와 반증 신호를 붙인다. 외부 도구 비교는 특정 버전 기능을 단정하지 않는
+    <strong>기능-클래스 수준</strong>으로 제한한다.</p>
+  </div>
+</section>
+
+<!-- ============ TAB: 핵심 방법론 ============ -->
+<section class="tabpanel" id="tab-method">
+  <h2>핵심 방법론 — 관측 사실 (파일:줄번호 인용)</h2>
+  <p class="lede">이 절의 모든 항목은 소스 파일에서 그대로 확인 가능한 <strong>관측</strong>이며 추론이 섞이지 않는다.</p>
+
+  <div class="card tablewrap">
+    <table>
+      <tr><th style="width:26px">#</th><th>관측 사실</th><th style="width:230px">근거</th></tr>
+      <tr><td>1</td><td>모든 주장은 "파일 + 프레임 번호 + tshark 명령"을 동반해야 finding으로 인정된다</td><td class="cite">SKILL.md:30–31</td></tr>
+      <tr><td>2</td><td>관측(observed)과 추론(inferred)을 별도 레지스터로 분리하고, 추론은 절대 사실로 승격하지 않는다</td><td class="cite">SKILL.md:32–35 / analysis-methodology.md:90–107</td></tr>
+      <tr><td>3</td><td>모든 추론 주장에는 신뢰도(High/Medium/Low)와 "반증 신호"를 명시해야 한다</td><td class="cite">SKILL.md:36–41</td></tr>
+      <tr><td>4</td><td>분석은 Sonnet(medium effort), 방향 판단은 Opus급 advisor — 실행 모델이 이원화되어 있다</td><td class="cite">SKILL.md:43–60</td></tr>
+      <tr><td>5</td><td>Advisor 체크포인트가 두 번 고정: (1) 메커니즘 확정 전 토폴로지 검증, (2) 발행 전 "회의적 벤더 엔지니어" 반박 심사</td><td class="cite">SKILL.md:62–78</td></tr>
+      <tr><td>6</td><td>실패 진단은 하나의 스파인 질문으로 수렴: "페이로드가 완전 전달됐는가, teardown이 응답 전/후 언제 왔는가"</td><td class="cite">analysis-methodology.md:8–11</td></tr>
+      <tr><td>7</td><td>QUIC/HTTP3는 RST/FIN 대신 <code>CONNECTION_CLOSE</code>로 스파인 질문을 대체하는 명시적 예외를 받는다</td><td class="cite">analysis-methodology.md:16–19 / tshark-recipes.md:150–162</td></tr>
+      <tr><td>8</td><td>실패는 4개 표준 버킷으로 분류하며 "버킷을 명명하지 않고 얼버무리지 말 것"을 명시적으로 요구한다</td><td class="cite">analysis-methodology.md:21–37</td></tr>
+      <tr><td>9</td><td>성능 문제는 재전송률×RTT×zero-window 결정표로 분류하고, 2% 임계값을 "출발점"으로 명시적 제한한다</td><td class="cite">analysis-methodology.md:51–69, 129–133</td></tr>
+      <tr><td>10</td><td>교차검증 게이트: ≥3 독립 실패 스트림, ≥2 캡처 파일, 성공-실패 diff, 신뢰도+반증신호, 문서 불일치 명시, 측정 한계 명시 — 5개 모두 체크 전 작성 단계 진입 금지</td><td class="cite">SKILL.md:246–261</td></tr>
+      <tr><td>11</td><td>엔드포인트 식별은 "문서 앵커 → 소거법 → ≥2 독립 증거 교차검증"의 5단계로 고정</td><td class="cite">endpoint-identification.md:7–61</td></tr>
+      <tr><td>12</td><td>측정 한계(SYN 누락, snaplen 절단, 캡처 중간 시작, keep-alive 인과 혼선)를 숨기지 말고 명시하라고 규정</td><td class="cite">analysis-methodology.md:109–119</td></tr>
+      <tr><td>13</td><td>원시 pcap 바이트를 LLM 컨텍스트에 직접 넣는 것을 금지 — 항상 <code>-T fields</code>/<code>-z</code> 통계로 전처리</td><td class="cite">tshark-recipes.md:202–206</td></tr>
+      <tr><td>14</td><td>HTML 보고서는 별개 문서가 아니라 "같은 보고서의 렌더링" — 토폴로지·타임라인·비교뷰·용어집이 최소 요건</td><td class="cite">confluence-io.md:128–141 / SKILL.md:312–321</td></tr>
+      <tr><td>15</td><td>citec-kb 실패 버킷 연동: 존재 시 강제, 분석 전 조회 → 신호 축적 시 재조회 → 발행 후 등록/확인/반박 3단 루프</td><td class="cite">SKILL.md:80–97, 137–143, 200–204, 331–340</td></tr>
+    </table>
+  </div>
+
+  <h3>스파인 질문이 진단을 어떻게 수렴시키는가 — 예시 스윔레인</h3>
+  <p class="lede">아래는 분석 방법론이 요구하는 스윔레인 시각화 형태의 예시 구조다(가상 프레임 번호로 절차만 예시).</p>
+  <div class="card">
+    <div class="swimlanes">
+      <div class="swimlane">
+        <div class="actor">클라이언트</div>
+        <div class="lane">
+          <div class="evt" style="left:8%"><div class="marker" style="background:var(--series-1)"></div><div class="tlabel">POST 시작</div></div>
+          <div class="evt" style="left:92%"><div class="marker" style="background:var(--critical)"></div><div class="tlabel">RST 수신, t=2.73s</div></div>
+        </div>
+      </div>
+      <div class="swimlane">
+        <div class="actor">LB 프론트 (VIP)</div>
+        <div class="lane">
+          <div class="evt" style="left:20%"><div class="marker" style="background:var(--text-muted)"></div><div class="tlabel">데이터 릴레이 중</div></div>
+          <div class="evt" style="left:78%"><div class="marker" style="background:var(--critical)"></div><div class="tlabel">RST 발신, t=2.73s</div></div>
+        </div>
+      </div>
+      <div class="swimlane">
+        <div class="actor">LB 백엔드 (SNAT)</div>
+        <div class="lane">
+          <div class="evt" style="left:35%"><div class="marker" style="background:var(--text-muted)"></div><div class="tlabel">평문 HTTP 전달</div></div>
+          <div class="evt" style="left:60%"><div class="marker" style="background:var(--warning)"></div><div class="tlabel">idle gap 시작</div></div>
+        </div>
+      </div>
+      <div class="swimlane">
+        <div class="actor">백엔드 파드</div>
+        <div class="lane">
+          <div class="evt" style="left:40%"><div class="marker" style="background:var(--good)"></div><div class="tlabel">마지막 데이터 바이트</div></div>
+        </div>
+      </div>
+    </div>
+    <p class="footnote">스파인 질문 적용: 페이로드는 마지막 바이트까지 전달됐으나(관측), RST는 응답 완료 <em>이전</em>에
+    LB 프론트에서 발신됐다(관측) → "LB의 idle 타이머가 백엔드 응답을 기다리다 선제 종료" 가설로 수렴
+    (신뢰도: Medium — 반증 신호: idle gap이 설정된 타임아웃 값과 일치하지 않는 프레임이 다른 스트림에서 재현되면 기각).</p>
+  </div>
+</section>
+
+<!-- ============ TAB: 생태계 비교 ============ -->
+<section class="tabpanel" id="tab-compare">
+  <h2>공개 tcpdump/Wireshark 생태계와의 비교</h2>
+  <p class="lede">비교는 <strong>기능-클래스</strong> 수준에서만 수행한다 — 특정 제품의 세부 버전 기능은
+  단정하지 않는다. 범례: <span class="status good"><span class="dot"></span>핵심 강점</span>
+  <span class="status warning"><span class="dot"></span>부분/간접 지원</span>
+  <span class="status critical"><span class="dot"></span>구조적으로 미지원</span></p>
+
+  <div class="card tablewrap">
+    <table>
+      <tr>
+        <th style="width:190px">기능-클래스</th>
+        <th>캡처/수집</th>
+        <th>대규모 저장·검색</th>
+        <th>패킷→기전 추론</th>
+        <th>반박가능성 자기검증</th>
+        <th>RCA 문서 산출</th>
+      </tr>
+      <tr>
+        <td>원시 tcpdump/Wireshark 수동 분석</td>
+        <td><span class="status good"><span class="dot"></span>로컬</span></td>
+        <td><span class="status critical"><span class="dot"></span></span></td>
+        <td><span class="status warning"><span class="dot"></span>분석가 역량 의존</span></td>
+        <td><span class="status critical"><span class="dot"></span></span></td>
+        <td><span class="status critical"><span class="dot"></span></span></td>
+      </tr>
+      <tr>
+        <td>IDS/플로우 탐지 (Zeek·Suricata류)</td>
+        <td><span class="status good"><span class="dot"></span>인라인/탭</span></td>
+        <td><span class="status warning"><span class="dot"></span>로그 수준</span></td>
+        <td><span class="status warning"><span class="dot"></span>이상탐지 중심</span></td>
+        <td><span class="status critical"><span class="dot"></span></span></td>
+        <td><span class="status warning"><span class="dot"></span>알림/로그</span></td>
+      </tr>
+      <tr>
+        <td>대규모 풀패킷 인덱싱 (Arkime·Stenographer류)</td>
+        <td><span class="status good"><span class="dot"></span>대규모</span></td>
+        <td><span class="status good"><span class="dot"></span>핵심 강점</span></td>
+        <td><span class="status critical"><span class="dot"></span>검색 도구일 뿐</span></td>
+        <td><span class="status critical"><span class="dot"></span></span></td>
+        <td><span class="status critical"><span class="dot"></span></span></td>
+      </tr>
+      <tr>
+        <td>eBPF 클라우드 네이티브 관측 (Hubble·Pixie류)</td>
+        <td><span class="status good"><span class="dot"></span>PCAP 불필요</span></td>
+        <td><span class="status warning"><span class="dot"></span>텔레메트리 저장소</span></td>
+        <td><span class="status warning"><span class="dot"></span>지표 제공, 서사적 인과는 별도</span></td>
+        <td><span class="status critical"><span class="dot"></span></span></td>
+        <td><span class="status critical"><span class="dot"></span></span></td>
+      </tr>
+      <tr>
+        <td>분산 트레이싱/APM (Jaeger·Tempo류)</td>
+        <td><span class="status warning"><span class="dot"></span>앱 계측 필요</span></td>
+        <td><span class="status good"><span class="dot"></span></span></td>
+        <td><span class="status warning"><span class="dot"></span>지연 분포, TCP 기전 불가</span></td>
+        <td><span class="status critical"><span class="dot"></span></span></td>
+        <td><span class="status critical"><span class="dot"></span></span></td>
+      </tr>
+      <tr>
+        <td>SRE/ITIL 프로세스 (5 Whys, USE method)</td>
+        <td><span class="status na"><span class="dot"></span>무관</span></td>
+        <td><span class="status na"><span class="dot"></span>무관</span></td>
+        <td><span class="status warning"><span class="dot"></span>프로세스만, 도구 없음</span></td>
+        <td><span class="status warning"><span class="dot"></span>포스트모템 문화</span></td>
+        <td><span class="status good"><span class="dot"></span>내러티브</span></td>
+      </tr>
+      <tr style="font-weight:600">
+        <td>packet-capture-rca</td>
+        <td><span class="status critical"><span class="dot"></span>범위 밖</span></td>
+        <td><span class="status critical"><span class="dot"></span></span></td>
+        <td><span class="status good"><span class="dot"></span>스파인 질문+버킷 분류법</span></td>
+        <td><span class="status good"><span class="dot"></span>강제 게이트+2단 advisor</span></td>
+        <td><span class="status good"><span class="dot"></span>8절+4부록 고정 템플릿</span></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-top:0">이 비교에서 도출되는 사실 기반 결론</h3>
+    <ol style="padding-left:20px; font-size:0.9rem; color:var(--text-secondary)">
+      <li><strong style="color:var(--text-primary)">packet-capture-rca는 캡처/인덱싱 도구와 경쟁 관계가 아니라 보완 관계다.</strong>
+      Arkime/Stenographer류가 "어느 pcap을 찾을지"를 풀고, 본 플러그인은 "그 pcap이 주어졌을 때 무엇을
+      결론 내려도 되는지"를 푼다. 같은 층위 비교는 카테고리 오류다.</li>
+      <li>IDS/APM/eBPF 도구는 이상탐지·지표수집에 강하지만 "이 RST가 왜 이 시점에 발생했는가"라는 인과
+      서술을 산출하도록 설계되지 않았다 — 본 플러그인이 채우는 공백이 정확히 이 지점이다.</li>
+      <li>가장 방어 가능한 차별점은 <strong style="color:var(--text-primary)">"강제된 반증가능성 프로토콜"</strong>이다.
+      개별 요소(observed/inferred 구분, seq/ack 바이트 계정)는 이미 공개 문헌에 존재하지만, 이를 워크플로
+      강제 게이트로 묶어 실행 가능하게 만든 공개 도구는 흔치 않다.
+      <span class="conf medium">신뢰도 Medium</span>
+      <span class="kill">— 반증 신호: 동일한 강제 게이트 구조를 가진 공개 저장소가 발견되면 이 주장은 좁아진다
+      (본 분석은 웹 검색을 수행하지 않았다).</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ TAB: 클라우드 vs 온프렘 ============ -->
+<section class="tabpanel" id="tab-value">
+  <h2>클라우드 vs 온프레미스 — 방법론 레버 유효성</h2>
+  <p class="lede">방법론이 의존하는 5개 핵심 레버가 두 환경에서 얼마나 그대로 성립하는지를 비교한다
+  (1=거의 성립하지 않음 · 5=설계 의도대로 성립). 모든 값은 <strong>추론</strong>이며 §개선 과제 탭에
+  근거와 반증 신호가 있다.</p>
+
+  <div class="card">
+    <div class="legend">
+      <div class="item"><span class="swatch s1"></span>온프레미스 / 레거시</div>
+      <div class="item"><span class="swatch s2"></span>대규모 클라우드 (메시+gRPC)</div>
+    </div>
+    <div class="dotplot" id="dotplot"></div>
+    <div class="scalelabels"><div class="axis"><span>1 · 거의 미성립</span><span>3</span><span>5 · 설계 의도대로 성립</span></div></div>
+  </div>
+
+  <div class="card tablewrap">
+    <table>
+      <tr><th style="width:220px">레버</th><th>온프레미스</th><th>클라우드(메시)</th><th>근거</th></tr>
+      <tr><td>엔드포인트 앵커링<br><span class="cite">고정 VIP/SNAT 문서 존재</span></td><td class="num">5</td><td class="num">2</td><td class="cite">endpoint-identification.md:16–26</td></tr>
+      <tr><td>L7 진실 레버<br><span class="cite">프록시→백엔드 평문 관찰</span></td><td class="num">5</td><td class="num">1</td><td class="cite">SKILL.md:163–165 vs mTLS 메시</td></tr>
+      <tr><td>스트림=트랜잭션 가정<br><span class="cite">HTTP/1.1 1:1 프레이밍</span></td><td class="num">5</td><td class="num">2</td><td class="cite">analysis-methodology.md:8–11, 39–49</td></tr>
+      <tr><td>단일 캡처 지점으로 충분<br><span class="cite">SPAN 1개소 vs 다중 노드</span></td><td class="num">5</td><td class="num">2</td><td class="cite">SKILL.md:208</td></tr>
+      <tr><td>캡처 확보 용이성<br><span class="cite">SPAN 설치 vs 사이드카/eBPF 배치</span></td><td class="num">4</td><td class="num">2</td><td class="cite">SKILL.md:99–105 (범위 밖 전제)</td></tr>
+    </table>
+  </div>
+
+  <h3>대규모 클라우드에서 구조적으로 깨지는 지점</h3>
+  <div class="card">
+    <p><strong>(a) 엔드포인트 식별의 앵커 부재.</strong> 파드 IP는 배포마다 바뀌고 고정 VIP/SNAT 테이블이
+    문서에 없는 경우가 흔하다. <span class="conf high">High</span>
+    <span class="kill">반증: 네임스페이스 단위 고정 ClusterIP 테이블이 주어지면 앵커링은 그대로 성립.</span></p>
+    <p><strong>(b) mTLS 메시 하 L7 진실 레버 소실.</strong> <code>tshark-recipes.md</code> TLS 섹션에
+    <code>tls.keylog_file</code> 복호화 레시피가 없다(142–162행 확인). <span class="conf high">High</span>
+    <span class="kill">반증: 키로그 레시피 추가 후 실제 복호화 성공 사례가 확인되면 해소.</span></p>
+    <p><strong>(c) HTTP/2·gRPC 멀티플렉싱이 "스트림=트랜잭션" 가정을 깬다.</strong> QUIC은 명시적 예외를
+    받았으나(16–19행) HTTP/2는 받지 못했다. <span class="conf medium">Medium</span>
+    <span class="kill">반증: <code>http2.streamid</code>로 논리 스트림 분리가 기존 버킷 어휘로 충분함이
+    확인되면 격하.</span></p>
+    <p><strong>(d) 캡처 확보 자체가 범위 밖 — 최대 실질 공백.</strong> <span class="conf high">High</span>
+    <span class="kill">반증: 상시 가동 클러스터 전역 미러링 인프라가 있는 조직에는 해당 없음.</span></p>
+    <p style="margin-bottom:0"><strong>(e) 다중 캡처 지점 간 클럭 스큐 미규정.</strong> 측정 한계 목록
+    (analysis-methodology.md:109–119)에 클럭 스큐 언급이 없다. <span class="conf medium">Medium</span>
+    <span class="kill">반증: 각 캡처 지점이 동일 NTP 소스에 동기화되어 있고 오차가 판정 시간차보다 훨씬
+    작음이 확인되면 소거.</span></p>
+  </div>
+</section>
+
+<!-- ============ TAB: 개선 과제 ============ -->
+<section class="tabpanel" id="tab-gaps">
+  <h2>개선이 필요한 부분 — 우선순위순</h2>
+  <p class="lede">각 항목은 추론이며 신뢰도와 반증 신호를 포함한다.</p>
+
+  <div class="card tablewrap">
+    <table>
+      <tr><th style="width:26px">순위</th><th>격차</th><th style="width:210px">근거</th><th style="width:90px">신뢰도</th></tr>
+      <tr>
+        <td>1</td>
+        <td><strong>캡처 확보(acquisition)가 완전히 범위 밖.</strong> 클라우드 RCA 노력의 상당 부분을
+        차지하는 단계가 워크플로 시작 전 이미 끝나 있다고 가정한다.</td>
+        <td class="cite">SKILL.md:99–105</td>
+        <td><span class="conf high">High</span></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><strong>mTLS 메시 복호화/우회 레시피 부재.</strong> TLS 섹션에 <code>tls.keylog_file</code> 언급 없음.</td>
+        <td class="cite">tshark-recipes.md:142–162</td>
+        <td><span class="conf high">High</span></td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><strong>HTTP/2·gRPC 멀티플렉싱 확장 부재.</strong> QUIC은 예외 처리됐으나 HTTP/2는 아님.</td>
+        <td class="cite">analysis-methodology.md:16–19</td>
+        <td><span class="conf medium">Medium</span></td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><strong>클럭 스큐가 측정 한계 목록에서 누락.</strong> 다중 노드 인터리빙 정확도 보증 부재.</td>
+        <td class="cite">analysis-methodology.md:109–119</td>
+        <td><span class="conf medium">Medium</span></td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><strong>버킷이 서술형 텍스트에 머무름.</strong> 구조화 스키마(식별/반례 신호)가 없다.</td>
+        <td class="cite">analysis-methodology.md:21–37</td>
+        <td><span class="conf medium">Medium</span></td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><strong>트레이스ID/액세스 로그 상관 절차 없음.</strong> 앱 레벨 신원 없이 분산 트랜잭션 매칭이 어렵다.</td>
+        <td class="cite">문서 전역(부재)</td>
+        <td><span class="conf medium">Medium</span></td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><strong>기준선(known-good baseline) 확보 절차 미비.</strong> 이미 부분적으로 언급되어 격차는 좁음.</td>
+        <td class="cite">tshark-recipes.md:129–133</td>
+        <td><span class="conf low">Low</span></td>
+      </tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============ TAB: 강점 증폭 ============ -->
+<section class="tabpanel" id="tab-amplify">
+  <h2>강점의 재확인과 증폭 방향</h2>
+
+  <h3>확인된 핵심 강점 (관측 기반)</h3>
+  <div class="card">
+    <ol style="padding-left:20px; font-size:0.9rem">
+      <li><strong>강제된 반증가능성 프로토콜</strong> — 모든 추론에 신뢰도+반증신호를 강제하고
+      (<span class="cite">SKILL.md:36–41</span>), 발행 전 "회의적 벤더" advisor 심사를 고정 배치
+      (<span class="cite">SKILL.md:67–73</span>). 분석가 컨디션에 의존하지 않는 품질 하한선.</li>
+      <li><strong>교차검증 게이트가 진입 차단으로 설계됨</strong> — 5개 항목 중 하나라도 비면 작성 단계
+      진입 불가(<span class="cite">SKILL.md:246–261</span>).</li>
+      <li><strong>observed/inferred 분리가 보고서 구조 자체에 스며듦</strong> — 관측·추론이 물리적으로
+      다른 절로 강제 분리(<span class="cite">SKILL.md:270–284</span>).</li>
+      <li><strong>citec-kb 피드백 루프</strong> — 등록/확인/반박 3단 (<span class="cite">SKILL.md:331–340</span>)이
+      개별 분석을 넘어 조직 지식 자산으로 복리 성장하는 구조를 만든다.</li>
+    </ol>
+  </div>
+
+  <h3>강점을 "더 큰 강점"으로 — 증폭 방향</h3>
+  <div class="card">
+    <p><strong>(A) 실패 버킷을 구조화 데이터로 승격.</strong> 현재 산문으로만 정의된 버킷을
+    <code>{bucket_id, discriminating_signals[], counter_signals[], protocol_family, environment_tag}</code>
+    스키마로 만들면 검색·통계·자동 매칭이 가능한 자산으로 복리 성장한다.
+    <span class="conf medium">Medium</span>
+    <span class="kill">반증: citec-kb-integration.md에 이미 구조화 필드가 존재하면 무효화 (본 분석은 해당 파일을 범위 밖으로 뒀다).</span></p>
+
+    <p><strong>(B) tshark 전처리를 고정 추출 계약으로 굳히기.</strong> 스트림당 정규화된 JSON을 산출하는
+    고정 스크립트로 표준화하면 advisor·citec-kb·HTML 시각화가 동일 스키마를 소비해 일관성이 오른다.
+    <span class="conf medium">Medium</span>
+    <span class="kill">반증: 사건 유형별 필요 필드 편차가 커서 고정 스키마가 발목을 잡는 사례가 반복되면 재고.</span></p>
+
+    <p><strong>(C) 프로토콜 계열별 스파인 질문 확장.</strong> QUIC이 받은 예외 처리를 템플릿 삼아
+    HTTP/2·gRPC·DB 와이어 프로토콜에도 계열별 스파인 질문을 추가하면 클라우드 격차(c)가 정면 해소된다.
+    <span class="conf high">High</span>
+    <span class="kill">반증: 기존 버킷 어휘만으로 gRPC 사례 분리가 충분함이 확인되면 "확장"이 아닌 "문서화"로 격하.</span></p>
+
+    <p><strong>(D) 환경별 캡처 확보 플레이북 추가.</strong> 최대 격차(순위 1)를 정면으로 겨냥 — 온프레미스
+    SPAN/TAP, 클라우드 VPC 미러링, k8s 사이드카/eBPF별 절차를 <code>references/</code>에 추가하면 방법론
+    스코프가 "캡처 있음 가정"에서 "확보부터 원인까지"로 확장된다.
+    <span class="conf high">High</span>
+    <span class="kill">반증: 대부분 조직이 이미 자체 캡처 인프라를 갖추고 있어 한계효용이 낮으면 우선순위 하향.</span></p>
+
+    <p style="margin-bottom:0"><strong>(E) 트레이스ID/액세스 로그 상관 레시피 추가.</strong> 앱 레벨 신원으로
+    스트림-요청 매핑을 표준화하면 순위 6 격차 해소 + HTTP/2 멀티플렉싱 문제 일부 완화(패킷이 안 되면 로그로 보완).
+    <span class="conf medium">Medium</span>
+    <span class="kill">반증: 로그-패킷 타임스탬프 상관이 클럭 스큐 문제를 그대로 물려받아 실효성이 낮은 사례가
+    반복되면 (D)가 선결 조건으로 재배치되어야 함.</span></p>
+  </div>
+</section>
+
+<!-- ============ TAB: 부록 ============ -->
+<section class="tabpanel" id="tab-appendix">
+  <h2>부록</h2>
+
+  <h3>부록 A. 근거 재확인 명령</h3>
+  <div class="card">
+    <p style="margin-top:0">본 문서의 모든 "관측" 등급 주장은 <code>파일:줄번호</code> 인용으로 재추적 가능하다.</p>
+    <pre style="background:var(--surface-1); border:1px solid var(--border); border-radius:8px; padding:12px; overflow-x:auto; font-size:0.8rem"><code>sed -n '&lt;시작&gt;,&lt;끝&gt;p' skills/packet-capture-rca/SKILL.md
+sed -n '&lt;시작&gt;,&lt;끝&gt;p' skills/packet-capture-rca/references/analysis-methodology.md
+sed -n '&lt;시작&gt;,&lt;끝&gt;p' skills/packet-capture-rca/references/tshark-recipes.md
+sed -n '&lt;시작&gt;,&lt;끝&gt;p' skills/packet-capture-rca/references/endpoint-identification.md</code></pre>
+  </div>
+
+  <h3>부록 B. 이 분석 자체의 측정 한계</h3>
+  <div class="card">
+    <ul style="padding-left:20px; font-size:0.9rem; color:var(--text-secondary)">
+      <li>외부 도구 비교는 웹 검색 없이 기존 지식으로 수행 — 기능-클래스 수준으로 의도적으로 제한.</li>
+      <li><code>citec-kb-integration.md</code>, <code>confluence-io.md</code>의 발행 관련 절은 범위 밖으로 명시 제외.</li>
+      <li>본 분석은 실제 pcap 실행 없이 소스 문서 정독만으로 수행 — §클라우드 vs 온프렘, §개선 과제, §강점 증폭의
+      다수 항목이 "실전 적용 시 확인/반증"을 반증 신호로 건 이유가 이것이다.</li>
+    </ul>
+  </div>
+
+  <h3>부록 C. 용어 설명 (비전문가용)</h3>
+  <div class="card">
+    <dl class="glossary">
+      <dt>pcap/pcapng</dt><dd>네트워크 카드를 지나간 패킷을 그대로 저장한 파일 형식.</dd>
+      <dt>tshark</dt><dd>Wireshark의 커맨드라인 버전 — GUI 없이 대량 패킷을 필터링·집계.</dd>
+      <dt>RST/FIN</dt><dd>TCP 연결 종료 신호. FIN은 정상 종료, RST는 강제 종료 — 어느 쪽이 왔는지가 원인 추정의 핵심 단서.</dd>
+      <dt>zero window</dt><dd>수신자가 "더 못 받는다"고 알리는 신호. 버퍼 포화를 뜻하며 병목 방향을 알려준다.</dd>
+      <dt>VIP/SNAT</dt><dd>로드밸런서의 외부 대표 주소(VIP)와 백엔드로 나갈 때 쓰는 발신 주소(SNAT). 구분해야 "누가 누구에게 말했는지" 알 수 있다.</dd>
+      <dt>mTLS(상호 TLS)</dt><dd>클라이언트·서버 양쪽이 서로 인증서를 확인하는 암호화 방식. 서비스 메시에서 흔하며, 이 경우 패킷 내용을 읽을 수 없어 분석 난이도가 크게 오른다.</dd>
+      <dt>HTTP/2 멀티플렉싱</dt><dd>하나의 TCP 연결 위에 여러 요청/응답을 동시에 섞어 보내는 방식. 패킷 스트림 하나가 여러 논리적 요청을 담아 "이 스트림이 실패했다"가 모호해질 수 있다.</dd>
+      <dt>클럭 스큐</dt><dd>서로 다른 컴퓨터 시계 간의 오차. 여러 지점 캡처의 시간 순서를 비교할 때 이 오차가 크면 "누가 먼저 반응했는가" 판정 자체가 틀릴 수 있다.</dd>
+    </dl>
+  </div>
+</section>
+</div>
+
+<script>
+  (function () {
+    var buttons = document.querySelectorAll('nav.tabs button');
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        buttons.forEach(function (b) { b.classList.remove('active'); });
+        document.querySelectorAll('.tabpanel').forEach(function (p) { p.classList.remove('active'); });
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Build the dot-plot comparison (온프레미스 vs 클라우드 메시), scale 1..5
+    var rows = [
+      { label: '엔드포인트 앵커링', a: 5, b: 2 },
+      { label: 'L7 진실 레버', a: 5, b: 1 },
+      { label: '스트림=트랜잭션 가정', a: 5, b: 2 },
+      { label: '단일 캡처 지점 충분성', a: 5, b: 2 },
+      { label: '캡처 확보 용이성', a: 4, b: 2 }
+    ];
+    var host = document.getElementById('dotplot');
+    var min = 1, max = 5;
+    function pct(v) { return ((v - min) / (max - min)) * 100; }
+    rows.forEach(function (r) {
+      var row = document.createElement('div');
+      row.className = 'dotrow';
+      var ticks = [1,2,3,4,5].map(function(v){
+        return '<span class="tick" style="left:' + pct(v) + '%"></span>';
+      }).join('');
+      row.innerHTML =
+        '<div class="label">' + r.label + '</div>' +
+        '<div class="track">' +
+          '<div class="baseline"></div>' + ticks +
+          '<div class="marker m1" style="left:' + pct(r.a) + '%" title="온프레미스: ' + r.a + '/5"></div>' +
+          '<div class="marker m2" style="left:' + pct(r.b) + '%" title="클라우드(메시): ' + r.b + '/5"></div>' +
+        '</div>';
+      host.appendChild(row);
+    });
+  })();
+</script>
