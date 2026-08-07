@@ -312,6 +312,40 @@ failure_bucket 계열 5개 도구에는 없다 — 즉 지금 이 지침을 먼�
 
 ---
 
+## Part B 구현 현황 (2026-08-07 갱신)
+
+| 항목 | 상태 | 비고 |
+|---|---|---|
+| B-1 (environment 배선) | **구현 완료** | `citec-kb` 커밋 `3e639e0`. 스키마 마이그레이션(`20260807_0005`) 적용, 컨테이너 재기동, 라이브 API로 등록/필터 동작 검증(§B-1 실행 결과 참고) |
+| B-3 (evidence_ref 형식 경고) | **구현 완료** | 같은 커밋. 비어있지 않지만 알려진 접두어와 다른 `evidence_ref`에 대해 `evidence_ref_warning` 반환(차단은 아님) |
+| B-2 (의미 매칭 폴백) | 보류 (원래 계획대로) | §B-5에서 "먼저 실측 데이터를 모은 뒤 착수" 원칙 유지 — 아직 실측 근거 부족 |
+| B-4 (protocol 값 확장) | citec-kb 코드 변경 불필요 | Part A-2(packet-capture-rca 쪽 관례 문제)에 흡수, 그대로 |
+| A-6 (packet-capture-rca 쪽 environment 반영) | **선행 조건 충족, 아직 미착수** | B-1이 배포됐으므로 이제 `references/citec-kb-integration.md` 갱신 가능 — 별도 작업으로 남음 |
+
+아래 §B-1 실행 결과는 구현 후 라이브 스택에 대해 직접 검증한 내용이다.
+
+### B-1 실행 결과 (라이브 검증)
+
+- 스키마: `failure_buckets.environment String(16) NULL` + 인덱스 추가, 백필 없음(§B-1 원안대로 — 근거
+  없는 값을 소급 채우지 않음).
+- `create_bucket()`/`match_buckets()`/`list_buckets()`에 `environment` 파라미터 배선, `match_buckets()`는
+  **하드 필터**(`environment == 질의값 OR environment IS NULL`)로 적용 — 스코어에는 개입하지 않음. 기존
+  4건이 모두 `environment IS NULL`이므로 이 설계 덕분에 어떤 `environment` 질의를 걸어도 계속 후보에
+  남는다(이전 지식이 새 필터 때문에 갑자기 안 보이게 되는 회귀가 없음).
+- `_ENV_RULES`에 서비스 메시/사이드카/쿠버네티스 정규식 → `"hybrid"` 추가(보조 경로).
+- `evidence_ref` 형식 검사를 `fb_domain_warning`과 동일한 비차단 경고 패턴으로 추가.
+- MCP 도구 5개(`kb_register_failure_bucket`/`kb_match_failure_bucket`/`kb_list_failure_buckets`/
+  `kb_get_failure_bucket`/`kb_refine_failure_bucket`) 중 `environment` 파라미터가 필요한 3개
+  (등록/매칭/목록)에 반영, 나머지 2개는 `bucket_id` 기반이라 변경 불필요(설계 문서 §8과 동일한 판단).
+- **라이브 스모크 테스트**(운영 스택, `docker compose exec` + 직접 REST 호출): `environment="hybrid"`로
+  등록 → `environment="onprem"` 질의에서 제외되고 `environment="hybrid"` 질의에서 노출됨을 확인,
+  `evidence_ref="확인함"`(자유 서술) 등록 시 `evidence_ref_warning` 발생 확인. 테스트 데이터는 검증 후
+  DB에서 직접 정리(cascade delete)해 운영 데이터에 잔존하지 않음 — 현재도 실제 등록 건수는 4건 그대로.
+- `apps/api/tests/`의 `failure_bucket`/`taxonomy` 관련 pytest 16건 모두 통과.
+- 마이그레이션 적용 후 `/v1/health`의 `alembic_revision`이 `20260807_0005`로 확인됨.
+
+---
+
 # Part B. citec-kb(wiki-mcp) 연동 개선 분석 — 소스코드 근거 기반
 
 `~/dev/citec-kb`의 실제 소스(`apps/api/app/failure_buckets/*.py`, `apps/api/app/db/models.py`,
