@@ -435,6 +435,41 @@ SQL/스크립트였고, 어디에도 마이그레이션으로 기록되지 않�
 뒤 이 스크립트를 한 번 실행해야 운영의 `kb_search(environment=...)`/`kb_match_failure_bucket
 (environment=...)`도 dev와 동일한 결과를 낸다.
 
+### B-1e — `kb_tools_help()`/`AI_AGENT_GUIDE.md`가 실제 시그니처와 불일치 (사용자 지적, 라이브 검증)
+
+B-1 배포 후 사용자가 "`kb_tools_help()`의 안내문이 실제 코드와 달라 클라이언트가 오판할 수 있다"고
+지적했다. 확인 결과(관측): `kb_tools_help()`(`mcp-server/server.py`)는 손으로 작성한 정적 문자열이라
+실제 함수 시그니처에서 자동 생성되지 않으며, B-1이 `kb_register_failure_bucket`/
+`kb_match_failure_bucket`/`kb_list_failure_buckets`/`kb_refine_failure_bucket` 4개에 `environment=`를
+추가했을 때 이 문자열은 갱신되지 않은 채 방치되어 있었다. `docs/AI_AGENT_GUIDE.md` §4.15도 동일한
+4개 시그니처를 손으로 나열하고 있어 같은 문제가 있었다(`docs/PACKET_ANALYSIS_MCP_GUIDE.md`는 이미
+앞서 갱신했었다). 이 도구를 먼저 호출해 사용법을 파악하는 에이전트/클라이언트라면 `environment`
+파라미터의 존재 자체를 몰랐을 것이다 — 정확히 사용자가 우려한 오판 시나리오.
+
+**수정 (`citec-kb` 커밋 `741604c`):**
+1. `kb_tools_help()`의 4개 시그니처에 `environment=` 추가 + 짧은 설명 문단(다른 문서와 동일한 문구:
+   fb_domain/protocol과 직교, 근거 있을 때만 채움, 미지정 시 기존 동작 유지) 추가.
+2. `docs/AI_AGENT_GUIDE.md` §4.15도 동일하게 갱신.
+3. **회귀 방지 테스트 추가** (`test_smoke.py`): `inspect.signature()`로 4개 함수에 실제로
+   `environment` 파라미터가 있는지 확인 + `kb_tools_help()` 텍스트에서 해당 함수 시그니처 부분에
+   `environment=`가 포함돼 있는지 문자열로 대조. `kb_tools_help()`는 이걸 지켜주는 다른 메커니즘이
+   없는 손 관리 문자열이므로, 다음에 파라미터가 추가/제거될 때 이 테스트를 함께 갱신해야 한다는
+   점을 테스트 자체에 주석으로 남겼다.
+
+**라이브 검증:** mcp 컨테이너 재기동 후 `kb_tools_help()` 실제 호출로 4개 시그니처 모두
+`environment=`가 나타남을 확인. pytest 18/18. `citec-kb-code-v36.tar.gz` 생성 후 압축 해제해
+`server.py`/`AI_AGENT_GUIDE.md` 양쪽에 반영됨을 파일로 직접 확인.
+
+**교훈:** B-1~B-1d를 구현하며 서비스 로직·라우터·MCP 도구 시그니처·전용 가이드 문서
+(`PACKET_ANALYSIS_MCP_GUIDE.md`)까지는 매번 갱신했지만, "도구 사용법을 알려주는 도구"
+(`kb_tools_help()`)와 범용 에이전트 가이드(`AI_AGENT_GUIDE.md`)는 별도 체크리스트 항목으로 관리하지
+않아 두 번 다 놓쳤다. 앞으로 failure_bucket 도구 시그니처를 바꿀 때는 이 두 곳도 항상 갱신 대상에
+포함해야 한다.
+
+**운영 배포 필요:** `citec-kb-code-v36.tar.gz`를 v35와 동일한 방식으로(`in.sh --code -y`) 배포해야
+운영의 `kb_tools_help()`도 정확해진다 — 이번 건은 데이터 backfill이 아니라 순수 코드/문서 수정이라
+`in.sh --code -y`만으로 충분하고 별도 스크립트 실행은 필요 없다.
+
 **운영 배포 완료 (2026-08-07):** `citec-kb-code-v35.tar.gz`(dev에서 생성, B-1/B-1c/B-1d/B-3와
 backfill 스크립트 전부 포함 — 압축 해제해 파일 단위로 직접 검증함)를 운영에 전달, `in.sh --code -y`
 + `scripts/backfill_2026-08-07_failure_bucket_environment.sh` 두 단계 모두 실행 완료. 이로써
