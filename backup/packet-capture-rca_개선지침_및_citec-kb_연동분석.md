@@ -414,6 +414,22 @@ environment 필터가 정상 작동했지만, `kb_search`/`kb_ask`(범용 하이
 질의에서 더 자주 쓰일 경로)로는 같은 필터가 전혀 작동하지 않는 상태였다. 두 경로가 서로 다른 답을
 주는 조용한 비일관성이었다는 점에서, B-1 자체의 완성도를 크게 높이는 수정이다.
 
+### 운영(폐쇄망) 배포 시 주의 — 스키마는 자동 반영, 데이터 backfill은 아님
+
+이 인스턴스(`~/dev/citec-kb`)는 개발/스테이징이며, 실제 운영은 `in.sh`로 번들을 받는 별도 폐쇄망
+시스템이다. `20260807_0005` 마이그레이션(스키마: `environment` 컬럼+인덱스)은 code 번들 배포 +
+컨테이너 재기동만으로 운영에도 자동 적용된다. **그러나 위에서 3건에 채운 실제 값
+(`onprem`/`onprem`/`hybrid`)과 `documents.environment` 재동기화는 이 개발 DB에만 실행한 1회성
+SQL/스크립트였고, 어디에도 마이그레이션으로 기록되지 않았다** — code 번들만 배포하면 운영의 동일한
+4건은 마이그레이션 이후에도 `environment=NULL`인 채로 남는다.
+
+이를 위해 `scripts/backfill_2026-08-07_failure_bucket_environment.sh`(citec-kb 커밋 `d6a5df6`)를
+추가했다 — bucket_name 매칭으로 3건을 백필하고 Document 미러를 재동기화하며, 두 단계 모두 이미
+적용된 상태에서 재실행해도 안전하게 아무 것도 하지 않도록(멱등) 만들었다(dev에서 재실행해
+`UPDATE 0/0/0` + "동기화 필요한 행 없음"을 확인). 운영에 `20260807_0005` 마이그레이션이 반영된
+뒤 이 스크립트를 한 번 실행해야 운영의 `kb_search(environment=...)`/`kb_match_failure_bucket
+(environment=...)`도 dev와 동일한 결과를 낸다.
+
 ---
 
 # Part B. citec-kb(wiki-mcp) 연동 개선 분석 — 소스코드 근거 기반
