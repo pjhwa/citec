@@ -312,7 +312,12 @@ failure_bucket 계열 5개 도구에는 없다 — 즉 지금 이 지침을 먼�
 
 ---
 
-## Part B 구현 현황 (2026-08-07 갱신)
+## Part B 구현 현황 (2026-08-07 갱신, 운영 배포 완료)
+
+**운영 배포 상태: 코드·데이터 모두 반영 완료.** `citec-kb-code-v35.tar.gz` 배포(`in.sh --code -y`) +
+`scripts/backfill_2026-08-07_failure_bucket_environment.sh` 실행까지 운영에서 완료됨(사용자 확인,
+2026-08-07). 아래 표의 "구현 완료" 항목은 전부 dev·운영 양쪽에 동일하게 적용된 상태다. 상세는 아래
+"운영(폐쇄망) 배포 시 주의" 절 참고.
 
 | 항목 | 상태 | 비고 |
 |---|---|---|
@@ -429,6 +434,15 @@ SQL/스크립트였고, 어디에도 마이그레이션으로 기록되지 않�
 `UPDATE 0/0/0` + "동기화 필요한 행 없음"을 확인). 운영에 `20260807_0005` 마이그레이션이 반영된
 뒤 이 스크립트를 한 번 실행해야 운영의 `kb_search(environment=...)`/`kb_match_failure_bucket
 (environment=...)`도 dev와 동일한 결과를 낸다.
+
+**운영 배포 완료 (2026-08-07):** `citec-kb-code-v35.tar.gz`(dev에서 생성, B-1/B-1c/B-1d/B-3와
+backfill 스크립트 전부 포함 — 압축 해제해 파일 단위로 직접 검증함)를 운영에 전달, `in.sh --code -y`
++ `scripts/backfill_2026-08-07_failure_bucket_environment.sh` 두 단계 모두 실행 완료. 이로써
+Part B의 코드·데이터 개선사항은 **dev와 운영 양쪽 모두 동일한 상태**다 — 스키마 마이그레이션,
+environment 배선(등록/매칭/목록/refine), Document 미러 동기화, evidence_ref 경고, 기존 3건의
+environment 값 backfill까지 전부 운영에도 적용되었다. (`docker`/`docker-mcp` 이미지 번들은
+`requirements.txt`/`Dockerfile` 변경이 없어 배포하지 않았다 — code 번들 + 컨테이너 재기동만으로
+충분했다.)
 
 ---
 
