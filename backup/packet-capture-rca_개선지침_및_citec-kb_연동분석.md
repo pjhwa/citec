@@ -321,7 +321,7 @@ failure_bucket 계열 5개 도구에는 없다 — 즉 지금 이 지침을 먼�
 | B-2 (의미 매칭 폴백) | 보류 (원래 계획대로) | §B-5에서 "먼저 실측 데이터를 모은 뒤 착수" 원칙 유지 — 아직 실측 근거 부족 |
 | B-4 (protocol 값 확장) | citec-kb 코드 변경 불필요 | Part A-2(packet-capture-rca 쪽 관례 문제)에 흡수, 그대로 |
 | A-6 (packet-capture-rca 쪽 environment 반영) | **선행 조건 충족, 아직 미착수** | B-1이 배포됐으므로 이제 `references/citec-kb-integration.md` 갱신 가능 — 별도 작업으로 남음 |
-| B-1c (신규 발견: `refine_bucket()`에 environment 갱신 경로 없음) | **미착수** | 기존 4건 백필 시도 중 발견 — 3건은 사용자 확인 후 직접 SQL UPDATE로 임시 반영, API 확장은 후속 과제로 남음 |
+| B-1c (신규 발견: `refine_bucket()`에 environment 갱신 경로 없음) | **구현 완료** | `citec-kb` 커밋 `08bd9b9`. `refine_bucket()`/`kb_refine_failure_bucket`에 `environment` 파라미터 추가(미지정 시 기존 값 유지, 지정 시 덮어씀) — 다음부터는 소급 보강도 SQL 우회 없이 정식 API로 가능 |
 
 아래 §B-1 실행 결과는 구현 후 라이브 스택에 대해 직접 검증한 내용이다.
 
@@ -370,10 +370,14 @@ psql ... UPDATE failure_buckets SET environment=..., updated_at=now() WHERE id=.
 직접 재확인: 3건에 값이 정상 반영됐고, `environment="hybrid"` 질의가 `efd42d6e`(hybrid)와
 `59f417e2`(NULL)는 포함하면서 `onprem` 태그된 2건은 정확히 제외함을 확인했다.
 
-**후속 개선 항목(B-1c로 기록):** `refine_bucket()`/`kb_refine_failure_bucket`에 `environment`(및
-필요하면 `protocol`) 갱신 파라미터를 추가해, 다음부터는 이런 소급 보강을 SQL 직접 조작이 아니라
-정식 API로 할 수 있게 해야 한다. (신뢰도: High — 반증 신호: 이런 소급 보강이 실제로는 드물게만
-필요하다면 — 즉 environment가 등록 시점에 항상 정확히 채워진다면 — 이 API 확장의 실익은 낮아진다.)
+**후속 개선 항목(B-1c) — 구현 완료:** `refine_bucket()`/`kb_refine_failure_bucket`에 `environment`
+갱신 파라미터를 추가했다(커밋 `08bd9b9`). 미지정(기본값)이면 기존 값을 그대로 두고, 지정하면
+덮어쓴다 — `add_signal`/`add_counter_signal`의 "건드린 것만 바꾼다" 관례를 그대로 따랐다.
+`bucket_draft()`의 content_hash 입력에 `environment`가 없어(§B-1과 동일) 재임베딩이 필요 없다. 라이브
+스모크 테스트로 확인: environment 없이 등록 → `environment="onprem"`으로 refine → environment
+없이 재차 refine해도 `onprem` 유지됨을 확인. 다음부터는 기존 버킷의 environment를 사후에 채우거나
+정정할 때 SQL 직접 조작 없이 `kb_refine_failure_bucket(bucket_id=, environment=..., confirm=)`로
+처리한다. (`protocol` 갱신 경로는 이번 범위에 포함하지 않았다 — 필요성이 확인되면 별도 항목으로.)
 
 ---
 
