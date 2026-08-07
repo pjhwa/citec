@@ -322,6 +322,7 @@ failure_bucket 계열 5개 도구에는 없다 — 즉 지금 이 지침을 먼�
 | B-4 (protocol 값 확장) | citec-kb 코드 변경 불필요 | Part A-2(packet-capture-rca 쪽 관례 문제)에 흡수, 그대로 |
 | A-6 (packet-capture-rca 쪽 environment 반영) | **선행 조건 충족, 아직 미착수** | B-1이 배포됐으므로 이제 `references/citec-kb-integration.md` 갱신 가능 — 별도 작업으로 남음 |
 | B-1c (신규 발견: `refine_bucket()`에 environment 갱신 경로 없음) | **구현 완료** | `citec-kb` 커밋 `08bd9b9`. `refine_bucket()`/`kb_refine_failure_bucket`에 `environment` 파라미터 추가(미지정 시 기존 값 유지, 지정 시 덮어씀) — 다음부터는 소급 보강도 SQL 우회 없이 정식 API로 가능 |
+| B-1d (신규 발견: `environment`가 `documents.environment`로 미러링 안 됨) | **구현 완료** | `citec-kb` 커밋 `459d841`. `fb_domain`은 전용 taxonomy 브랜치로 `Document.domain`까지 흘러가는데 `environment`는 `failure_buckets.environment`에만 있고 `kb_search`/`kb_ask`가 읽는 `documents.environment`로는 전혀 안 흘러가던 비대칭을 발견·수정 — `kb_search(environment=...)`가 이제 정상 작동 |
 
 아래 §B-1 실행 결과는 구현 후 라이브 스택에 대해 직접 검증한 내용이다.
 
@@ -378,6 +379,40 @@ psql ... UPDATE failure_buckets SET environment=..., updated_at=now() WHERE id=.
 없이 재차 refine해도 `onprem` 유지됨을 확인. 다음부터는 기존 버킷의 environment를 사후에 채우거나
 정정할 때 SQL 직접 조작 없이 `kb_refine_failure_bucket(bucket_id=, environment=..., confirm=)`로
 처리한다. (`protocol` 갱신 경로는 이번 범위에 포함하지 않았다 — 필요성이 확인되면 별도 항목으로.)
+
+### B-1d 실행 결과 — `environment`가 `Document` 미러로 흘러가지 않던 비대칭 (라이브 검증)
+
+B-1c 이후 "citec-kb 코드 수정이 더 필요한가"라는 질문에 답하려고 `failure_buckets.environment`와
+`documents.environment`를 직접 JOIN해 대조한 결과(관측), 4건 전부 `failure_buckets.environment`에는
+값이 있거나 의도적으로 NULL인데 `documents.environment`는 4건 **전부 NULL**이었다. 원인은
+`fb_domain`과 비대칭적인 처리: `fb_domain`은 `taxonomy.py`의 `source_type == "failure_bucket"` 전용
+분기를 통해 `Document.domain`까지 흘러가도록 이미 배선돼 있었지만(§B-0 정정 참고), `environment`는
+`bucket_draft()`가 `DocumentDraft`에 아예 전달하지 않아 매번 `enrich_draft_fields()`의 정규식
+추론(`infer_environment`)에만 맡겨져 있었다 — 그리고 정규식은 이 4건의 본문 어디에도 걸리지 않는
+문구라 결과가 항상 NULL이었다.
+
+**수정 (`citec-kb` 커밋 `459d841`):**
+1. `draft.py`의 `bucket_draft()`에 `environment=row.environment`를 추가 — `fb_domain`이 `metadata`를
+   거쳐 흘러가는 것과 대칭적으로, 구조화 컬럼 값을 그대로 통과시킨다. `enrich_draft_fields()`의
+   `environment or infer_environment(...)`가 이미 "명시값 우선, 없으면 regex 추론"이므로 이 한 줄로
+   충분했다.
+2. `service.py`의 `refine_bucket()`에 `environment_changed` 추적을 추가 — 값이 실제로 바뀔 때만
+   `_index_bucket()`을 재실행해 `Document` 미러를 갱신한다(이전에는 `environment`만 바꾼 refine
+   호출이 미러를 전혀 건드리지 않았다).
+3. 테스트 추가: `environment`가 `content_hash`에 영향을 주지 않는다는 것(기존 confidence/support_count
+   제외 보장과 동일한 성격)과, `bucket_draft()`가 `row.environment`를 그대로 통과시킨다는 것.
+
+**라이브 검증:** 컨테이너 재기동 후 기존 4건에 대해 `_index_bucket()`을 수동 재실행(재청킹 없이
+태그만 패치될 것으로 예상했으나, 실제로는 2~4개 청크가 재임베딩됨 — 원인은 추가 확인하지 않았고
+비용이 미미해 문제 삼지 않음). 재실행 후 `failure_buckets.environment`와 `documents.environment`가
+4건 전부 정확히 일치함을 SQL로 재확인했고, `kb_search(query=..., section="failure_bucket",
+environment="onprem")`와 `environment="hybrid"`가 각각 올바른 버킷만 반환함을 실제 호출로 확인했다
+(수정 전에는 둘 다 0건이었을 것이다 — `documents.environment`가 전부 NULL이었으므로).
+
+**의미:** 이 수정 전에는 `kb_match_failure_bucket`/`kb_list_failure_buckets`(failure_bucket 전용 API)로는
+environment 필터가 정상 작동했지만, `kb_search`/`kb_ask`(범용 하이브리드 검색 — 다른 스킬이나 일반
+질의에서 더 자주 쓰일 경로)로는 같은 필터가 전혀 작동하지 않는 상태였다. 두 경로가 서로 다른 답을
+주는 조용한 비일관성이었다는 점에서, B-1 자체의 완성도를 크게 높이는 수정이다.
 
 ---
 
