@@ -321,6 +321,7 @@ failure_bucket 계열 5개 도구에는 없다 — 즉 지금 이 지침을 먼�
 | B-2 (의미 매칭 폴백) | 보류 (원래 계획대로) | §B-5에서 "먼저 실측 데이터를 모은 뒤 착수" 원칙 유지 — 아직 실측 근거 부족 |
 | B-4 (protocol 값 확장) | citec-kb 코드 변경 불필요 | Part A-2(packet-capture-rca 쪽 관례 문제)에 흡수, 그대로 |
 | A-6 (packet-capture-rca 쪽 environment 반영) | **선행 조건 충족, 아직 미착수** | B-1이 배포됐으므로 이제 `references/citec-kb-integration.md` 갱신 가능 — 별도 작업으로 남음 |
+| B-1c (신규 발견: `refine_bucket()`에 environment 갱신 경로 없음) | **미착수** | 기존 4건 백필 시도 중 발견 — 3건은 사용자 확인 후 직접 SQL UPDATE로 임시 반영, API 확장은 후속 과제로 남음 |
 
 아래 §B-1 실행 결과는 구현 후 라이브 스택에 대해 직접 검증한 내용이다.
 
@@ -343,6 +344,36 @@ failure_bucket 계열 5개 도구에는 없다 — 즉 지금 이 지침을 먼�
   DB에서 직접 정리(cascade delete)해 운영 데이터에 잔존하지 않음 — 현재도 실제 등록 건수는 4건 그대로.
 - `apps/api/tests/`의 `failure_bucket`/`taxonomy` 관련 pytest 16건 모두 통과.
 - 마이그레이션 적용 후 `/v1/health`의 `alembic_revision`이 `20260807_0005`로 확인됨.
+
+### B-1 추가 발견 — 기존 4건 백필 시도 중 드러난 API 공백
+
+B-1 구현 직후 기존 4건에 `environment`를 실제로 채워 넣으려 시도하는 과정에서 새로운 공백을 발견했다:
+**`refine_bucket()`(`service.py`)과 `kb_refine_failure_bucket` MCP 도구에는 `environment`를 갱신하는
+파라미터가 아예 없다.** B-1은 `environment`를 `create_bucket()`(신규 등록)에만 배선했고, 기존 버킷을
+사후에 보강하는 `refine_bucket()` 경로는 빠뜨렸다 — 신규 패턴 등록 시나리오만 염두에 두고 "이미
+등록된 오래된 버킷에 새 축을 소급 적용"하는 시나리오를 놓친 설계 공백이다.
+
+기존 4건의 `symptom`/`discriminating_signals`/`root_cause` 텍스트를 직접 재검토한 결과 (관측 —
+이미 등록된 텍스트에서 그대로 인용):
+
+| 버킷 | 판단 | 근거(버킷 자체 텍스트 인용) |
+|---|---|---|
+| ECN 오처리 (`bb8df507`) | onprem | "esdoc4↔원격 사이트" WAN 경로, "방화벽/VPN GW/라우터", "ESXi 등) NIC/vSwitch 드롭 카운터" — 클라우드/메시 키워드 없음 |
+| WAN 흐름-선택적 손실 (`c9d72a38`) | onprem | "원격 지점↔데이터센터 WAN 경로", FTP STOR — 동일하게 온프레미스 WAN 회선 |
+| 클라이언트 VM 경합 (`59f417e2`) | **NULL 유지** | "오브젝트 스토리지", "클라이언트 VM"만 언급 — CSP VM인지 온프레미스 가상화인지 구분할 텍스트 증거 없음. 여기서 추측하면 "근거 없는 확정 금지" 원칙 위반 |
+| LB 버퍼 포화 (`efd42d6e`) | hybrid | "A10 L7 로드밸런서"(어플라이언스) + "backend(pod)" + ":30980"(쿠버네티스 NodePort 대역) 조합 — `_ENV_RULES`에 추가한 "어플라이언스+k8s 혼재" 패턴과 정확히 일치 |
+
+**API 경로가 없어** 사용자 확인 후 3건을 **직접 SQL UPDATE**로 반영했다(`docker compose exec postgres
+psql ... UPDATE failure_buckets SET environment=..., updated_at=now() WHERE id=...`). `environment`는
+`bucket_draft()`의 메타데이터/본문 어디에도 포함되지 않는 순수 필터 컬럼이라(콘텐츠 해시에 영향 없음)
+재임베딩·재색인은 불필요했다. `kb_list_failure_buckets`/`kb_match_failure_bucket(environment=...)`로
+직접 재확인: 3건에 값이 정상 반영됐고, `environment="hybrid"` 질의가 `efd42d6e`(hybrid)와
+`59f417e2`(NULL)는 포함하면서 `onprem` 태그된 2건은 정확히 제외함을 확인했다.
+
+**후속 개선 항목(B-1c로 기록):** `refine_bucket()`/`kb_refine_failure_bucket`에 `environment`(및
+필요하면 `protocol`) 갱신 파라미터를 추가해, 다음부터는 이런 소급 보강을 SQL 직접 조작이 아니라
+정식 API로 할 수 있게 해야 한다. (신뢰도: High — 반증 신호: 이런 소급 보강이 실제로는 드물게만
+필요하다면 — 즉 environment가 등록 시점에 항상 정확히 채워진다면 — 이 API 확장의 실익은 낮아진다.)
 
 ---
 
