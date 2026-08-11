@@ -12,3 +12,7 @@ p. 27 playwright marketplace 트러블슈팅
 ```
 /plugin marketplace add anthropics/claude-plugins-official
 ```
+
+
+https://github.com/multica-ai/andrej-karpathy-skills
+https://github.com/garrytan/gstack
