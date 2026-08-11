@@ -20,3 +20,6 @@ https://github.com/garrytan/gstack
 https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md 내용을 기반으로 한글로 karpathy-guidelines.md 만들어줘
 그리고 CLAUDE.md 에게 이 가이드라인을 지키라고 명시해줘
 애매한 경우 질문하지 말고 알아서 판단해서 수행하도록 가이드라인 수정해줘.
+
+Mars Rover KATA
+uvicorn main:app --reload
