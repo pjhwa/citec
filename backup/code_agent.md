@@ -16,3 +16,6 @@ p. 27 playwright marketplace 트러블슈팅
 
 https://github.com/multica-ai/andrej-karpathy-skills
 https://github.com/garrytan/gstack
+
+https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md 내용을 기반으로 한글로 karpathy-guidelines.md 만들어줘
+그리고 CLAUDE.md 에게 이 가이드라인을 지키라고 명시해줘
