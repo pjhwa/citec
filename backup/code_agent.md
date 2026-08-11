@@ -23,3 +23,5 @@ https://github.com/multica-ai/andrej-karpathy-skills/blob/main/CLAUDE.md 내용�
 
 Mars Rover KATA
 uvicorn main:app --reload
+
+랄프 위검 루프(Ralph Wiggum Loop)는 AI 코딩 에이전트에 동일한 프롬프트를 반복해서 입력해 작업이 완료될 때까지 실행하는 자율 개발 기법입니다
