@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CI-TEC MBTI 분석 대시보드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --bg:#0d0f14; --bg2:#151820; --bg3:#1c2030; --bg4:#222840;
+  --border:#2a3050; --border2:#3a4570;
+  --text:#e8eaf2; --text2:#9aa0bc; --text3:#5a6080;
+  --accent:#5b7fff; --gold:#f0b840; --teal:#40d4b8;
+  --coral:#ff6b6b; --purple:#a07aff; --green:#4dbb8a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6}
+.header{background:linear-gradient(135deg,#0d0f14,#151828,#0d1220);border-bottom:1px solid var(--border);padding:1.5rem 2rem;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;background:radial-gradient(circle,rgba(91,127,255,.1) 0%,transparent 70%);border-radius:50%}
+.header-top{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.brand{display:flex;align-items:center;gap:12px}
+.brand-icon{width:44px;height:44px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:#fff;text-align:center;line-height:1.3}
+.brand-text h1{font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.5px}
+.brand-text p{font-size:12px;color:var(--text2);margin-top:1px}
+.header-stats{display:flex;gap:20px;flex-wrap:wrap}
+.hstat{text-align:right}
+.hstat-val{font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--accent)}
+.hstat-lbl{font-size:11px;color:var(--text3)}
+.nav{display:flex;gap:4px;padding:.75rem 2rem;border-bottom:1px solid var(--border);background:var(--bg2);overflow-x:auto;scrollbar-width:none;flex-wrap:wrap}
+.nav::-webkit-scrollbar{display:none}
+.nav-btn{padding:6px 14px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--text2);cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:12px;white-space:nowrap;transition:all .2s}
+.nav-btn:hover{border-color:var(--border2);color:var(--text)}
+.nav-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+.main{padding:1.25rem 2rem;max-width:1400px}
+.section{display:none}
+.section.active{display:block}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.4rem;margin-bottom:1rem}
+.card-title{font-size:13px;font-weight:500;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:.9rem;display:flex;align-items:center;gap:8px}
+.card-title::before{content:'';width:3px;height:13px;background:var(--accent);border-radius:2px;display:inline-block;flex-shrink:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.metric{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem}
+.metric-val{font-family:'Space Mono',monospace;font-size:26px;font-weight:700;color:var(--text)}
+.metric-lbl{font-size:12px;color:var(--text2);margin-top:3px}
+.metric-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.bar-label{font-family:'Space Mono',monospace;font-size:11px;color:var(--text2);width:40px;text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:20px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.23,1,.32,1);display:flex;align-items:center;padding-left:7px}
+.bar-fill span{font-size:10px;font-weight:500;color:rgba(255,255,255,.9)}
+.bar-count{font-size:12px;color:var(--text2);width:32px;flex-shrink:0;text-align:right}
+.dim-row{margin-bottom:12px}
+.dim-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:3px}
+.dim-labels strong{color:var(--text);font-weight:500}
+.dim-track{height:14px;border-radius:7px;overflow:hidden;display:flex}
+.member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:7px}
+.member-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:.75rem .9rem;cursor:pointer;transition:all .2s}
+.member-card:hover{border-color:var(--border2);background:var(--bg4);transform:translateY(-1px)}
+.member-card.selected{border-color:var(--accent);background:var(--bg4)}
+.member-name{font-size:13px;font-weight:500;color:var(--text)}
+.member-role{font-size:11px;color:var(--text3);margin-top:2px;line-height:1.4}
+.mbti-pill{display:inline-block;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;margin-top:5px}
+.filter-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.9rem}
+.filter-btn{padding:4px 11px;font-size:12px;border:1px solid var(--border);border-radius:99px;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;font-family:'Noto Sans KR',sans-serif}
+.filter-btn:hover{border-color:var(--border2);color:var(--text)}
+.filter-btn.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+.detail-panel{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.4rem;margin-top:.9rem;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.detail-header{display:flex;align-items:center;gap:12px;margin-bottom:.9rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
+.avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
+.detail-info h3{font-size:15px;font-weight:500;color:var(--text)}
+.detail-info p{font-size:12px;color:var(--text3);margin-top:2px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.detail-item label{font-size:11px;color:var(--text3);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px}
+.detail-item p{font-size:13px;color:var(--text);line-height:1.5}
+.tag-list{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.tag{font-size:11px;padding:2px 7px;border-radius:4px;background:var(--bg4);color:var(--text2)}
+.org-part{margin-bottom:1.4rem}
+.org-part-title{font-size:12px;font-weight:500;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:.5rem;padding-bottom:.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.org-members{display:flex;flex-wrap:wrap;gap:5px}
+.org-member{display:flex;align-items:center;gap:5px;border:1px solid var(--border);border-radius:99px;padding:3px 9px 3px 5px;font-size:12px}
+.org-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.compat-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;margin-bottom:.7rem}
+.compat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem}
+.compat-pair{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--text)}
+.stars{color:var(--gold);font-size:12px}
+.compare-select-row{display:flex;align-items:center;gap:12px;margin-bottom:1.3rem;flex-wrap:wrap}
+.compare-select-row select{padding:7px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;cursor:pointer}
+.vs-divider{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:var(--text3)}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.compare-col{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:1.1rem}
+.compare-col-header{margin-bottom:.9rem;padding-bottom:.7rem;border-bottom:1px solid var(--border)}
+.compare-mbti{font-family:'Space Mono',monospace;font-size:22px;font-weight:700}
+.compare-row{display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px solid var(--border)}
+.compare-row:last-child{border-bottom:none}
+.compare-key{font-size:11px;color:var(--text3);width:56px;flex-shrink:0}
+.compare-val{font-size:12px;color:var(--text);text-align:right;line-height:1.5}
+.proposal-section{margin-bottom:1.8rem}
+.proposal-section-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:.9rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.proposal-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.4rem;margin-bottom:.7rem}
+.proposal-card-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:.7rem}
+.proposal-badge{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;margin-top:1px}
+.proposal-title{font-size:14px;font-weight:500;color:var(--text)}
+.proposal-body{font-size:13px;color:var(--text2);line-height:1.75}
+.proposal-body ul{padding-left:1.1rem;margin-top:.3rem}
+.proposal-body li{margin-bottom:.25rem}
+.proposal-body strong{color:var(--text)}
+.proposal-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:.7rem}
+.proposal-tag{font-size:11px;font-family:'Space Mono',monospace;padding:2px 7px;border-radius:4px;background:var(--bg4);color:var(--text2);border:1px solid var(--border)}
+.fun-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:1rem 1.3rem;margin-bottom:.7rem;display:flex;gap:12px}
+.fun-ico{font-size:20px;flex-shrink:0;margin-top:1px}
+.fun-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:.25rem}
+.fun-body{font-size:13px;color:var(--text2);line-height:1.65}
+.fun-body strong{color:var(--text)}
+.chart-wrap{position:relative;width:100%}
+select{padding:7px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Noto Sans KR',sans-serif;font-size:12px;cursor:pointer}
+button{font-family:'Noto Sans KR',sans-serif}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=checkbox]{accent-color:var(--accent)}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+table{width:100%;border-collapse:collapse}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <div class="brand">
+      <div class="brand-icon">CI<br>TEC</div>
+      <div class="brand-text">
+        <h1>CI-TEC MBTI 분석 대시보드</h1>
+        <p>IT 기술지원 부서 · 인프라 &amp; 소프트웨어 파트</p>
+      </div>
+    </div>
+    <div class="header-stats">
+      <div class="hstat"><div class="hstat-val">27</div><div class="hstat-lbl">전체 부서원</div></div>
+      <div class="hstat"><div class="hstat-val">11</div><div class="hstat-lbl">MBTI 유형 수</div></div>
+      <div class="hstat"><div class="hstat-val" id="hs-i">85%</div><div class="hstat-lbl">내향형 비율</div></div>
+      <div class="hstat"><div class="hstat-val" id="hs-sj">52%</div><div class="hstat-lbl">SJ 기질 비율</div></div>
+    </div>
+  </div>
+</div>
+<div class="nav" id="navBar"></div>
+<div class="main">
+<div id="sec-overview" class="section">
+  <div class="g4" id="topMetrics" style="margin-bottom:1rem"></div>
+  <div class="g2">
+    <div class="card"><div class="card-title">MBTI 유형 분포</div><div id="typeChart"></div></div>
+    <div>
+      <div class="card"><div class="card-title">4가지 지표 비율</div><div id="dimChart"></div></div>
+      <div class="card"><div class="card-title">기질 그룹</div><div id="temperChart"></div></div>
+    </div>
+  </div>
+  <div class="card"><div class="card-title">유형별 비중 도넛 차트</div><div class="chart-wrap" style="height:260px"><canvas id="donutChart"></canvas></div></div>
+</div>
+<div id="sec-members" class="section">
+  <div class="card"><div class="card-title">멤버 탐색</div><div class="filter-row" id="filterRow"></div><div class="member-grid" id="memberGrid"></div><div id="memberDetail"></div></div>
+</div>
+<div id="sec-profiles" class="section">
+  <div class="card" style="margin-bottom:1rem"><div class="card-title">개인 상세 프로파일</div><div class="filter-row" id="profileFilterRow"></div><div class="member-grid" id="profileGrid"></div></div>
+  <div id="profileDetail"></div>
+</div>
+<div id="sec-org" class="section">
+  <div class="card"><div class="card-title">조직별 MBTI 분포</div><div id="orgView"></div></div>
+  <div class="g2">
+    <div class="card"><div class="card-title">파트별 유형 분포</div><div class="chart-wrap" style="height:250px"><canvas id="partChart"></canvas></div></div>
+    <div class="card"><div class="card-title">파트별 역량 레이더</div><div class="chart-wrap" style="height:250px"><canvas id="partDimChart"></canvas></div></div>
+  </div>
+</div>
+<div id="sec-compat" class="section">
+  <div class="card"><div class="card-title">파트 내 주요 유형 조합 시너지</div><div id="compatView"></div></div>
+</div>
+<div id="sec-compare" class="section">
+  <div class="card"><div class="card-title">두 유형 비교</div>
+    <div class="compare-select-row"><select id="cmpA"></select><span class="vs-divider">VS</span><select id="cmpB"></select></div>
+    <div class="compare-grid" id="comparePanel"></div>
+  </div>
+</div>
+<div id="sec-growth" class="section"><div id="growthView"></div></div>
+<div id="sec-dynamics" class="section"><div id="dynamicsView"></div></div>
+<div id="sec-conflict" class="section"><div id="conflictView"></div></div>
+<div id="sec-playbook" class="section"><div id="playbookView"></div></div>
+<div id="sec-mood" class="section"><div id="moodView"></div></div>
+<div id="sec-matcher" class="section"><div id="matcherView"></div></div>
+<div id="sec-simulator" class="section"><div id="simulatorView"></div></div>
+<div id="sec-okr" class="section"><div id="okrView"></div></div>
+<div id="sec-fun" class="section"><div class="card"><div class="card-title">CI-TEC 특별 인사이트</div><div id="funView"></div></div></div>
+</div>
+<script>
+
+const members = [
+  {name:'이승택',mbti:'INFP',role:'그룹장',part:'그룹장',team:'전체',leader:true},
+  {name:'강건',mbti:'ISTJ',role:'기획/교육',part:'기획/교육',team:'기획/교육'},
+  {name:'양은지',mbti:'ESFJ',role:'기획/교육',part:'기획/교육',team:'기획/교육'},
+  {name:'박재화',mbti:'ENFJ',role:'인프라 파트장',part:'인프라',team:'인프라',leader:true},
+  {name:'곽주영',mbti:'ISTP',role:'OpenStack 지원',part:'인프라',team:'OpenStack'},
+  {name:'성기현',mbti:'ISTP',role:'OpenStack 지원',part:'인프라',team:'OpenStack'},
+  {name:'백종탁',mbti:'ISTP',role:'OpenStack 지원',part:'인프라',team:'OpenStack'},
+  {name:'배상용',mbti:'INFJ',role:'스토리지 지원',part:'인프라',team:'스토리지'},
+  {name:'박희태',mbti:'ISTJ',role:'스토리지 지원',part:'인프라',team:'스토리지'},
+  {name:'임부건',mbti:'ISFP',role:'스토리지 지원',part:'인프라',team:'스토리지'},
+  {name:'이광호',mbti:'INFP',role:'VMware 지원',part:'인프라',team:'VMware'},
+  {name:'권상득',mbti:'INTJ',role:'VMware 지원',part:'인프라',team:'VMware'},
+  {name:'이충용',mbti:'INTJ',role:'네트워크 지원',part:'인프라',team:'네트워크'},
+  {name:'조영상',mbti:'INTP',role:'네트워크 지원',part:'인프라',team:'네트워크'},
+  {name:'권다진',mbti:'ISTJ',role:'네트워크 지원',part:'인프라',team:'네트워크'},
+  {name:'이은정',mbti:'ESTJ',role:'네트워크 지원',part:'인프라',team:'네트워크'},
+  {name:'전력식',mbti:'ISTJ',role:'소프트웨어 파트장',part:'소프트웨어',team:'소프트웨어',leader:true},
+  {name:'김형일',mbti:'ISTJ',role:'성능/진단 지원',part:'소프트웨어',team:'성능/진단'},
+  {name:'이창호',mbti:'INTJ',role:'성능/진단 지원',part:'소프트웨어',team:'성능/진단'},
+  {name:'박영철',mbti:'ISTJ',role:'데이터베이스 지원',part:'소프트웨어',team:'DB'},
+  {name:'민연홍',mbti:'ESTJ',role:'데이터베이스 지원',part:'소프트웨어',team:'DB'},
+  {name:'홍지희',mbti:'ISFJ',role:'데이터베이스 지원',part:'소프트웨어',team:'DB'},
+  {name:'박경현',mbti:'ISTJ',role:'미들웨어 지원',part:'소프트웨어',team:'미들웨어'},
+  {name:'김영도',mbti:'ISTP',role:'미들웨어 지원',part:'소프트웨어',team:'미들웨어'},
+  {name:'이상준',mbti:'ISFJ',role:'미들웨어 지원',part:'소프트웨어',team:'미들웨어'},
+  {name:'조윤석',mbti:'ISTJ',role:'Linux 지원',part:'소프트웨어',team:'Linux'},
+  {name:'홍성순',mbti:'ISFJ',role:'Linux 지원',part:'소프트웨어',team:'Linux'},
+];
+
+const COLORS = {
+  ISTJ:'#5b7fff',ISFJ:'#4dbb8a',INFJ:'#a07aff',INTJ:'#7a5fff',
+  ISTP:'#40d4b8',ISFP:'#5ec4f0',INFP:'#d490f0',INTP:'#40c4a8',
+  ESTJ:'#ff6b6b',ESFJ:'#ff9090',ENFJ:'#ffaa60',ENTJ:'#ff4444',
+};
+
+const DESC = {
+  ISTJ:{nick:'청렴결백한 논리주의자',strength:['신뢰성·책임감','체계적 문서화','규정 준수'],challenge:['변화 적응 어려움','유연성 부족','창의성 제한'],role:'규정·절차의 수호자',collab:'ENFJ·ESFJ와 팀워크 향상'},
+  ISFJ:{nick:'용감한 수호자',strength:['헌신·세심함','팀 화합 유지','조용한 지원'],challenge:['자기주장 약함','거절 어려움','공로 내세우기 어려움'],role:'팀의 든든한 지원군',collab:'ENFJ·ENTJ와 리더십 보완'},
+  INFJ:{nick:'선의의 옹호자',strength:['통찰력·공감','비전 제시','깊은 집중'],challenge:['완벽주의·번아웃','과도한 이상'],role:'팀 방향 제시 나침반',collab:'ESTP·ISTJ와 현실 균형'},
+  INTJ:{nick:'용의주도한 전략가',strength:['전략적 사고','독립심·효율','장기 비전'],challenge:['완고함','사회적 거리감','독단적 결정'],role:'장기 계획·시스템 설계자',collab:'ENFJ·ESFJ와 소통 강화'},
+  ISTP:{nick:'만능 재주꾼',strength:['실전 문제해결','침착한 대응','기술적 숙련'],challenge:['장기계획 약함','감정표현 부족','규범 무시'],role:'현장의 실전 해결사',collab:'ISFJ·ISTJ와 프로세스 보완'},
+  ISFP:{nick:'호기심 많은 예술가',strength:['유연성·공감','현실적 적응','팀 분위기'],challenge:['갈등 회피','장기목표 약함','표현 소극적'],role:'팀 분위기 조율사',collab:'INTJ·ISTJ와 구조 보완'},
+  INFP:{nick:'열정적인 중재자',strength:['가치 기반 헌신','공감·창의성','깊은 통찰'],challenge:['현실 적응 어려움','과민반응','실행력 약함'],role:'팀의 가치·의미 추구자',collab:'ISTJ·ESTJ와 현실화 파트너'},
+  INTP:{nick:'논리적인 사색가',strength:['분석력·독창성','객관적 사고','복잡한 문제 해결'],challenge:['실행력 약함','규범 무시','불확실성 회피'],role:'복잡한 문제 아키텍트',collab:'ESTJ·ENTJ와 실행력 보완'},
+  ENFJ:{nick:'정의로운 사회운동가',strength:['리더십·설득력','공감·동기부여','팀 빌딩'],challenge:['감정 소모','자기희생 과다','갈등 회피'],role:'팀을 이끄는 영감 리더',collab:'ISTJ·INTJ와 구조적 실행'},
+  ESFJ:{nick:'사교적인 외교관',strength:['협력·친화력','팀 화합','대외 소통'],challenge:['비판에 민감','갈등 회피','규범 의존'],role:'팀 분위기 메이커',collab:'INTJ·ISTJ와 전략적 균형'},
+  ESTJ:{nick:'엄격한 관리자',strength:['실행력·조직화','책임감·추진력','명확한 기준'],challenge:['융통성 부족','강압적 경향','감정 무시'],role:'프로세스·실행의 엔진',collab:'INFP·INFJ와 감성적 균형'},
+};
+
+const MEMBER_PROFILES = {
+  '이승택':{summary:'조용하지만 깊은 신념으로 조직을 이끄는 그룹장.',personality:'내면에 강렬한 가치 체계를 가진 이상주의자. 사람들의 감정을 직관적으로 읽고 표면 아래 본질을 꿰뚫습니다.',workstyle:['혼자 깊이 생각한 후 명확한 의견 표현','감정적 분위기에 민감, 팀 내 갈등 조기 포착','규칙보다 가치와 의미 중심 판단'],strength:['진정성 있는 공감 리더십','팀 핵심 가치와 문화 형성 주도','구성원 개인 잠재력 발견'],growth:['데이터·수치 기반 의사결정 보완','갈등 상황에서 직접적 표현 연습','완벽주의로 인한 결정 지연 주의'],motivation:'팀이 의미 있는 일을 하고 있다는 확신, 구성원 성장 목격',stress:'가치와 충돌하는 지시, 팀 내 불화, 감정적 소모 갈등',bestWith:'ISTJ(실행 보완)·INTJ(전략 지원)·ENFJ(공감 공유)',citec:'그룹 전체의 WHY를 정의. 27명의 다양한 성향을 하나로 묶는 보이지 않는 접착제.'},
+  '강건':{summary:'체계와 원칙으로 기획 업무를 완벽히 수행하는 실력자.',personality:'신뢰성과 성실함이 체질화. 한 번 맡은 일은 끝까지 책임지며 기록과 체계를 중시합니다.',workstyle:['사전 계획 수립 후 단계적 실행','상세한 문서화와 기록 유지','절차와 규정에 따른 표준화 선호'],strength:['완벽한 기획 문서 작성','교육 커리큘럼 체계적 설계','일관된 품질 유지'],growth:['새로운 방법론 유연하게 수용','창의적 브레인스토밍 참여도 향상','관성에 대한 주기적 점검'],motivation:'명확한 목표, 충분한 준비 시간, 자신의 기여가 인정받을 때',stress:'갑작스러운 계획 변경, 불명확한 지시, 완료 기준 없는 업무',bestWith:'ESFJ(협업 에너지)·ENFJ(방향 제시)·INTJ(전략 연계)',citec:'기획/교육팀에서 교육 자료와 프로세스의 뼈대를 세우는 역할.'},
+  '양은지':{summary:'팀과 사람을 연결하는 따뜻한 에너지의 소유자. 27명 중 외향형 F 성향 대표.',personality:'사람을 진심으로 돌보고 연결하는 것을 좋아합니다. 팀의 화합을 매우 중요하게 여깁니다.',workstyle:['적극적 소통과 빠른 관계 형성','팀 교육 진행 시 참여 유도 퍼실리테이터','타인의 니즈를 직관적으로 파악하여 선제 지원'],strength:['교육 진행 및 퍼실리테이션','신규 입사자 온보딩 지원','대외 협업 및 부서 간 소통'],growth:['비판적 피드백을 직접적으로 전달하는 연습','데이터 기반 분석 역량 보완'],motivation:'팀원들이 성장하고 감사 표현을 할 때, 교육 후 긍정 피드백',stress:'팀 내 갈등과 불화, 차가운 분위기',bestWith:'ISTJ(구조 제공)·INTJ(전략 지원)·INFP(가치 공유)',citec:'부서 전체 86% 내향형 환경에서 외부와 연결하는 소중한 외향 에너지.'},
+  '박재화':{summary:'사람을 통해 결과를 만드는 인프라 파트장. 팀원 잠재력을 끌어내는 영감형 리더.',personality:'카리스마와 공감이 공존하는 리더. 팀원이 무언가를 이루도록 돕는 것에서 보람을 찾습니다.',workstyle:['팀원 동기부여 중심 리더십','일 대 일 코칭 및 개별 면담','감정적 중재자 역할'],strength:['팀 응집력 강화','개인별 맞춤 동기부여','다양한 유형을 하나로 묶는 능력'],growth:['감정 소모와 번아웃 자기 관리 필수','ISTJ 파트원에게 논리적 근거 함께 제시'],motivation:'팀원의 성장, 팀 목표 달성, 구성원에게 영향력을 미쳤을 때',stress:'팀 내 장기적 불화, 과도한 행정 업무',bestWith:'ISTJ(실행 파트너)·INTJ(전략 보완)·INFP 그룹장(가치 공유)',citec:'인프라 파트의 ISTP 3명, INTJ 2명 등 다양한 유형을 이끄는 포용형 리더.'},
+  '곽주영':{summary:'말보다 손이 먼저 나가는 OpenStack 현장 전문가.',personality:'행동 지향적이고 실용적인 문제 해결사. 직접 해보고 결과를 확인하는 방식을 선호합니다.',workstyle:['직접 실험·검증을 통한 문제해결','간결하고 핵심만 담은 커뮤니케이션','혼자 집중할 때 최고 퍼포먼스'],strength:['OpenStack 현장 장애 즉각 대응','복잡한 기술 문제 빠른 원인 분석','성기현·백종탁과 ISTP 트리플 시너지'],growth:['문서화 습관 의도적 강화','팀원들과 해결 과정 공유 늘리기'],motivation:'복잡한 기술 문제, 자율적 탐구, 실질적 결과',stress:'과도한 보고·회의, 이론적 토론만 계속되는 상황',bestWith:'성기현·백종탁(ISTP 트리오)·ISFJ(문서 보완)',citec:'OpenStack 3인방의 핵심. 현장 판단력과 기술 숙련도로 인프라 실전 대응력 책임.'},
+  '성기현':{summary:'조용하지만 신뢰할 수 있는 OpenStack 기술 전문가.',personality:'관찰하고 분석한 후 행동합니다. 독립적으로 일하는 것을 선호합니다.',workstyle:['세밀한 관찰 후 핵심을 파고드는 스타일','불필요한 소통 최소화, 결과로 증명'],strength:['OpenStack 운영 안정성 관리','현장 상황 판단력'],growth:['지식 공유 및 문서화 참여 늘리기','팀 내 관점을 더 적극적으로 표현'],motivation:'기술적 자율성, 실질적인 문제 해결',stress:'마이크로매니지먼트, 과도한 회의',bestWith:'곽주영·백종탁(ISTP 공명)·ISFJ(기록 보완)',citec:'ISTP 삼형제 중 중간 포지션. 기술적 검증과 현장 대응의 균형.'},
+  '백종탁':{summary:'결과로 말하는 OpenStack 실전파. 문제 앞에서 당황하지 않는 냉정한 기술자.',personality:'실용적이고 현실적. 감정보다 사실, 이론보다 경험을 중시합니다.',workstyle:['사실과 경험 기반 판단','독립적 업무 수행 선호','핵심만 간결하게 소통'],strength:['OpenStack 장애 대응 능력','기술적 집요함과 끈기'],growth:['문서화 역량 강화 (ISFJ와 페어링 권장)','장기 목표와 연계한 업무 계획 수립'],motivation:'기술적 완성도, 자율적 업무 환경',stress:'형식적 절차와 보고, 통제적 환경',bestWith:'곽주영·성기현(ISTP 공명)·ISFJ(기록 보완)',citec:'ISTP 트리오의 완성. 세 명 모두 말 없지만 장애 상황 결과는 누구보다 빠릅니다.'},
+  '배상용':{summary:'통찰과 헌신이 결합된 스토리지 전문가. 팀의 보이지 않는 나침반.',personality:'깊은 공감과 강한 직관력. 표면적 현상 너머의 본질을 꿰뚫어 봅니다.',workstyle:['혼자 깊이 분석 후 행동','장기적 관점으로 문제 조망','세밀한 부분까지 놓치지 않는 꼼꼼함'],strength:['스토리지 시스템 심층 분석','팀 내 비공식 멘토 역할','복잡한 상황의 본질 파악'],growth:['완벽주의로 인한 번아웃 주의','자신의 의견을 더 직접적으로 표현'],motivation:'의미 있는 기여, 팀원이 성장하는 모습',stress:'표면적이고 성의 없는 업무, 과도한 부하',bestWith:'ISTJ 박희태(실행 파트너)·ISFP 임부건(감성 공유)',citec:'스토리지팀에서 ISTJ 박희태의 체계성과 ISFP 임부건의 유연성 사이 통찰의 중심.'},
+  '박희태':{summary:'스토리지 운영의 신뢰 기둥. 흔들림 없는 책임감.',personality:'책임감과 성실함이 몸에 밴 사람. 맡은 일은 반드시 완수합니다.',workstyle:['계획대로 단계적으로 실행','상세한 기록과 문서화 철저','예측 가능하고 안정적인 루틴 선호'],strength:['스토리지 운영 안정성 관리','체계적 장애 대응 절차 수립'],growth:['새로운 기술과 방법론에 열린 자세','유연한 상황 대처 능력 강화'],motivation:'명확한 목표, 안정된 업무 환경',stress:'갑작스러운 변경, 불명확한 지시',bestWith:'INFJ 배상용(통찰 보완)·ISFP 임부건(유연성 보완)',citec:'스토리지팀의 실행 엔진. 배상용의 통찰을 현실적 절차로 구현.'},
+  '임부건':{summary:'유연함과 공감으로 스토리지팀의 분위기를 따뜻하게 만드는 존재.',personality:'현재 순간에 충실하고 주변 사람들의 감정에 섬세하게 반응합니다.',workstyle:['상황에 맞게 유연하게 적응','주변 사람들의 필요를 먼저 챙기는 스타일'],strength:['팀 분위기 조율 및 갈등 완화','다양한 성향과 자연스럽게 협업'],growth:['장기 목표 설정과 커리어 계획 수립','자신의 의견을 더 적극적으로 표현'],motivation:'팀원이 도움을 받았을 때',stress:'지속적인 갈등 상황, 강압적 환경',bestWith:'ISTJ 박희태(구조 지원)·INFJ 배상용(감성 공유)',citec:'CI-TEC 내 희귀 유형(ISFP). 스토리지팀의 부드러운 연결고리.'},
+  '이광호':{summary:'기술과 가치를 연결하는 VMware 전문가.',personality:'이상적인 세계에 대한 비전을 가지고 자신의 일에서 의미를 찾습니다.',workstyle:['의미와 목적 중심으로 업무 접근','직관적으로 문제의 본질을 파악'],strength:['VMware 환경의 창의적 최적화','팀 내 새로운 관점 제시'],growth:['실행력과 마감 관리 강화','구체적 수치 기반 제안 역량 개발'],motivation:'자신의 일이 팀에 의미 있다는 확신',stress:'반복적이고 의미 없는 업무',bestWith:'INTJ 권상득(전략·실행 보완)·ENFJ 파트장(가치 공유)',citec:'VMware팀에서 권상득(INTJ)과 INFP+INTJ 콤비.'},
+  '권상득':{summary:'VMware 아키텍처를 설계하는 냉철한 전략가.',personality:'독립적이고 전략적인 사고. 비효율을 참지 못하며 항상 더 나은 방법을 탐색합니다.',workstyle:['장기적 관점에서 시스템 설계','최소한의 소통으로 최대 결과 추구'],strength:['VMware 인프라 아키텍처 설계','장기 기술 로드맵 수립'],growth:['팀원들과 의사결정 과정 공유','유연성 강화'],motivation:'도전적인 기술 문제, 자율성',stress:'비효율적 프로세스, 논리 없는 결정',bestWith:'INFP 이광호(관점 보완)·INTP 조영상(논리 검증)',citec:'인프라 파트의 기술 전략 두뇌. INTJ로서 이충용과 함께 기술 방향성 설계.'},
+  '이충용':{summary:'네트워크 아키텍처의 마스터플래너. 시스템 전체를 꿰뚫는 전략적 통찰력.',personality:'높은 기준과 강한 자기 확신. 비효율과 비논리에 즉각 반응합니다.',workstyle:['시스템 전체 관점에서 네트워크 설계','독립적 분석과 검증을 통한 결론 도출'],strength:['네트워크 아키텍처 설계 및 최적화','장기 기술 전략 수립'],growth:['팀원들에게 의사결정 과정 투명하게 공유','감정적 요소를 고려한 소통 방식 보완'],motivation:'복잡한 기술 과제, 자율성',stress:'비효율적 절차, 반복적 설명 요구',bestWith:'INTP 조영상(논리 검증)·ISTJ 권다진(실행 보완)',citec:'네트워크팀의 전략 두뇌. 조영상(INTP)과 함께 부서 최강 분석·설계 콤비.'},
+  '조영상':{summary:'네트워크 문제를 원리부터 파고드는 논리의 사색가. CI-TEC 유일 INTP.',personality:'이론과 원리를 탐구하는 것을 즐깁니다. 복잡한 문제일수록 흥미를 느낍니다.',workstyle:['원리와 메커니즘부터 이해하고 접근','여러 가능성을 동시에 분석'],strength:['네트워크 장애 근본 원인 분석(RCA)','이충용(INTJ)과의 분석·전략 완전체'],growth:['아이디어를 실행으로 연결하는 추진력 강화','명확한 결론과 실행 계획 제시 연습'],motivation:'복잡한 지적 문제, 탐구의 자유',stress:'이론 없는 즉흥적 결정, 반복적 단순 업무',bestWith:'INTJ 이충용(전략화 파트너)·ESTJ 이은정(실행 드라이브)',citec:'CI-TEC 유일의 INTP. 이충용의 전략에 깊이 있는 논리적 토대를 제공.'},
+  '권다진':{summary:'네트워크 운영의 든든한 기둥. 체계적이고 신뢰할 수 있는 실행력.',personality:'책임감 있고 성실. 규정과 절차를 중시하며 맡은 일은 반드시 완수합니다.',workstyle:['절차와 매뉴얼에 따른 정확한 실행','INTJ·INTP의 설계를 현장에서 구현'],strength:['네트워크 운영 표준화 및 안정화','신뢰할 수 있는 일관된 업무 처리'],growth:['새로운 기술 트렌드에 적극적 관심','창의적 문제 해결 시도 늘리기'],motivation:'명확한 업무 기준, 팀의 안정적 운영',stress:'불명확한 지시, 잦은 계획 변경',bestWith:'INTJ 이충용(방향 제시)·ESTJ 이은정(실행 공조)',citec:'분석가(INTJ·INTP)와 관리자(ESTJ)를 연결하는 실행의 다리.'},
+  '이은정':{summary:'네트워크팀의 실행 엔진. 명확한 기준과 강한 추진력.',personality:'목표 지향적이고 결단력 있는 사람. 불명확한 것을 명확하게 만듭니다.',workstyle:['목표를 정하고 체계적으로 달성','명확하고 직접적인 소통 스타일'],strength:['프로젝트 실행력 및 추진력','네트워크팀 성과 관리'],growth:['INTJ·INTP 팀원의 자율성 존중','F 유형 팀원들의 감정적 신호 수용'],motivation:'명확한 성과, 팀의 목표 달성',stress:'우유부단한 결정, 비효율적 프로세스',bestWith:'INTP 조영상(분석 지원)·ISTJ 권다진(실행 공조)',citec:'네트워크팀에서 유일한 ESTJ. 생각에서 실행으로 전환을 이끄는 핵심 역할.'},
+  '전력식':{summary:'소프트웨어 파트를 체계와 원칙으로 이끄는 파트장.',personality:'책임감과 성실함의 화신. 팀의 표준과 절차를 정비하고 일관된 품질을 유지합니다.',workstyle:['파트 전체 업무 표준화 및 절차 수립','INTJ 이창호를 전략 파트너로 활용'],strength:['소프트웨어 파트 전체 운영 체계화','파트 안정성과 신뢰성 유지'],growth:['INTJ·ISTP 팀원들의 자율성 보장','혁신적 아이디어를 거부하지 않는 개방성'],motivation:'파트의 안정적 운영, 명확한 역할과 책임',stress:'불명확한 목표, 갑작스러운 방향 전환',bestWith:'INTJ 이창호(전략 보완)·INFP 그룹장(가치 연결)',citec:'소프트웨어 파트 5명의 ISTJ 중 리더. INTJ 이창호를 전략 파트너로 두어 단점(혁신 부족)을 보완.'},
+  '김형일':{summary:'성능·진단 분야의 신뢰할 수 있는 전문가.',personality:'꼼꼼하고 신중한 분석가. 데이터와 사실에 근거하여 체계적으로 접근합니다.',workstyle:['데이터 기반 성능 분석','단계적이고 체계적인 진단 절차'],strength:['시스템 성능 진단 및 최적화','이창호(INTJ)와의 보완적 협업'],growth:['새로운 진단 도구·방법론 적극 탐색','이창호의 전략적 관점 흡수'],motivation:'명확한 문제와 해결, 성능 개선이 수치로 보일 때',stress:'측정 불가능한 문제, 불충분한 데이터',bestWith:'INTJ 이창호(전략 연계)·ISTJ 파트장(방향 제시)',citec:'성능/진단팀에서 ISTJ+INTJ 콤비(김형일+이창호)는 체계적 진단과 전략적 해결의 황금 조합.'},
+  '이창호':{summary:'소프트웨어 파트의 전략적 두뇌. 성능 문제의 근본을 꿰뚫는 냉철한 분석가.',personality:'독립적이고 전략적인 사고. 표면적 증상보다 근본 원인을 찾습니다.',workstyle:['시스템 전체 관점에서 성능 문제 접근','장기적 개선 방향 설계'],strength:['성능 문제 전략적 분석 및 개선 계획','소프트웨어 파트 기술 방향성 제시'],growth:['ISTJ 팀원들에게 전략을 명확히 설명','자신의 분석을 팀과 적극 공유'],motivation:'복잡한 기술 과제, 전략적 자율성',stress:'비효율적 절차, 빈번한 방해',bestWith:'ISTJ 김형일(실행 파트너)·INTP 조영상(논리 검증)',citec:'소프트웨어 파트에서 ISTJ 집단사고를 방지하는 전략적 해독제.'},
+  '박영철':{summary:'데이터베이스 운영의 안정적 기반. 철저한 책임감으로 DB 안정성 수호.',personality:'신중하고 꼼꼼한 데이터베이스 전문가. DB는 실수가 허용되지 않는 영역.',workstyle:['DB 운영 절차의 엄격한 준수','체계적 백업·복구 계획 수립'],strength:['데이터베이스 안정성 관리','변경 관리 프로세스 체계화'],growth:['DB 자동화·최적화 새 기술 적극 탐색','민연홍의 실행 에너지를 활용한 개선 추진'],motivation:'DB의 안정적 운영, 전문성 인정',stress:'예측 불가능한 DB 장애',bestWith:'ESTJ 민연홍(실행 드라이브)·ISTJ 파트장(기준 제시)',citec:'DB팀에서 ISTJ(박영철)+ESTJ(민연홍)+ISFJ(홍지희) 3인 체제. 신중한 계획·강한 실행력·세심한 지원의 완성형 조합.'},
+  '민연홍':{summary:'데이터베이스팀의 실행 드라이버. 명확한 목표를 향해 팀을 이끄는 강한 추진력.',personality:'결단력 있고 목표 지향적. 일을 명확하게 정의하고 효율적으로 완수합니다.',workstyle:['명확한 목표 설정과 추진','직접적이고 간결한 소통'],strength:['DB 운영 효율화 및 자동화 추진','박영철(ISTJ)과의 계획·실행 이원화'],growth:['박영철의 신중한 접근법 존중','빠른 추진 속에서 꼼꼼한 검증 챙기기'],motivation:'명확한 성과, 효율적 결과',stress:'의사결정 지연, 비효율적 프로세스',bestWith:'ISTJ 박영철(계획 보완)·INTJ 이창호(전략 연계)',citec:'소프트웨어 파트 내 ESTJ. DB팀에서 박영철(ISTJ)·홍지희(ISFJ)와 함께 안정성·효율·화합을 동시 달성.'},
+  '홍지희':{summary:'DB팀에 새로 합류한 세심한 지원형 전문가. 신규 멤버이자 팀의 새로운 감성 균형추.',personality:'타인을 배려하고 팀의 화합을 중시하는 헌신형. 맡은 일을 꼼꼼히 처리하며 조용히 신뢰를 쌓아가는 타입입니다. 신규 합류자로서 기존 절차를 빠르게 습득하고 팀에 자연스럽게 녹아드는 강점이 있습니다.',workstyle:['세밀하고 꼼꼼한 업무 처리','팀원들의 필요를 먼저 파악하여 지원','절차와 매뉴얼을 성실히 학습·준수','안정적이고 예측 가능한 환경에서 최고 성과'],strength:['DB 운영 지원 및 문서화','팀 화합과 협력 촉진','신규 시각으로 기존 절차의 개선점 발견','박영철(ISTJ)·민연홍(ESTJ)과 보완적 협업'],growth:['온보딩 기간 중 적극적으로 질문하고 의견 표현','자신의 기여를 가시적으로 드러내기','DB 심화 기술 역량 학습 로드맵 수립','거절 능력 강화 — 과도한 부담 방지'],motivation:'팀에 실질적으로 기여하고 있다는 확신, 동료들의 감사 표현',stress:'불명확한 역할 정의, 팀 내 갈등, 준비 없이 몰아치는 업무',bestWith:'ISTJ 박영철(절차 학습 파트너)·ESTJ 민연홍(실행 드라이브)·ISFJ 이상준·홍성순(동일 유형 멘토)',citec:'DB팀에 ISTJ(계획)+ESTJ(실행)에 이어 ISFJ(지원·화합)가 더해져 3인 역할 균형 완성. 소프트웨어 파트 ISFJ가 3명으로 늘어 기술 중심 환경의 인간적 온기가 한층 강화됨.'},
+  '박경현':{summary:'미들웨어 운영의 체계적 관리자.',personality:'신뢰할 수 있고 성실. 미들웨어라는 복잡한 영역을 절차와 체계로 관리합니다.',workstyle:['미들웨어 운영 절차 표준화','김영도(ISTP)·이상준(ISFJ)과 역할 분담'],strength:['미들웨어 운영 안정화','다양한 유형(ISTP·ISFJ)과의 협업 관리'],growth:['ISTP 김영도의 실전적 접근법 수용','새로운 미들웨어 기술 적극 탐색'],motivation:'체계적 운영, 명확한 역할',stress:'갑작스러운 변경, 잦은 시스템 변화',bestWith:'ISTP 김영도(현장 보완)·ISFJ 이상준(팀워크 보완)',citec:'미들웨어팀의 ISTJ+ISTP+ISFJ 삼각 구도에서 체계의 중심.'},
+  '김영도':{summary:'미들웨어 현장의 실전 해결사. 복잡한 미들웨어 문제도 직접 부딪혀 해결.',personality:'행동 지향적이고 실용적인 기술자. 이론보다 실제 동작을 직접 확인하는 방식 선호.',workstyle:['직접 테스트·검증을 통한 문제 해결','유연하고 상황 대응적 접근'],strength:['미들웨어 장애 현장 즉각 대응','유연한 상황 판단'],growth:['문서화와 지식 공유 습관 강화','이상준(ISFJ)의 팀 지향적 관점 배우기'],motivation:'기술적 도전, 자율성',stress:'과도한 절차, 형식적 보고',bestWith:'ISTJ 박경현(절차 보완)·ISFJ 이상준(팀워크 지원)',citec:'미들웨어팀에서 ISTJ의 체계와 ISFJ의 헌신 사이에서 현장 유연성 담당.'},
+  '이상준':{summary:'미들웨어팀의 조용한 지원군. 헌신과 세심함으로 팀을 뒤에서 받쳐주는 사람.',personality:'타인을 돕는 것에서 보람을 찾는 사람. 팀의 화합을 중요하게 여깁니다.',workstyle:['팀원들의 필요를 먼저 파악하여 지원','세밀하고 꼼꼼한 업무 처리'],strength:['팀 화합과 협력 촉진','온보딩·교육 자료 정리 및 공유'],growth:['자신의 공로를 적극적으로 표현','거절 능력 강화'],motivation:'팀원들의 감사 표현',stress:'팀 내 갈등, 자신의 기여가 무시될 때',bestWith:'ISTJ 박경현(방향 제시)·ISTP 김영도(현장 보완)',citec:'소프트웨어 파트 ISFJ 3인(이상준·홍성순·홍지희)은 부서의 인간적 온기를 유지하는 핵심.'},
+  '조윤석':{summary:'Linux 운영의 믿음직한 전문가. 원칙과 체계로 Linux 환경 안정성 책임.',personality:'성실하고 책임감 있는 Linux 전문가. 한 번 배운 것을 철저히 익혀 자신의 것으로 만듭니다.',workstyle:['Linux 운영 표준화 및 절차 수립','홍성순(ISFJ)과의 협업으로 운영·지원 역할 분담'],strength:['Linux 환경 안정적 운영','운영 절차 체계화 및 표준화'],growth:['새로운 Linux 기술 트렌드 적극 탐색','자동화 및 효율화 주도'],motivation:'안정적 시스템 운영, 전문성 인정',stress:'예측 불가능한 시스템 변화',bestWith:'ISFJ 홍성순(팀워크 보완)·ISTJ 파트장(기준 제시)',citec:'Linux팀의 ISTJ+ISFJ 조합(조윤석+홍성순). 체계(ISTJ)와 헌신(ISFJ)이 합쳐져 안정적 서비스 제공.'},
+  '홍성순':{summary:'Linux팀의 따뜻한 지원자. 기술과 팀워크를 동시에 챙기는 세심한 동료.',personality:'팀원을 진심으로 돌보며 자신의 전문성을 팀을 위해 사용합니다.',workstyle:['팀원 지원과 기술 업무의 균형','조윤석(ISTJ)과의 운영·지원 역할 분담'],strength:['Linux 운영 지원 및 문서화','팀 화합 유지'],growth:['자신의 전문성과 기여를 더 적극적으로 어필','Linux 심화 기술 역량 적극 개발'],motivation:'팀이 잘 돌아가는 것',stress:'팀 갈등, 자신의 노력이 당연하게 여겨질 때',bestWith:'ISTJ 조윤석(방향·실행 제시)·ISTJ 파트장(기준 제시)',citec:'소프트웨어 파트 ISFJ 3인(이상준·홍성순·홍지희)은 기술 중심 환경에서 인간적 온기 유지.'},
+};
+
+const TABS = [
+  {id:'overview',  label:'📊 전체 분포'},
+  {id:'members',   label:'👥 멤버 탐색'},
+  {id:'profiles',  label:'🔍 개인 프로파일'},
+  {id:'org',       label:'🏢 조직별 분석'},
+  {id:'compat',    label:'🤝 시너지 분석'},
+  {id:'compare',   label:'⚡ 유형 비교'},
+  {id:'growth',    label:'🚀 성장 제안'},
+  {id:'dynamics',  label:'🧩 팀 역학'},
+  {id:'conflict',  label:'🛡️ 갈등 관리'},
+  {id:'playbook',  label:'📋 팀 빌딩'},
+  {id:'mood',      label:'🌡️ 분위기 트래커'},
+  {id:'matcher',   label:'💬 소통 매처'},
+  {id:'simulator', label:'🔬 팀 시뮬레이터'},
+  {id:'okr',       label:'🎯 OKR & 시너지'},
+  {id:'fun',       label:'🎉 인사이트'},
+];
+
+const navBar = document.getElementById('navBar');
+TABS.forEach((t,i)=>{
+  const b = document.createElement('button');
+  b.className = 'nav-btn'+(i===0?' active':'');
+  b.textContent = t.label;
+  b.onclick = ()=>{
+    document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    document.getElementById('sec-'+t.id).classList.add('active');
+  };
+  navBar.appendChild(b);
+});
+document.getElementById('sec-overview').classList.add('active');
+
+// ── STATS
+const total = members.length;
+const typeCount = {};
+members.forEach(m=>{ typeCount[m.mbti]=(typeCount[m.mbti]||0)+1; });
+const sortedTypes = Object.entries(typeCount).sort((a,b)=>b[1]-a[1]);
+const introCount = members.filter(m=>m.mbti[0]==='I').length;
+const sjCount = members.filter(m=>m.mbti[1]==='S'&&m.mbti[3]==='J').length;
+const jCount = members.filter(m=>m.mbti[3]==='J').length;
+document.getElementById('hs-i').textContent = Math.round(introCount/total*100)+'%';
+document.getElementById('hs-sj').textContent = Math.round(sjCount/total*100)+'%';
+
+// ── TOP METRICS
+const tmEl = document.getElementById('topMetrics');
+[
+  {val:total, lbl:'전체 부서원', sub:'3개 팀 구성'},
+  {val:Object.keys(typeCount).length, lbl:'MBTI 유형 수', sub:'ISTJ 최다 '+typeCount['ISTJ']+'명'},
+  {val:introCount, lbl:'내향형 (I)', sub:Math.round(introCount/total*100)+'% 압도적'},
+  {val:sjCount, lbl:'SJ 수호자 기질', sub:Math.round(sjCount/total*100)+'% 안정성 중심'},
+].forEach(m=>{
+  tmEl.innerHTML += '<div class="metric"><div class="metric-val">'+m.val+'</div><div class="metric-lbl">'+m.lbl+'</div><div class="metric-sub">'+m.sub+'</div></div>';
+});
+
+// ── TYPE BAR CHART
+const maxCnt = sortedTypes[0][1];
+const tcEl = document.getElementById('typeChart');
+sortedTypes.forEach(function(entry){
+  const type = entry[0], cnt = entry[1];
+  const col = COLORS[type]||'#888';
+  const pct = Math.round(cnt/total*100);
+  const w = Math.round(cnt/maxCnt*100);
+  tcEl.innerHTML += '<div class="bar-row"><span class="bar-label">'+type+'</span><div class="bar-track"><div class="bar-fill" style="width:'+w+'%;background:'+col+'88;border-right:2px solid '+col+'"><span style="color:'+col+'">'+pct+'%</span></div></div><span class="bar-count">'+cnt+'명</span></div>';
+});
+
+// ── DIM CHART
+const dimData = [
+  {left:'I (내향)',right:'E (외향)',lc:'#5b7fff',rc:'#ffaa60',lv:members.filter(m=>m.mbti[0]==='I').length,rv:members.filter(m=>m.mbti[0]==='E').length},
+  {left:'N (직관)',right:'S (감각)',lc:'#a07aff',rc:'#40d4b8',lv:members.filter(m=>m.mbti[1]==='N').length,rv:members.filter(m=>m.mbti[1]==='S').length},
+  {left:'T (사고)',right:'F (감정)',lc:'#40c4a8',rc:'#d490f0',lv:members.filter(m=>m.mbti[2]==='T').length,rv:members.filter(m=>m.mbti[2]==='F').length},
+  {left:'J (판단)',right:'P (인식)',lc:'#5b7fff',rc:'#ff9090',lv:members.filter(m=>m.mbti[3]==='J').length,rv:members.filter(m=>m.mbti[3]==='P').length},
+];
+const dcEl = document.getElementById('dimChart');
+dimData.forEach(function(d){
+  const t2=d.lv+d.rv, lp=Math.round(d.lv/t2*100), rp=100-lp;
+  dcEl.innerHTML += '<div class="dim-row"><div class="dim-labels"><span><strong>'+d.left+'</strong> '+d.lv+'명 ('+lp+'%)</span><span>'+d.rv+'명 ('+rp+'%) <strong>'+d.right+'</strong></span></div><div class="dim-track"><div style="width:'+lp+'%;background:'+d.lc+'99;height:100%"></div><div style="width:'+rp+'%;background:'+d.rc+'55;height:100%"></div></div></div>';
+});
+
+// ── TEMPERAMENT
+const temps = [
+  {n:'SJ 수호자',v:sjCount,c:'#5b7fff',note:'안정·규칙·책임'},
+  {n:'SP 탐험가',v:members.filter(m=>m.mbti[1]==='S'&&m.mbti[3]==='P').length,c:'#40d4b8',note:'적응·현장·실용'},
+  {n:'NF 이상가',v:members.filter(m=>m.mbti[1]==='N'&&m.mbti[2]==='F').length,c:'#d490f0',note:'공감·비전·의미'},
+  {n:'NT 분석가',v:members.filter(m=>m.mbti[1]==='N'&&m.mbti[2]==='T').length,c:'#7a5fff',note:'전략·논리·독립'},
+];
+const tcEl2 = document.getElementById('temperChart');
+const maxT = Math.max.apply(null, temps.map(t=>t.v));
+temps.forEach(function(t){
+  const w=Math.round(t.v/maxT*100);
+  tcEl2.innerHTML += '<div class="bar-row"><span class="bar-label" style="width:64px;font-family:\'Noto Sans KR\';font-size:11px">'+t.n+'</span><div class="bar-track"><div class="bar-fill" style="width:'+w+'%;background:'+t.c+'77;border-right:2px solid '+t.c+'"><span style="color:'+t.c+';font-size:10px">'+t.note+'</span></div></div><span class="bar-count">'+t.v+'명</span></div>';
+});
+
+// ── DONUT CHART
+setTimeout(function(){
+  const ctx = document.getElementById('donutChart').getContext('2d');
+  new Chart(ctx,{
+    type:'doughnut',
+    data:{
+      labels:sortedTypes.map(function(e){return e[0];}),
+      datasets:[{
+        data:sortedTypes.map(function(e){return e[1];}),
+        backgroundColor:sortedTypes.map(function(e){return (COLORS[e[0]]||'#888')+'bb';}),
+        borderColor:sortedTypes.map(function(e){return COLORS[e[0]]||'#888';}),
+        borderWidth:1.5,hoverOffset:8,
+      }]
+    },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'right',labels:{color:'#9aa0bc',font:{size:11,family:"'Space Mono',monospace"},boxWidth:11,padding:8}},
+        tooltip:{callbacks:{label:function(c){return c.label+': '+c.parsed+'명 ('+Math.round(c.parsed/total*100)+'%)';}}}
+      }
+    }
+  });
+},150);
+
+// ── MEMBERS TAB
+const allMbtiTypes = Array.from(new Set(members.map(m=>m.mbti))).sort();
+const filterRowEl = document.getElementById('filterRow');
+let activeFilter = null, selectedMember = null;
+
+(function(){
+  const ab = document.createElement('button');
+  ab.className='filter-btn on'; ab.textContent='전체 보기';
+  ab.onclick=function(){activeFilter=null;updateFilter(ab);};
+  filterRowEl.appendChild(ab);
+  allMbtiTypes.forEach(function(t){
+    const b = document.createElement('button');
+    b.className='filter-btn';
+    const col=COLORS[t]||'#888';
+    b.innerHTML='<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:'+col+';margin-right:4px;vertical-align:middle"></span>'+t;
+    b.onclick=function(){activeFilter=t;updateFilter(b);};
+    filterRowEl.appendChild(b);
+  });
+})();
+
+function updateFilter(btn){
+  document.querySelectorAll('#filterRow .filter-btn').forEach(function(x){x.classList.remove('on');});
+  btn.classList.add('on');
+  selectedMember=null;
+  document.getElementById('memberDetail').innerHTML='';
+  renderMembers();
+}
+
+function renderMembers(){
+  const grid=document.getElementById('memberGrid');
+  const filtered=activeFilter?members.filter(function(m){return m.mbti===activeFilter;}):members;
+  grid.innerHTML='';
+  filtered.forEach(function(m){
+    const col=COLORS[m.mbti]||'#888';
+    const div=document.createElement('div');
+    div.className='member-card'+(selectedMember===m.name?' selected':'');
+    div.innerHTML='<div class="member-name">'+m.name+(m.leader?'<span style="font-size:10px;color:var(--gold);margin-left:4px">▲</span>':'')+'</div><div class="member-role">'+m.role+'</div><span class="mbti-pill" style="background:'+col+'22;color:'+col+'">'+m.mbti+'</span>';
+    div.onclick=function(){
+      selectedMember=m.name;
+      document.querySelectorAll('#memberGrid .member-card').forEach(function(x){x.classList.remove('selected');});
+      div.classList.add('selected');
+      showMemberDetail(m);
+    };
+    grid.appendChild(div);
+  });
+}
+
+function showMemberDetail(m){
+  const dp=document.getElementById('memberDetail');
+  const d=DESC[m.mbti]; const col=COLORS[m.mbti]||'#888';
+  const sameType=members.filter(function(x){return x.mbti===m.mbti&&x.name!==m.name;});
+  dp.className='detail-panel';
+  dp.innerHTML='<div class="detail-header"><div class="avatar" style="background:'+col+'22;color:'+col+';border:1px solid '+col+'55">'+m.name[0]+'</div><div class="detail-info"><h3>'+m.name+(m.leader?' <span style="font-size:11px;color:var(--gold)">리더</span>':'')+'</h3><p>'+m.role+' · '+m.part+' 파트</p><p style="margin-top:3px"><span class="mbti-pill" style="background:'+col+'22;color:'+col+'">'+m.mbti+'</span> '+(d?d.nick:'')+'</p></div></div>'+(d?'<div class="detail-grid"><div class="detail-item"><label>핵심 강점</label><div class="tag-list">'+d.strength.map(function(s){return '<span class="tag" style="border-left:2px solid '+col+'">'+s+'</span>';}).join('')+'</div></div><div class="detail-item"><label>주의할 점</label><div class="tag-list">'+d.challenge.map(function(s){return '<span class="tag" style="border-left:2px solid #ff6b6b55">'+s+'</span>';}).join('')+'</div></div><div class="detail-item"><label>팀 내 역할</label><p>'+d.role+'</p></div><div class="detail-item"><label>협업 팁</label><p>'+d.collab+'</p></div></div>':'')+'<div style="margin-top:.8rem;padding-top:.6rem;border-top:1px solid var(--border);font-size:12px;color:var(--text3)">'+(sameType.length?'같은 유형 동료: <span style="color:var(--text2)">'+sameType.map(function(x){return x.name;}).join('·')+'</span>':'<span style="color:var(--gold)">유일한 유형</span>')+'</div>';
+}
+renderMembers();
+
+// ── PROFILES TAB
+(function(){
+  const partOptions=['전체','그룹장','기획/교육','인프라','소프트웨어'];
+  const pfRow=document.getElementById('profileFilterRow');
+  let activePartFilter=null, selectedProfile=null;
+  partOptions.forEach(function(p){
+    const b=document.createElement('button');
+    b.className='filter-btn'+(p==='전체'?' on':'');
+    b.textContent=p;
+    b.onclick=function(){
+      activePartFilter=p==='전체'?null:p;
+      document.querySelectorAll('#profileFilterRow .filter-btn').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on');
+      selectedProfile=null;
+      document.getElementById('profileDetail').innerHTML='';
+      renderProfileGrid();
+    };
+    pfRow.appendChild(b);
+  });
+
+  function renderProfileGrid(){
+    const grid=document.getElementById('profileGrid');
+    const filtered=activePartFilter?members.filter(function(m){return m.part===activePartFilter;}):members;
+    grid.innerHTML='';
+    filtered.forEach(function(m){
+      const col=COLORS[m.mbti]||'#888';
+      const div=document.createElement('div');
+      div.className='member-card'+(selectedProfile===m.name?' selected':'');
+      div.innerHTML='<div class="member-name">'+m.name+(m.leader?'<span style="font-size:10px;color:var(--gold);margin-left:4px">▲</span>':'')+'</div><div class="member-role" style="font-size:11px;margin-top:2px">'+m.role+'</div><span class="mbti-pill" style="background:'+col+'22;color:'+col+'">'+m.mbti+'</span>';
+      div.onclick=function(){
+        selectedProfile=m.name;
+        document.querySelectorAll('#profileGrid .member-card').forEach(function(x){x.classList.remove('selected');});
+        div.classList.add('selected');
+        renderProfileDetail(m);
+      };
+      grid.appendChild(div);
+    });
+  }
+
+  function renderProfileDetail(m){
+    const p=MEMBER_PROFILES[m.name];
+    const d=DESC[m.mbti];
+    const col=COLORS[m.mbti]||'#888';
+    const det=document.getElementById('profileDetail');
+    if(!p){det.innerHTML='';return;}
+    const traitDefs=[
+      {L:'I',R:'E',lv:m.mbti[0]==='I'?72:30,lc:'#5b7fff',rc:'#ffaa60'},
+      {L:'N',R:'S',lv:m.mbti[1]==='N'?70:35,lc:'#a07aff',rc:'#40d4b8'},
+      {L:'T',R:'F',lv:m.mbti[2]==='T'?68:38,lc:'#40c4a8',rc:'#d490f0'},
+      {L:'J',R:'P',lv:m.mbti[3]==='J'?71:32,lc:'#5b7fff',rc:'#ff9090'},
+    ];
+    const traitHTML=traitDefs.map(function(t){
+      const rv=100-t.lv, dom=t.lv>50;
+      return '<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:3px"><strong style="color:'+(dom?t.lc:t.rc)+'">'+(dom?t.L:t.R)+'</strong><span style="color:var(--text3)">'+(dom?t.L:t.R)+' 우세</span><strong style="color:'+(dom?t.rc:t.lc)+'">'+(dom?t.R:t.L)+'</strong></div><div style="height:10px;border-radius:5px;overflow:hidden;display:flex"><div style="width:'+t.lv+'%;background:'+t.lc+'88;height:100%"></div><div style="width:'+rv+'%;background:'+t.rc+'44;height:100%"></div></div></div>';
+    }).join('');
+
+    det.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem"><div class="card" style="grid-column:1/-1"><div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><div style="width:58px;height:58px;border-radius:50%;background:'+col+'22;border:2px solid '+col+'55;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:'+col+';flex-shrink:0">'+m.name[0]+'</div><div style="flex:1"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:18px;font-weight:700;color:var(--text)">'+m.name+'</span>'+(m.leader?'<span style="font-size:11px;color:var(--gold);border:1px solid rgba(240,184,64,.4);padding:1px 7px;border-radius:4px">리더</span>':'')+'<span class="mbti-pill" style="background:'+col+'22;color:'+col+';font-size:12px;padding:3px 10px">'+m.mbti+'</span></div><div style="font-size:12px;color:var(--text2);margin-top:3px">'+m.role+' · '+m.part+' 파트</div>'+(d?'<div style="font-size:11px;color:'+col+';margin-top:2px">"'+d.nick+'"</div>':'')+'<div style="font-size:13px;color:var(--text2);margin-top:7px;line-height:1.6">'+p.summary+'</div></div></div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem"><div class="card"><div class="card-title">MBTI 지표 성향</div>'+traitHTML+'</div><div class="card"><div class="card-title">성격 특성</div><div style="font-size:13px;color:var(--text2);line-height:1.75">'+p.personality+'</div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem"><div class="card"><div class="card-title">업무 스타일</div><ul style="font-size:13px;color:var(--text2);line-height:1.8;padding-left:1rem">'+p.workstyle.map(function(s){return '<li>'+s+'</li>';}).join('')+'</ul></div><div class="card"><div class="card-title">핵심 강점</div>'+p.strength.map(function(s){return '<div style="display:flex;align-items:flex-start;gap:7px;margin-bottom:6px"><span style="width:6px;height:6px;border-radius:50%;background:'+col+';margin-top:5px;flex-shrink:0"></span><span style="font-size:13px;color:var(--text2);line-height:1.5">'+s+'</span></div>';}).join('')+'</div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem"><div class="card"><div class="card-title">성장 포인트</div>'+p.growth.map(function(s){return '<div style="display:flex;align-items:flex-start;gap:7px;margin-bottom:6px"><span style="width:6px;height:6px;border-radius:50%;background:#ff9090;margin-top:5px;flex-shrink:0"></span><span style="font-size:13px;color:var(--text2);line-height:1.5">'+s+'</span></div>';}).join('')+'</div><div class="card"><div class="card-title">동기 &amp; 스트레스</div><div style="margin-bottom:10px"><div style="font-size:11px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">동기 요인</div><div style="font-size:13px;color:var(--text2);line-height:1.6;background:'+col+'11;border-left:2px solid '+col+';padding:.5rem .7rem;border-radius:0 6px 6px 0">'+p.motivation+'</div></div><div><div style="font-size:11px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">스트레스 요인</div><div style="font-size:13px;color:var(--text2);line-height:1.6;background:#ff606011;border-left:2px solid #ff6060;padding:.5rem .7rem;border-radius:0 6px 6px 0">'+p.stress+'</div></div></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem"><div class="card"><div class="card-title">최적 협업 파트너</div><div style="font-size:13px;color:var(--text2);line-height:1.7">'+p.bestWith+'</div></div><div class="card" style="border-color:'+col+'44"><div class="card-title">CI-TEC에서의 역할</div><div style="font-size:13px;color:var(--text2);line-height:1.7">'+p.citec+'</div></div></div>';
+  }
+  renderProfileGrid();
+})();
+
+// ── ORG TAB
+(function(){
+  const orgParts = {
+    '그룹장 & 기획/교육': members.filter(function(m){return m.part==='그룹장'||m.part==='기획/교육';}),
+    '인프라 파트': members.filter(function(m){return m.part==='인프라';}),
+    '소프트웨어 파트': members.filter(function(m){return m.part==='소프트웨어';}),
+  };
+  const ov = document.getElementById('orgView');
+  Object.entries(orgParts).forEach(function(entry){
+    const partName=entry[0], pMembers=entry[1];
+    const tMap={};
+    pMembers.forEach(function(m){tMap[m.mbti]=(tMap[m.mbti]||0)+1;});
+    const sorted=Object.entries(tMap).sort(function(a,b){return b[1]-a[1];});
+    let html='<div class="org-part"><div class="org-part-title"><span>'+partName+'</span><span style="font-size:11px;color:var(--text3)">'+pMembers.length+'명 · '+sorted.map(function(e){return e[0]+':'+e[1];}).join(' / ')+'</span></div><div class="org-members">';
+    pMembers.forEach(function(m){
+      const col=COLORS[m.mbti]||'#888';
+      html+='<div class="org-member" style="border-color:'+col+'44"><span class="org-dot" style="background:'+col+'"></span><span style="color:var(--text)">'+m.name+'</span><span style="font-family:Space Mono;font-size:10px;color:'+col+'">'+m.mbti+'</span>'+(m.leader?'<span style="color:var(--gold);font-size:10px">★</span>':'')+'</div>';
+    });
+    html+='</div></div>';
+    ov.innerHTML+=html;
+  });
+
+  setTimeout(function(){
+    const parts=['인프라','소프트웨어'];
+    const topTypes=['ISTJ','ISTP','INTJ','ISFJ','ESTJ','INFP','ENFJ'];
+    const ds=topTypes.map(function(t){
+      return {
+        label:t,
+        data:parts.map(function(p){return members.filter(function(m){return m.part===p&&m.mbti===t;}).length;}),
+        backgroundColor:(COLORS[t]||'#888')+'aa',
+        borderColor:COLORS[t]||'#888',
+        borderWidth:1,
+      };
+    });
+    new Chart(document.getElementById('partChart').getContext('2d'),{
+      type:'bar',data:{labels:parts,datasets:ds},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#9aa0bc',font:{size:10},boxWidth:10}}},
+        scales:{x:{ticks:{color:'#9aa0bc'},grid:{color:'#2a305022'}},y:{ticks:{color:'#9aa0bc',stepSize:1},grid:{color:'#2a305055'}}}
+      }
+    });
+    const radarDs=parts.map(function(p,i){
+      const pm=members.filter(function(m){return m.part===p;}), n=pm.length;
+      return {
+        label:p+' 파트',
+        data:[
+          Math.round(pm.filter(function(m){return m.mbti[0]==='I';}).length/n*100),
+          Math.round(pm.filter(function(m){return m.mbti[1]==='N';}).length/n*100),
+          Math.round(pm.filter(function(m){return m.mbti[2]==='T';}).length/n*100),
+          Math.round(pm.filter(function(m){return m.mbti[3]==='J';}).length/n*100),
+        ],
+        backgroundColor:i===0?'rgba(91,127,255,.15)':'rgba(255,107,107,.15)',
+        borderColor:i===0?'#5b7fff':'#ff6b6b',
+        borderWidth:2,pointBackgroundColor:i===0?'#5b7fff':'#ff6b6b',pointRadius:4,
+      };
+    });
+    new Chart(document.getElementById('partDimChart').getContext('2d'),{
+      type:'radar',data:{labels:['내향(I)','직관(N)','사고(T)','판단(J)'],datasets:radarDs},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#9aa0bc',font:{size:11}}}},
+        scales:{r:{min:0,max:100,ticks:{color:'#5a6080',font:{size:9},stepSize:25},grid:{color:'#2a3050'},angleLines:{color:'#2a3050'},pointLabels:{color:'#9aa0bc',font:{size:11}}}}
+      }
+    });
+  },200);
+})();
+
+// ── COMPAT TAB
+(function(){
+  const COMPAT = [
+    {pair:'INFP × ENFJ',score:5,stars:'★★★★★',color:'#d490f0',desc:'<strong>그룹장(이승택·INFP)과 인프라 파트장(박재화·ENFJ)</strong>. NF 기질을 공유하는 최고의 리더십 시너지. 그룹장이 가치와 비전을 설정하면 파트장이 팀에 생동감 있게 전달하는 완벽한 릴레이 구조.'},
+    {pair:'ISTJ × ENFJ',score:5,stars:'★★★★★',color:'#ffaa60',desc:'<strong>소프트웨어 파트장(전력식·ISTJ)과 인프라 파트장(박재화·ENFJ)</strong>. 체계적 실행력과 강력한 동기부여가 결합된 황금 분업.'},
+    {pair:'INTJ × INTP',score:5,stars:'★★★★★',color:'#7a5fff',desc:'<strong>네트워크팀 이충용(INTJ)·조영상(INTP)</strong>. 전략적 설계자 + 논리적 분석가의 조합. 복잡한 아키텍처 문제와 장애 분석에서 극강의 시너지.'},
+    {pair:'ISTP × ISTP × ISTP',score:4,stars:'★★★★☆',color:'#40d4b8',desc:'<strong>OpenStack팀 3인방</strong>(곽주영·성기현·백종탁) 전원 ISTP. 현장 장애 대응과 기술 실험에서 압도적 팀워크. 문서화를 의식적으로 챙겨야 팀 역량 축적 가능.'},
+    {pair:'ISTJ × ISTJ (5인)',score:3,stars:'★★★☆☆',color:'#5b7fff',desc:'<strong>소프트웨어 파트 내 ISTJ 5인</strong>. 신뢰성·안정성은 매우 높지만 혁신 드라이브가 약해질 위험. <strong>의도적으로 다른 관점 주입이 필요.</strong>'},
+    {pair:'INFP × ESFJ',score:4,stars:'★★★★☆',color:'#ff9090',desc:'<strong>그룹장(이승택·INFP)과 기획/교육팀 양은지(ESFJ)</strong>. 부서 대외 소통과 교육 기획에서 강력한 조합. 방향(INFP)과 실행(ESFJ)의 자연스러운 이원화.'},
+    {pair:'INTJ × ISTJ',score:4,stars:'★★★★☆',color:'#a07aff',desc:'INTJ의 전략적 비전을 ISTJ가 체계적으로 실행. 장기 인프라 로드맵 수립에 효과적. 단, INTJ가 ISTJ의 절차 중시를 답답해할 수 있음.'},
+    {pair:'INFJ × ISFP',score:3,stars:'★★★☆☆',color:'#5ec4f0',desc:'<strong>스토리지팀 배상용(INFJ)·임부건(ISFP)</strong>. 두 내향 F 유형. 팀 분위기는 온화하지만 어려운 결정 상황에서 회피 경향 주의. ISTJ 박희태가 현실적 균형추 역할.'},
+  ];
+  const cv=document.getElementById('compatView');
+  COMPAT.forEach(function(s){
+    cv.innerHTML+='<div class="compat-card"><div class="compat-header"><span class="compat-pair" style="color:'+s.color+'">'+s.pair+'</span><span class="stars">'+s.stars+'</span></div><div style="font-size:13px;color:var(--text2);line-height:1.65">'+s.desc+'</div></div>';
+  });
+})();
+
+// ── COMPARE TAB
+(function(){
+  const selA=document.getElementById('cmpA'), selB=document.getElementById('cmpB');
+  Array.from(new Set(members.map(function(m){return m.mbti;}))).sort().forEach(function(t){
+    selA.innerHTML+='<option value="'+t+'">'+t+'</option>';
+    selB.innerHTML+='<option value="'+t+'">'+t+'</option>';
+  });
+  selB.value='INTJ';
+  function renderCompare(){
+    const tA=selA.value, tB=selB.value;
+    const dA=DESC[tA], dB=DESC[tB];
+    const cA=COLORS[tA]||'#5b7fff', cB=COLORS[tB]||'#ff6b6b';
+    const mA=members.filter(function(m){return m.mbti===tA;}), mB=members.filter(function(m){return m.mbti===tB;});
+    function mkCol(t,d,col,ms){
+      return '<div class="compare-col" style="border-top:3px solid '+col+'"><div class="compare-col-header"><div class="compare-mbti" style="color:'+col+'">'+t+'</div><div style="font-size:12px;color:var(--text2);margin-top:3px">'+(d?d.nick:'')+'</div><div style="font-size:11px;color:var(--text3);margin-top:2px">'+ms.length+'명: '+ms.map(function(m){return m.name;}).join('·')+'</div></div>'+(d?'<div class="compare-row"><span class="compare-key">별명</span><span class="compare-val">'+d.nick+'</span></div><div class="compare-row"><span class="compare-key">강점</span><span class="compare-val">'+d.strength.join('<br>')+'</span></div><div class="compare-row"><span class="compare-key">주의점</span><span class="compare-val">'+d.challenge.join('<br>')+'</span></div><div class="compare-row"><span class="compare-key">역할</span><span class="compare-val">'+d.role+'</span></div><div class="compare-row"><span class="compare-key">협업 팁</span><span class="compare-val">'+d.collab+'</span></div>':'')+'</div>';
+    }
+    document.getElementById('comparePanel').innerHTML=mkCol(tA,dA,cA,mA)+mkCol(tB,dB,cB,mB);
+  }
+  selA.onchange=renderCompare; selB.onchange=renderCompare; renderCompare();
+})();
+
+// ── GROWTH TAB
+(function(){
+  const PROPOSALS = [
+    {section:'🏗️ 팀 구조 & 역할 설계',items:[
+      {badge:'구조 설계',badgeColor:'#5b7fff',title:'SJ 실행 + NF 비전의 이중 구조 강화',body:'CI-TEC의 핵심 강점은 <strong>ISTJ(파트장)로 대표되는 강력한 실행 엔진</strong>과 <strong>INFP(그룹장)·ENFJ(인프라 파트장)의 비전-공감 리더십</strong>이 공존한다는 점입니다.<ul><li>분기마다 그룹장(INFP) 주도 부서 방향성 워크숍</li><li>인프라 파트장(ENFJ)이 팀 내 사람 이슈를 선제 포착해 그룹장에게 리포트하는 비공식 파이프라인 구축</li><li>소프트웨어 파트장(ISTJ)은 프로세스 표준화 오너로 지정</li></ul>',tags:['INFP 그룹장','ENFJ 인프라','ISTJ 소프트웨어','비전×실행']},
+      {badge:'역할 매칭',badgeColor:'#40d4b8',title:'성향별 전문 역할 공식화 — MBTI 기반 역할 헌장',body:'각 유형의 강점을 공식 역할에 반영하면 자연스러운 몰입과 성과로 이어집니다.<ul><li><strong>INTJ:</strong> 기술 로드맵·아키텍처 리뷰 담당, 분기별 기술 방향성 검토 오너</li><li><strong>INTP:</strong> 장애 근본원인 분석(RCA) 전담</li><li><strong>ISTP 3인방:</strong> 현장 실험·PoC 프로젝트 전담팀으로 공식화</li><li><strong>ESFJ·ISFJ:</strong> 신입/타부서 온보딩 코디네이터, 교육 자료 퍼실리테이터</li><li><strong>INFJ:</strong> 팀 내 1:1 멘토링·구성원 고충 수렴 비공식 채널</li></ul>',tags:['역할 헌장','강점 기반','공식화']},
+    ]},
+    {section:'🤝 협업 & 커뮤니케이션',items:[
+      {badge:'소통 설계',badgeColor:'#ffaa60',title:'내향형 85% 팀을 위한 비동기 우선 커뮤니케이션 문화',body:'전체의 85%가 내향형(I)인 CI-TEC에서 즉흥적인 회의·브레인스토밍은 성과가 낮습니다.<ul><li><strong>회의 72시간 전 안건 배포</strong> 원칙 수립</li><li>주요 아이디어는 Confluence/노션 비동기 피드백 먼저, 회의는 결정 전용으로 단축</li><li>ESFJ(양은지)·ENFJ(박재화)를 회의 퍼실리테이터로 지정</li></ul>',tags:['내향형 배려','비동기','심리적 안전감']},
+      {badge:'갈등 예방',badgeColor:'#d490f0',title:'T vs F 갈등 예방 — 사실·영향·제안 3단계 커뮤니케이션 규약',body:'사고형(T)이 77%이지만 그룹장(INFP)·인프라 파트장(ENFJ) 등 F 리더가 있는 특수 구조.<ul><li><strong>비판은 사실 + 영향 + 제안</strong> 3단계 포맷 수립</li><li>T 유형이 F 리더에게 보고 시 데이터 먼저, 맥락 설명 추가 훈련</li><li>분기 1회 팀 회고(Retrospective) 도입</li></ul>',tags:['T vs F','심리적 안전감','피드백 문화']},
+    ]},
+    {section:'🌱 개인 성장 & 역량 개발',items:[
+      {badge:'성장 격차',badgeColor:'#ff6b6b',title:'ISTJ 8인 집단사고 방지 — Red Team 제도 도입',body:'소프트웨어 파트에 ISTJ가 5명(파트장 포함). 강점인 안정성이 자칫 집단사고(Groupthink)와 혁신 저해로 이어질 수 있습니다.<ul><li>주요 의사결정 시 <strong>INTJ·INTP를 Red Team으로 지정</strong></li><li>ISFP(임부건)·INFP(이광호)에게 외부 시각 의도적 주입</li><li>연 1회 외부 컨퍼런스 참가로 ISTJ에게 새로운 자극 제공</li></ul>',tags:['집단사고 방지','Red Team','혁신 드라이브']},
+      {badge:'강점 계발',badgeColor:'#40d4b8',title:'ISTP 기술 장인 트랙 — 공인 기술 전문가 육성',body:'ISTP 4인(곽주영·성기현·백종탁·김영도)은 관리직보다 기술 깊이에서 진정한 동기가 나옵니다.<ul><li><strong>기술 전문가(Principal Engineer) 트랙</strong> 신설</li><li>OpenStack 3인방에게 사내 기술 특강 발표 기회 부여</li><li>ISTP의 약점인 문서화를 보완하기 위해 <strong>ISFJ와 기술-문서 페어링</strong></li></ul>',tags:['ISTP 강점','기술 트랙','페어링']},
+    ]},
+    {section:'📈 팀 성과 & 문화',items:[
+      {badge:'성과 관리',badgeColor:'#f0b840',title:'유형별 최적 목표 설정 & 피드백 주기 조정',body:'같은 OKR·KPI도 유형에 따라 동기 부여 방식이 다릅니다.<ul><li><strong>ISTJ·ESTJ:</strong> 명확한 수치 목표, 마감 일정, 체크리스트 형태</li><li><strong>INTJ·INTP:</strong> 논리적 근거 먼저, 자율성 보장</li><li><strong>INFP·INFJ:</strong> 목표와 팀 가치의 연결 강조</li><li><strong>ISTP·ISFP:</strong> 단기 목표와 즉각적 피드백 선호, 스프린트 단위</li><li><strong>ESFJ·ENFJ:</strong> 팀 목표와 개인 기여의 연결, 팀원의 감사 표현</li></ul>',tags:['OKR','유형별 동기','피드백']},
+      {badge:'지식 관리',badgeColor:'#4dbb8a',title:'T 지식 + F 맥락의 통합 지식베이스 구축',body:'현재 강점: ISTJ·INTJ의 체계적 기술 문서화. 약점: 암묵적 맥락이 개인 머릿속에만 있음.<ul><li><strong>INTJ(전략가) + ISFJ(수호자)의 지식 파트너 제도</strong></li><li>ISTP의 현장 문제해결 과정을 트러블슈팅 케이스북으로 ISFJ·ISTJ가 정리</li><li>INFJ(배상용)에게 부서 지식 큐레이터 역할</li></ul>',tags:['지식 관리','암묵지 명시화','커리어']},
+    ]},
+  ];
+  const gv=document.getElementById('growthView');
+  PROPOSALS.forEach(function(section){
+    let html='<div class="proposal-section"><div class="proposal-section-title"><span>'+section.section+'</span></div>';
+    section.items.forEach(function(item){
+      html+='<div class="proposal-card"><div class="proposal-card-header"><span class="proposal-badge" style="background:'+item.badgeColor+'22;color:'+item.badgeColor+'">'+item.badge+'</span><div class="proposal-title">'+item.title+'</div></div><div class="proposal-body">'+item.body+'</div><div class="proposal-tags">'+item.tags.map(function(t){return '<span class="proposal-tag">'+t+'</span>';}).join('')+'</div></div>';
+    });
+    html+='</div>';
+    gv.innerHTML+=html;
+  });
+})();
+
+// ── DYNAMICS TAB
+(function(){
+  const dv=document.getElementById('dynamicsView');
+  const strengthAreas=[
+    {area:'시스템 안정성 & 운영',score:95,drivers:'ISTJ×8 + ISFJ×3 + ESTJ×2',color:'#5b7fff',detail:'SLA 달성률과 서비스 안정성에서 최강.'},
+    {area:'현장 장애 대응',score:90,drivers:'ISTP×4 + ISTJ×8',color:'#40d4b8',detail:'실전 문제해결과 침착한 위기 대응.'},
+    {area:'전략적 기술 설계',score:82,drivers:'INTJ×3 + INTP×1',color:'#7a5fff',detail:'장기 아키텍처 설계와 복잡한 문제 근본 분석.'},
+    {area:'팀 문화 & 화합',score:75,drivers:'ENFJ×1 + ESFJ×1 + ISFJ×3 + INFJ×1',color:'#ffaa60',detail:'구성원 간 신뢰와 심리적 안전감 유지.'},
+    {area:'비전 & 가치 정립',score:70,drivers:'INFP×2 + INFJ×1 + ENFJ×1',color:'#d490f0',detail:'부서의 존재 이유와 의미를 정의.'},
+    {area:'혁신 & 창의적 탐구',score:55,drivers:'INTP×1 + ISTP×4 + INFP×2',color:'#ff9090',detail:'팀 내 의식적 육성이 필요한 영역.'},
+    {area:'대외 소통 & 관계',score:45,drivers:'ESFJ×1 + ENFJ×1 + ESTJ×2',color:'#f0b840',detail:'E 유형 4명이 전담하는 중요 역할.'},
+  ];
+  let html='<div class="card" style="margin-bottom:1rem"><div class="card-title">팀 자연 강점 맵</div>';
+  strengthAreas.forEach(function(s){
+    html+='<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px"><span style="font-size:13px;font-weight:500;color:var(--text)">'+s.area+'</span><span style="font-size:11px;font-family:Space Mono;color:'+s.color+'">'+s.score+'</span></div><div style="height:9px;background:var(--bg3);border-radius:5px;overflow:hidden;margin-bottom:3px"><div style="height:100%;width:'+s.score+'%;background:'+s.color+';border-radius:5px"></div></div><div style="display:flex;justify-content:space-between"><span style="font-size:11px;color:var(--text3)">'+s.detail+'</span><span style="font-size:10px;font-family:Space Mono;color:var(--text3)">'+s.drivers+'</span></div></div>';
+  });
+  html+='</div>';
+
+  const conflictZones=[
+    {zone:'변화 vs 안정',sev:4,groups:'INTJ·INTP vs ISTJ(다수)',color:'#ff6b6b',trigger:'새로운 기술 도입, 프로세스 변경 제안 시',pattern:'INTJ·INTP는 더 나은 방법을 탐색하지만 ISTJ는 검증된 방법을 선호. 아이디어가 실험적으로 보이면 ISTJ가 저항.',solution:'변경 제안 시 위험도 평가표와 단계적 파일럿 계획을 함께 제시. ISTJ가 검증할 시간과 절차를 보장.'},
+    {zone:'속도 vs 완성도',sev:3,groups:'ESTJ·ISTP vs ISTJ·INFJ',color:'#ff9040',trigger:'장애 대응 또는 빠른 배포가 필요한 상황',pattern:'ESTJ·ISTP는 빠른 실행을 선호하지만 ISTJ·INFJ는 충분한 검토와 문서화를 원함.',solution:'긴급 상황 프로토콜 사전 수립. P0 장애 시 즉각 대응 후 사후 문서화 규칙으로 양측 니즈 충족.'},
+    {zone:'가치 vs 효율',sev:4,groups:'INFP·INFJ vs ISTJ·ESTJ',color:'#ff6b6b',trigger:'리소스 배분, 우선순위 결정 시',pattern:'INFP·INFJ는 의미를 먼저 찾지만 ISTJ·ESTJ는 효율에 집중.',solution:'의사결정 안건에 목적(Why) 섹션을 의무화.'},
+    {zone:'표현 방식 충돌',sev:3,groups:'ESTJ·INTJ vs ISFJ·ISFP·INFP',color:'#ff9040',trigger:'피드백 제공, 의견 불일치 시',pattern:'ESTJ·INTJ는 직접적이고 단호한 표현을 사용하지만 ISFJ·ISFP·INFP는 이를 공격적으로 받아들일 수 있음.',solution:'피드백은 사실+영향+제안 3단계 공식 도입.'},
+  ];
+  html+='<div class="card" style="margin-bottom:1rem"><div class="card-title">잠재 갈등 지도</div>';
+  conflictZones.forEach(function(c){
+    const sevLabel=c.sev>=4?'높음':c.sev>=3?'중간':'낮음';
+    html+='<div style="border:1px solid var(--border);border-left:3px solid '+c.color+';border-radius:8px;padding:.9rem 1.1rem;margin-bottom:.7rem"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;flex-wrap:wrap;gap:5px"><span style="font-size:13px;font-weight:500;color:var(--text)">'+c.zone+'</span><div style="display:flex;gap:7px;align-items:center"><span style="font-size:11px;padding:2px 7px;border-radius:4px;background:'+c.color+'22;color:'+c.color+'">위험도: '+sevLabel+'</span><span style="font-size:10px;font-family:Space Mono;color:var(--text3)">'+c.groups+'</span></div></div><div style="font-size:12px;color:var(--text3);margin-bottom:.3rem">트리거: '+c.trigger+'</div><div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:.4rem">'+c.pattern+'</div><div style="background:var(--bg4);border-radius:6px;padding:.5rem .8rem;font-size:13px;color:var(--teal);line-height:1.6">해결: '+c.solution+'</div></div>';
+  });
+  html+='</div>';
+
+  html+='<div class="card"><div class="card-title">파트별 역량 레이더 비교</div><div class="g2"><div class="chart-wrap" style="height:260px"><canvas id="dynRadar1"></canvas></div><div class="chart-wrap" style="height:260px"><canvas id="dynRadar2"></canvas></div></div></div>';
+  dv.innerHTML=html;
+
+  setTimeout(function(){
+    function mkRadar(id,labels,ds){
+      new Chart(document.getElementById(id).getContext('2d'),{
+        type:'radar',data:{labels:labels,datasets:ds},
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#9aa0bc',font:{size:11}}}},
+          scales:{r:{min:0,max:100,ticks:{color:'#5a6080',font:{size:9},stepSize:25},grid:{color:'#2a3050'},angleLines:{color:'#2a3050'},pointLabels:{color:'#9aa0bc',font:{size:10}}}}}
+      });
+    }
+    const dsBase=function(label,data,col){return{label:label,data:data,backgroundColor:col+'26',borderColor:col,borderWidth:2,pointBackgroundColor:col,pointRadius:4};};
+    mkRadar('dynRadar1',['안정성','실행력','분석력','협업력','소통력','적응력'],[dsBase('인프라',[80,75,82,68,65,72],'#5b7fff'),dsBase('소프트웨어',[92,85,70,72,60,55],'#ff6b6b')]);
+    mkRadar('dynRadar2',['혁신성','문서화','팀화합','리더십','위기대응','전략수립'],[dsBase('인프라',[72,58,75,80,88,78],'#5b7fff'),dsBase('소프트웨어',[50,82,70,65,80,62],'#ff6b6b')]);
+  },250);
+})();
+
+// ── CONFLICT TAB
+(function(){
+  const cv=document.getElementById('conflictView');
+  const meetingGuide=[
+    {type:'전체 부서 회의 (월례)',icon:'📢',
+     before:['안건 72시간 전 서면 배포 (I 성향 85% 배려)','핵심 질문 2~3개 사전 공유 — 즉흥 발언 부담 감소','ISTJ·INTJ를 위한 관련 데이터·수치 포함'],
+     during:['ENFJ 박재화 또는 ESFJ 양은지가 퍼실리테이터','라운드로빈 방식으로 전원 발언 기회 보장','T/F 혼합 의견 수렴: 사실 기반 → 영향 → 감정 순'],
+     after:['ISTJ 파트장이 액션아이템+담당자+마감일 문서화','24시간 내 회의록 공유','완료 항목 다음 회의 서두에 체크'],
+     avoid:['즉흥 투표나 즉각 의사결정 강요','ISTP·INTJ에게 감정적 표현 요구','30분 이상의 구조 없는 오픈 토론']},
+    {type:'기술 검토 회의',icon:'⚙️',
+     before:['INTJ·INTP가 사전에 분석 자료 준비','ISTJ는 현행 절차·기준 문서 대조 목록 준비','ISTP는 실험 결과 또는 PoC 데이터 준비'],
+     during:['INTJ가 문제 프레임 설정 → INTP가 대안 분석 → ISTP가 현장 가능성 검증 → ISTJ가 절차 적합성 확인'],
+     after:['결정 사항을 ISTJ가 표준 절차에 반영','INTJ·INTP의 검토 내용을 지식베이스에 저장'],
+     avoid:['감성적 언어나 모호한 방향성으로 시작','충분한 검토 없이 일단 해보자 결정']},
+  ];
+  let html='<div class="proposal-section"><div class="proposal-section-title">📅 MBTI 기반 미팅 설계 가이드</div>';
+  meetingGuide.forEach(function(m){
+    html+='<div class="proposal-card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:.9rem"><span style="font-size:16px">'+m.icon+'</span><span style="font-size:14px;font-weight:500;color:var(--text)">'+m.type+'</span></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px">';
+    [['사전 준비','#5b7fff',m.before],['진행 방식','#40d4b8',m.during],['사후 관리','#4dbb8a',m.after],['금지 사항','#ff6b6b',m.avoid]].forEach(function(g){
+      html+='<div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:'+g[1]+';margin-bottom:.3rem">'+g[0]+'</div>'+g[2].map(function(s){return '<div style="font-size:12px;color:var(--text2);line-height:1.55;margin-bottom:3px;display:flex;gap:4px"><span style="color:'+g[1]+';flex-shrink:0">›</span>'+s+'</div>';}).join('')+'</div>';
+    });
+    html+='</div></div>';
+  });
+  html+='</div>';
+
+  const conflictSteps=[
+    {step:1,title:'유형 파악 & 감정 온도 측정',color:'#5b7fff',detail:'갈등 당사자의 MBTI 확인. T 유형(논리 중심)과 F 유형(감정 중심) 충돌인지 먼저 파악. 감정 온도가 높을 때는 24시간 냉각 시간 부여.',who:'인프라 파트장(ENFJ) 또는 그룹장(INFP)'},
+    {step:2,title:'개별 청취 (T·F 분리 접근)',color:'#40d4b8',detail:'T 유형에게는 사실과 데이터를 먼저. F 유형에게는 감정과 영향을 먼저 경청. 양측을 같은 방식으로 면담하면 한쪽은 반드시 소외감을 느낌.',who:'파트장이 각자 개별 1:1로 진행'},
+    {step:3,title:'공통 목표 재확인 (그룹장 역할)',color:'#d490f0',detail:'INFP 그룹장의 강점을 최대로 활용. 갈등의 표면(방법 차이)이 아닌 근본(같은 목표)을 재확인하여 갈등 에너지를 협력으로 전환.',who:'이승택 그룹장(INFP)'},
+    {step:4,title:'구조적 해결책 수립',color:'#7a5fff',detail:'양측이 수용할 수 있는 규칙·절차·역할 분담을 명문화. ISTJ의 강점인 절차화로 재발 방지 구조 수립.',who:'파트장(ISTJ) 또는 INTJ 팀원 지원'},
+    {step:5,title:'사후 관찰 & 피드백 루프',color:'#4dbb8a',detail:'해결 후 2주간 파트장이 양측 분위기 모니터링. INFJ 배상용 등 통찰형 팀원이 팀 내 감정 온도 비공식 체크.',who:'INFJ 배상용·ENFJ 박재화 비공식 관찰'},
+  ];
+  html+='<div class="proposal-section"><div class="proposal-section-title">🛡️ CI-TEC 맞춤형 갈등 해결 5단계 프로세스</div><div style="position:relative">';
+  conflictSteps.forEach(function(s,i){
+    html+='<div style="display:flex;gap:12px;margin-bottom:.7rem"><div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0"><div style="width:34px;height:34px;border-radius:50%;background:'+s.color+'22;border:2px solid '+s.color+';display:flex;align-items:center;justify-content:center;font-family:Space Mono;font-size:12px;font-weight:700;color:'+s.color+'">'+s.step+'</div>'+(i<conflictSteps.length-1?'<div style="width:2px;flex:1;background:'+s.color+'33;margin:3px 0"></div>':'')+'</div><div class="card" style="flex:1;margin-bottom:0"><div style="font-size:13px;font-weight:500;color:'+s.color+';margin-bottom:.3rem">'+s.title+'</div><div style="font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:.4rem">'+s.detail+'</div><div style="font-size:11px;color:var(--text3);border-top:1px solid var(--border);padding-top:.35rem">담당: '+s.who+'</div></div></div>';
+  });
+  html+='</div></div>';
+
+  const feedbackGuide=[
+    {types:'ISTJ·ESTJ',icon:'📋',receive:'사실과 데이터 먼저, 구체적 예시 포함, 개선 절차 제안',avoid:'모호한 표현·감정적 언어, 절차 무시하는 즉흥적 변경 요구',color:'#5b7fff'},
+    {types:'INTJ·INTP',icon:'🧠',receive:'논리적 근거 중심, 자율적 해결 공간 부여',avoid:'근거 없는 지시, 세부 실행 과도한 간섭',color:'#7a5fff'},
+    {types:'ISTP',icon:'🔧',receive:'핵심만 간결하게, 실질적 개선 방향 제시',avoid:'긴 설교·이론 중심 피드백, 자율성 침해',color:'#40d4b8'},
+    {types:'ISFJ·ISFP',icon:'💚',receive:'긍정적 기여 먼저 인정, 따뜻한 맥락',avoid:'공개적 비판, 차갑고 직접적인 지적',color:'#4dbb8a'},
+    {types:'INFP·INFJ',icon:'🌟',receive:'가치·의미와 연결, 진정성 있는 공감',avoid:'표면적·형식적 피드백, 이상을 현실로 깎아내리는 표현',color:'#d490f0'},
+    {types:'ENFJ·ESFJ',icon:'🤝',receive:'팀에 대한 기여 강조, 감사 표현 포함',avoid:'차갑고 비인격적 피드백',color:'#ffaa60'},
+  ];
+  html+='<div class="proposal-section"><div class="proposal-section-title">💬 유형별 피드백 수신 가이드</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.7rem">';
+  feedbackGuide.forEach(function(f){
+    html+='<div style="border:1px solid var(--border);border-top:2px solid '+f.color+';border-radius:10px;padding:.9rem"><div style="display:flex;align-items:center;gap:7px;margin-bottom:.6rem"><span style="font-size:15px">'+f.icon+'</span><span style="font-family:Space Mono;font-size:12px;color:'+f.color+';font-weight:700">'+f.types+'</span></div><div style="font-size:11px;color:var(--text3);margin-bottom:.25rem">효과적인 피드백 방식</div><div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:.5rem">'+f.receive+'</div><div style="font-size:11px;color:var(--text3);margin-bottom:.25rem">피해야 할 방식</div><div style="font-size:12px;color:var(--text2);line-height:1.6">'+f.avoid+'</div></div>';
+  });
+  html+='</div></div>';
+  cv.innerHTML=html;
+})();
+
+// ── PLAYBOOK TAB
+(function(){
+  const pv=document.getElementById('playbookView');
+  const icebreakers=[
+    {title:'MBTI 카드 소개 타임',time:'15분',freq:'신규 입사·분기 킥오프',level:'쉬움',lc:'#4dbb8a',desc:'각자 자신의 MBTI를 소개하되, 이 특성이 업무에서 이렇게 나타난다는 형식으로. 강점과 함께 웃긴 에피소드 추가.',tip:'I 성향 우세 팀이므로 1분 발표 형식 고정 — 즉흥 발언 부담 없이'},
+    {title:'슈퍼파워 & 크립토나이트 발표',time:'30분',freq:'연 1회 워크숍',level:'중간',lc:'#f0b840',desc:'자신의 최강 강점(슈퍼파워) 1가지와 가장 힘든 상황(크립토나이트) 1가지를 포스트잇에 써서 공유.',tip:'INFP·ISFJ 등 자기 표현이 어려운 유형을 위해 익명 제출 후 공개 방식 병행'},
+    {title:'힘들었던 협업 익명 회고',time:'40분',freq:'반기 1회',level:'심층',lc:'#ff6b6b',desc:'익명으로 힘들었던 협업 상황, 이유, 바라는 것을 제출. MBTI 렌즈로 패턴을 읽어 팀 규약 개선에 반영.',tip:'T 유형은 익명성이 보장되면 솔직한 사실을 씀. F 유형은 감정적 표현 가능.'},
+  ];
+  let html='<div class="proposal-section"><div class="proposal-section-title">🧊 Icebreaker & 팀 빌딩 활동</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:.7rem">';
+  icebreakers.forEach(function(ic){
+    html+='<div style="border:1px solid var(--border);border-radius:10px;padding:.9rem;background:var(--bg3)"><div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.4rem;gap:5px;flex-wrap:wrap"><span style="font-size:13px;font-weight:500;color:var(--text)">'+ic.title+'</span><span style="font-size:11px;padding:2px 7px;border-radius:4px;background:'+ic.lc+'22;color:'+ic.lc+'">'+ic.level+'</span></div><div style="display:flex;gap:7px;margin-bottom:.5rem"><span style="font-size:11px;color:var(--text3)">'+ic.time+'</span><span style="font-size:11px;color:var(--text3)">'+ic.freq+'</span></div><div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:.5rem">'+ic.desc+'</div><div style="background:var(--bg4);border-radius:6px;padding:.45rem .7rem;font-size:12px;color:var(--accent);line-height:1.55">'+ic.tip+'</div></div>';
+  });
+  html+='</div></div>';
+
+  const roadmap=[
+    {q:'Q1',theme:'자아 인식 (Self-Awareness)',color:'#5b7fff',acts:['MBTI 결과 공유 워크숍 (본 대시보드 활용)','슈퍼파워 & 크립토나이트 Icebreaker','개인 업무 매뉴얼 작성 및 팀 공유','유형별 선호 소통 방식 합의 → 팀 규약 초안']},
+    {q:'Q2',theme:'상호 이해 (Mutual Understanding)',color:'#40d4b8',acts:['MBTI 기반 페어링 프로그램 시작 (ISTP+ISFJ 등)','파트간 크로스 기술 공유 세션 1회','힘들었던 협업 익명 회고 + 규약 개선','미팅 방식 개선 시범 운영 (72시간 전 안건 배포)']},
+    {q:'Q3',theme:'역할 최적화 (Role Optimization)',color:'#d490f0',acts:['역할 배정 매트릭스 기반 프로젝트 팀 재구성','ISTP 기술 전문가 트랙 공식화','Red Team(INTJ·INTP) 제도 파일럿','유형별 OKR 설정 방식 적용 시범']},
+    {q:'Q4',theme:'문화 정착 (Culture Embedding)',color:'#f0b840',acts:['연간 팀 역학 리뷰 (강점·갈등 개선 측정)','지식베이스 구축 완료 (ISTP+ISFJ 페어링 결과물)','감사해요 채널 연간 우수 기여 시상','내년도 팀 빌딩 로드맵 재설계']},
+  ];
+  html+='<div class="proposal-section"><div class="proposal-section-title">📅 분기별 팀 빌딩 로드맵</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.7rem">';
+  roadmap.forEach(function(r){
+    html+='<div style="border:1px solid var(--border);border-top:3px solid '+r.color+';border-radius:10px;padding:.9rem;background:var(--bg3)"><div style="display:flex;align-items:baseline;gap:8px;margin-bottom:.6rem"><span style="font-family:Space Mono;font-size:18px;font-weight:700;color:'+r.color+'">'+r.q+'</span><span style="font-size:12px;color:var(--text2)">'+r.theme+'</span></div>'+r.acts.map(function(a,i){return '<div style="display:flex;gap:6px;align-items:flex-start;margin-bottom:5px"><span style="font-family:Space Mono;font-size:10px;color:'+r.color+';flex-shrink:0;margin-top:2px">'+(i+1)+'.</span><span style="font-size:12px;color:var(--text2);line-height:1.5">'+a+'</span></div>';}).join('')+'</div>';
+  });
+  html+='</div></div>';
+  pv.innerHTML=html;
+})();
+
+// ── MOOD TRACKER TAB
+(function(){
+  const mv=document.getElementById('moodView');
+  const weeks=['W1','W2','W3','W4','W5','W6','W7','W8'];
+  const moodData={
+    all:[72,68,74,65,60,58,63,67],
+    infra:[75,72,78,70,66,62,68,71],
+    sw:[69,64,70,60,54,54,58,63],
+  };
+  const stressFactors=[
+    {label:'반복 업무 과부하',pct:62,color:'#ff6b6b'},
+    {label:'불명확한 목표',pct:45,color:'#ff9040'},
+    {label:'인정 부족',pct:38,color:'#f0b840'},
+    {label:'기술 부채 누적',pct:55,color:'#d490f0'},
+    {label:'팀 소통 단절',pct:28,color:'#5b7fff'},
+    {label:'워라밸 불균형',pct:33,color:'#40d4b8'},
+  ];
+  const mbtiMood=[
+    {type:'ISTJ',score:66,risk:'중',note:'반복 업무 만족도 하락. 성장 기회 제공 시급.'},
+    {type:'ISTP',score:71,risk:'낮',note:'자율성 유지 중. 문서화 압박 스트레스 소폭 증가.'},
+    {type:'INTJ',score:74,risk:'낮',note:'기술 도전 부족 시 급격 하락 위험. 현재 안정.'},
+    {type:'INTP',score:69,risk:'중',note:'실행 압박 증가로 에너지 소모. 탐구 시간 보장 필요.'},
+    {type:'INFP',score:58,risk:'높음',note:'가치 충돌 누적. 그룹장 번아웃 조기 경보.'},
+    {type:'INFJ',score:63,risk:'중',note:'완벽주의 부담. 정기 1:1 면담으로 모니터링.'},
+    {type:'ISFJ',score:70,risk:'낮',note:'팀 지원 역할에 만족. 공로 인정 빈도 늘리기.'},
+    {type:'ISFP',score:72,risk:'낮',note:'현재 안정. 장기 목표 부재 시 방향 상실 주의.'},
+    {type:'ENFJ',score:62,risk:'높음',note:'감정 소모 누적. 인프라 파트장 번아웃 위험.'},
+    {type:'ESFJ',score:75,risk:'낮',note:'팀 소통 허브 역할 잘 수행 중. 현재 양호.'},
+    {type:'ESTJ',score:68,risk:'중',note:'목표 불명확성에 스트레스. 명확한 KPI 재정의 필요.'},
+  ];
+
+  const highRisk=mbtiMood.filter(function(m){return m.risk==='높음';});
+  let alertHTML=highRisk.length?'<div style="border:1px solid #ff6b6b55;background:#ff6b6b0d;border-radius:10px;padding:.9rem 1.1rem;margin-bottom:1rem"><div style="font-size:13px;font-weight:500;color:#ff6b6b;margin-bottom:.4rem">번아웃 조기 경보 — 즉각 관심 필요</div>'+highRisk.map(function(a){return '<div style="font-size:13px;color:var(--text2);margin-bottom:2px"><span style="font-family:Space Mono;color:#ff6b6b">'+a.type+'</span> · '+a.note+'</div>';}).join('')+'</div>':'';
+  const istjScore=mbtiMood.find(function(m){return m.type==='ISTJ';}).score;
+  if(istjScore<70) alertHTML+='<div style="border:1px solid rgba(240,184,64,.4);background:rgba(240,184,64,.07);border-radius:10px;padding:.9rem 1.1rem;margin-bottom:1rem"><div style="font-size:13px;font-weight:500;color:var(--gold);margin-bottom:.3rem">ISTJ 집단사고 위험 감지</div><div style="font-size:13px;color:var(--text2)">ISTJ 그룹 만족도('+istjScore+')가 임계값(70) 미만. Red Team 활성화 및 외부 자극 제공 권장.</div></div>';
+
+  let html=alertHTML;
+  html+='<div class="g2" style="margin-bottom:1rem"><div class="card"><div class="card-title">주간 에너지 레벨 추이 (시뮬레이션)</div><div class="chart-wrap" style="height:200px"><canvas id="moodLineChart"></canvas></div><div style="margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--border);display:flex;gap:12px;flex-wrap:wrap"><label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);cursor:pointer"><input type="checkbox" id="moodAll" checked> 전체</label><label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);cursor:pointer"><input type="checkbox" id="moodInfra" checked> 인프라</label><label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);cursor:pointer"><input type="checkbox" id="moodSw" checked> 소프트웨어</label></div></div><div class="card"><div class="card-title">주요 스트레스 요인</div><div id="stressFactors"></div></div></div>';
+  html+='<div class="card" style="margin-bottom:1rem"><div class="card-title">MBTI 유형별 만족도 & 번아웃 위험도</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.6rem" id="mbtiMoodGrid"></div></div>';
+  html+='<div class="card"><div class="card-title">내 상태 입력 (주간 설문 시뮬레이터)</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;margin-bottom:.9rem"><div><label style="font-size:12px;color:var(--text2);display:block;margin-bottom:.3rem">에너지 레벨</label><input type="range" min="0" max="100" value="70" id="myEnergy"><div style="font-size:12px;color:var(--text2);text-align:right" id="myEnergyVal">70</div></div><div><label style="font-size:12px;color:var(--text2);display:block;margin-bottom:.3rem">스트레스 수준</label><input type="range" min="0" max="100" value="35" id="myStress"><div style="font-size:12px;color:var(--text2);text-align:right" id="myStressVal">35</div></div><div><label style="font-size:12px;color:var(--text2);display:block;margin-bottom:.3rem">업무 만족도</label><input type="range" min="0" max="100" value="65" id="mySatisfy"><div style="font-size:12px;color:var(--text2);text-align:right" id="mySatisfyVal">65</div></div></div><div id="myMoodResult" style="background:var(--bg3);border-radius:8px;padding:.8rem 1rem;font-size:13px;color:var(--text2);line-height:1.75"></div></div>';
+  mv.innerHTML=html;
+
+  const sfEl=document.getElementById('stressFactors');
+  stressFactors.forEach(function(s){
+    sfEl.innerHTML+='<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:2px"><span>'+s.label+'</span><span style="color:'+s.color+'">'+s.pct+'%</span></div><div style="height:7px;background:var(--bg3);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+s.pct+'%;background:'+s.color+';border-radius:4px"></div></div></div>';
+  });
+  const mg=document.getElementById('mbtiMoodGrid');
+  mbtiMood.forEach(function(m){
+    const col=COLORS[m.type]||'#888';
+    const riskCol=m.risk==='높음'?'#ff6b6b':m.risk==='중'?'#f0b840':'#4dbb8a';
+    mg.innerHTML+='<div style="border:1px solid var(--border);border-radius:8px;padding:.65rem;background:var(--bg3)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem"><span style="font-family:Space Mono;font-size:12px;color:'+col+'">'+m.type+'</span><span style="font-size:10px;padding:1px 6px;border-radius:4px;background:'+riskCol+'22;color:'+riskCol+'">'+m.risk+'</span></div><div style="height:5px;background:var(--bg4);border-radius:3px;overflow:hidden;margin-bottom:.3rem"><div style="height:100%;width:'+m.score+'%;background:'+(m.score>=70?'#4dbb8a':m.score>=60?'#f0b840':'#ff6b6b')+';border-radius:3px"></div></div><div style="font-size:11px;color:var(--text3);line-height:1.45">'+m.note+'</div></div>';
+  });
+
+  setTimeout(function(){
+    const ctx=document.getElementById('moodLineChart').getContext('2d');
+    const chart=new Chart(ctx,{
+      type:'line',
+      data:{labels:weeks,datasets:[
+        {label:'전체',data:moodData.all,borderColor:'#9aa0bc',backgroundColor:'#9aa0bc22',borderWidth:2,tension:.4,pointRadius:3},
+        {label:'인프라',data:moodData.infra,borderColor:'#5b7fff',backgroundColor:'#5b7fff22',borderWidth:2,tension:.4,pointRadius:3},
+        {label:'소프트웨어',data:moodData.sw,borderColor:'#ff6b6b',backgroundColor:'#ff6b6b22',borderWidth:2,tension:.4,pointRadius:3},
+      ]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+        scales:{y:{min:40,max:100,ticks:{color:'#5a6080',font:{size:10}},grid:{color:'#2a305055'}},x:{ticks:{color:'#5a6080',font:{size:10}},grid:{color:'#2a305022'}}}}
+    });
+    document.getElementById('moodAll').addEventListener('change',function(e){chart.data.datasets[0].hidden=!e.target.checked;chart.update();});
+    document.getElementById('moodInfra').addEventListener('change',function(e){chart.data.datasets[1].hidden=!e.target.checked;chart.update();});
+    document.getElementById('moodSw').addEventListener('change',function(e){chart.data.datasets[2].hidden=!e.target.checked;chart.update();});
+  },300);
+
+  function updateMyMood(){
+    const e=+document.getElementById('myEnergy').value;
+    const s=+document.getElementById('myStress').value;
+    const sat=+document.getElementById('mySatisfy').value;
+    document.getElementById('myEnergyVal').textContent=e;
+    document.getElementById('myStressVal').textContent=s;
+    document.getElementById('mySatisfyVal').textContent=sat;
+    const score=Math.round((e+(100-s)+sat)/3);
+    let statusText, statusColor;
+    if(score>=75){statusText='양호 · 안정';statusColor='#4dbb8a';}
+    else if(score>=60){statusText='보통 — 주의 구간';statusColor='#f0b840';}
+    else if(score>=45){statusText='피로 누적 — 리더 개입 권장';statusColor='#ff9040';}
+    else{statusText='위험 — 즉각 면담 필요';statusColor='#ff6b6b';}
+    const tip=s>65?'스트레스가 높습니다. 오늘 한 가지만 집중하고 나머지는 내일로 미루세요.':e<40?'에너지가 낮습니다. 집중 업무 전 15분 휴식을 취하세요.':sat<40?'만족도가 낮습니다. 파트장과 1:1 면담을 요청해보세요.':'현재 상태가 안정적입니다. 이 상태를 유지해보세요!';
+    document.getElementById('myMoodResult').innerHTML='<div style="font-size:15px;font-weight:500;color:var(--text);margin-bottom:.35rem">종합 지수: <span style="color:'+statusColor+'">'+score+'</span></div><div style="margin-bottom:.35rem">상태: <span style="color:'+statusColor+'">'+statusText+'</span></div><div style="color:var(--accent)">'+tip+'</div>';
+  }
+  ['myEnergy','myStress','mySatisfy'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.addEventListener('input',updateMyMood);
+  });
+  updateMyMood();
+})();
+
+// ── MATCHER TAB
+(function(){
+  const mv=document.getElementById('matcherView');
+  mv.innerHTML='<div class="card" style="margin-bottom:1rem"><div class="card-title">두 멤버의 소통 스타일 예측 분석</div><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:1.1rem"><select id="matchA" style="flex:1;min-width:130px"></select><span style="font-family:Space Mono;font-size:13px;color:var(--text3)">vs</span><select id="matchB" style="flex:1;min-width:130px"></select><button id="matchBtn" style="padding:7px 16px;background:var(--accent);border:none;border-radius:8px;color:#fff;font-size:12px;cursor:pointer">분석</button></div><div id="matchResult"></div></div><div class="card"><div class="card-title">소통 조화도 전체 매트릭스</div><div id="matchMatrix" style="overflow-x:auto"></div></div>';
+
+  ['matchA','matchB'].forEach(function(id,i){
+    const sel=document.getElementById(id);
+    members.forEach(function(m,j){
+      const opt=document.createElement('option');
+      opt.value=m.name;
+      opt.textContent=m.name+' ('+m.mbti+')';
+      if((i===0&&j===0)||(i===1&&j===3)) opt.selected=true;
+      sel.appendChild(opt);
+    });
+  });
+
+  function calcComm(mbtiA,mbtiB){
+    const direct=function(t){return (t[2]==='T'?2:0)+(t[3]==='J'?2:0)+(t[0]==='E'?1:0);};
+    const speed=function(t){return (t[0]==='E'?2:0)+(t[3]==='P'?2:0)+(t[1]==='S'?1:0);};
+    const detail=function(t){return (t[3]==='J'?2:0)+(t[1]==='N'?2:0)+(t[2]==='T'?1:0);};
+    const emotion=function(t){return (t[2]==='F'?3:0)+(t[0]==='E'?1:0)+(t[1]==='N'?1:0);};
+    const gap=function(fn){return Math.abs(fn(mbtiA)-fn(mbtiB));};
+    const harmony=Math.max(20,100-gap(direct)*12-gap(speed)*8-gap(emotion)*10);
+    const scores={직접성:Math.round((direct(mbtiA)+direct(mbtiB))/2*20),속도:Math.round((speed(mbtiA)+speed(mbtiB))/2*20),상세도:Math.round((detail(mbtiA)+detail(mbtiB))/2*20),감성도:Math.round((emotion(mbtiA)+emotion(mbtiB))/2*20)};
+    const shared=[],diff=[];
+    if(mbtiA[0]===mbtiB[0]) shared.push(mbtiA[0]==='I'?'둘 다 내향형 — 독립적 집중 시간 선호':'둘 다 외향형 — 활발한 소통 선호');
+    else diff.push('에너지 방향 차이(I/E) — 소통 주도권 조율 필요');
+    if(mbtiA[1]===mbtiB[1]) shared.push(mbtiA[1]==='N'?'직관형 공통 — 개념 중심 대화':'감각형 공통 — 구체적 사실 중심 소통');
+    else diff.push('인식 방식 차이(N/S) — 추상 vs 구체 언어 조율 필요');
+    if(mbtiA[2]===mbtiB[2]) shared.push(mbtiA[2]==='T'?'사고형 공통 — 논리·효율 우선':'감정형 공통 — 관계·공감 중심 소통');
+    else diff.push('판단 기준 차이(T/F) — 피드백 방식 특히 주의');
+    if(mbtiA[3]===mbtiB[3]) shared.push(mbtiA[3]==='J'?'판단형 공통 — 계획·마감 존중':'인식형 공통 — 유연한 변경 수용');
+    else diff.push('생활 방식 차이(J/P) — 계획 vs 즉흥 충돌 가능');
+    const tips=[];
+    if(mbtiA[2]!==mbtiB[2]) tips.push('피드백 시 사실+영향 순서로 제시하면 T/F 모두 수용도 상승');
+    if(mbtiA[0]==='I'&&mbtiB[0]==='I') tips.push('두 분 모두 내향형 — 회의보다 사전 문서 공유 후 짧은 동기화가 효율적');
+    if(mbtiA[3]!==mbtiB[3]) tips.push('계획 변경 시 최소 48시간 전 사전 공유 권장');
+    return{harmony,frictionRisk:100-harmony,scores,shared,diff,tips};
+  }
+
+  function renderMatch(){
+    const mA=members.find(function(m){return m.name===document.getElementById('matchA').value;});
+    const mB=members.find(function(m){return m.name===document.getElementById('matchB').value;});
+    if(!mA||!mB||mA.name===mB.name){document.getElementById('matchResult').innerHTML='<div style="color:var(--text3);font-size:13px">서로 다른 두 멤버를 선택하세요.</div>';return;}
+    const r=calcComm(mA.mbti,mB.mbti);
+    const cA=COLORS[mA.mbti]||'#888', cB=COLORS[mB.mbti]||'#888';
+    const harmCol=r.harmony>=75?'#4dbb8a':r.harmony>=55?'#f0b840':'#ff6b6b';
+    document.getElementById('matchResult').innerHTML=
+      '<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:.8rem;align-items:center;margin-bottom:1rem"><div style="text-align:center;padding:.7rem;background:'+cA+'11;border:1px solid '+cA+'44;border-radius:10px"><div style="font-size:17px;font-weight:700;color:'+cA+'">'+mA.name+'</div><div style="font-family:Space Mono;font-size:11px;color:'+cA+'">'+mA.mbti+'</div><div style="font-size:10px;color:var(--text3);margin-top:2px">'+mA.role+'</div></div><div style="text-align:center"><div style="font-size:26px;font-weight:700;color:'+harmCol+'">'+r.harmony+'</div><div style="font-size:11px;color:var(--text3)">소통 조화도</div><div style="font-size:11px;color:#ff6b6b">마찰 위험 '+r.frictionRisk+'%</div></div><div style="text-align:center;padding:.7rem;background:'+cB+'11;border:1px solid '+cB+'44;border-radius:10px"><div style="font-size:17px;font-weight:700;color:'+cB+'">'+mB.name+'</div><div style="font-family:Space Mono;font-size:11px;color:'+cB+'">'+mB.mbti+'</div><div style="font-size:10px;color:var(--text3);margin-top:2px">'+mB.role+'</div></div></div>'+
+      '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.9rem">'+Object.entries(r.scores).map(function(e){return '<div style="text-align:center;background:var(--bg3);border-radius:7px;padding:.5rem"><div style="font-size:17px;font-weight:700;color:var(--text)">'+e[1]+'</div><div style="font-size:11px;color:var(--text3)">'+e[0]+'</div></div>';}).join('')+'</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.8rem"><div style="background:var(--bg3);border-radius:8px;padding:.7rem"><div style="font-size:11px;color:var(--green);margin-bottom:.4rem">공통 강점</div>'+r.shared.map(function(s){return '<div style="font-size:12px;color:var(--text2);margin-bottom:.25rem;line-height:1.5">· '+s+'</div>';}).join('')+'</div><div style="background:var(--bg3);border-radius:8px;padding:.7rem"><div style="font-size:11px;color:var(--coral);margin-bottom:.4rem">주의 영역</div>'+r.diff.map(function(s){return '<div style="font-size:12px;color:var(--text2);margin-bottom:.25rem;line-height:1.5">· '+s+'</div>';}).join('')+'</div></div>'+
+      (r.tips.length?'<div style="background:var(--accent)11;border:1px solid var(--accent)33;border-radius:8px;padding:.7rem"><div style="font-size:11px;color:var(--accent);margin-bottom:.4rem">실전 대화 팁</div>'+r.tips.map(function(t){return '<div style="font-size:12px;color:var(--text2);margin-bottom:.25rem;line-height:1.5">→ '+t+'</div>';}).join('')+'</div>':'');
+  }
+  document.getElementById('matchBtn').onclick=renderMatch;
+  document.getElementById('matchA').onchange=renderMatch;
+  document.getElementById('matchB').onchange=renderMatch;
+  renderMatch();
+
+  const matTypes=Array.from(new Set(members.map(function(m){return m.mbti;}))).sort();
+  let matHTML='<table style="border-collapse:collapse;font-size:10px;min-width:500px"><thead><tr><th style="padding:4px 6px;color:var(--text3)"></th>';
+  matTypes.forEach(function(t){matHTML+='<th style="padding:4px 5px;font-family:Space Mono;color:'+(COLORS[t]||'#888')+'">'+t+'</th>';});
+  matHTML+='</tr></thead><tbody>';
+  matTypes.forEach(function(tA){
+    matHTML+='<tr><td style="padding:4px 6px;font-family:Space Mono;font-weight:700;color:'+(COLORS[tA]||'#888')+'">'+tA+'</td>';
+    matTypes.forEach(function(tB){
+      if(tA===tB){matHTML+='<td style="background:var(--bg3);text-align:center;padding:3px">—</td>';return;}
+      const h=calcComm(tA,tB).harmony;
+      const bg=h>=75?'#4dbb8a33':h>=55?'#f0b84033':'#ff6b6b33';
+      const tc=h>=75?'#4dbb8a':h>=55?'#f0b840':'#ff6b6b';
+      matHTML+='<td style="text-align:center;padding:3px;background:'+bg+';color:'+tc+';border-radius:2px" title="'+tA+' x '+tB+': '+h+'">'+h+'</td>';
+    });
+    matHTML+='</tr>';
+  });
+  matHTML+='</tbody></table>';
+  document.getElementById('matchMatrix').innerHTML=matHTML;
+})();
+
+// ── SIMULATOR TAB
+(function(){
+  const sv=document.getElementById('simulatorView');
+  sv.innerHTML='<div class="card"><div class="card-title">프로젝트 팀 구성 시뮬레이터</div><div style="font-size:13px;color:var(--text2);margin-bottom:.9rem">멤버를 선택하여 팀을 구성하고 MBTI 균형 점수·집단사고 위험도를 확인하세요. (4~6명 권장)</div><div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.9rem" id="simPool"></div><div style="display:flex;gap:8px;margin-bottom:.9rem;flex-wrap:wrap"><button id="simClear" style="padding:5px 12px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text2);font-size:12px;cursor:pointer">초기화</button><button id="simAuto" style="padding:5px 12px;background:var(--accent)22;border:1px solid var(--accent)44;border-radius:6px;color:var(--accent);font-size:12px;cursor:pointer">최적 팀 자동 추천</button></div><div id="simResult"></div></div>';
+
+  var selected=new Set();
+
+  function buildPool(){
+    var pool=document.getElementById('simPool');
+    pool.innerHTML='';
+    members.forEach(function(m){
+      var col=COLORS[m.mbti]||'#888';
+      var btn=document.createElement('button');
+      var isSel=selected.has(m.name);
+      btn.style.cssText='padding:4px 10px;border:1px solid '+(isSel?col:'var(--border)')+';border-radius:99px;background:'+(isSel?col+'22':'transparent')+';color:'+(isSel?col:'var(--text2)')+';font-size:11px;cursor:pointer;font-family:inherit;transition:all .15s';
+      btn.innerHTML=m.name+' <span style="font-family:Space Mono;font-size:9px">'+m.mbti+'</span>';
+      btn.onclick=function(){
+        if(selected.has(m.name)) selected.delete(m.name);
+        else if(selected.size<6) selected.add(m.name);
+        buildPool(); calcSim();
+      };
+      pool.appendChild(btn);
+    });
+  }
+
+  function calcSim(){
+    var res=document.getElementById('simResult');
+    var team=members.filter(function(m){return selected.has(m.name);});
+    if(team.length<2){res.innerHTML='<div style="color:var(--text3);font-size:13px">2명 이상 선택하면 분석이 시작됩니다.</div>';return;}
+    var types=team.map(function(m){return m.mbti;});
+    var unique=new Set(types).size;
+    var hasNT=types.some(function(t){return t[1]==='N'&&t[2]==='T';});
+    var hasSJ=types.some(function(t){return ['ISTJ','ESTJ','ISFJ'].includes(t);});
+    var hasSTP=types.some(function(t){return t[1]==='S'&&t[3]==='P';});
+    var hasConn=types.some(function(t){return ['ENFJ','ESFJ','INFJ','INFP','ISFP'].includes(t);});
+    var iCount=types.filter(function(t){return t[0]==='I';}).length;
+    var eCount=team.length-iCount;
+    var jCount2=types.filter(function(t){return t[3]==='J';}).length;
+    var tCount=types.filter(function(t){return t[2]==='T';}).length;
+    var fCount=team.length-tCount;
+    var istjCount=types.filter(function(t){return t==='ISTJ';}).length;
+    var balance=60;
+    if(hasNT) balance+=10; if(hasSJ) balance+=10; if(hasSTP) balance+=8; if(hasConn) balance+=10;
+    if(unique>=3) balance+=7; if(eCount>0) balance+=5; if(fCount>0) balance+=5;
+    balance=Math.min(100,balance);
+    var groupthink=Math.round(istjCount/team.length*50+(team.length-unique)/team.length*35+iCount/team.length*15);
+    groupthink=Math.min(100,groupthink);
+    var synergy=Math.round(unique/team.length*40+balance*0.4+(100-groupthink)*0.2);
+    var balCol=balance>=80?'#4dbb8a':balance>=60?'#f0b840':'#ff6b6b';
+    var gtCol=groupthink>=60?'#ff6b6b':groupthink>=40?'#f0b840':'#4dbb8a';
+    var roleCovers=[
+      {role:'전략 설계 (NT)',ok:hasNT,who:'INTJ·INTP 포함'},
+      {role:'실행 관리 (SJ)',ok:hasSJ,who:'ISTJ·ESTJ 포함'},
+      {role:'현장 대응 (SP)',ok:hasSTP,who:'ISTP 포함'},
+      {role:'팀 연결 (NF/SF)',ok:hasConn,who:'ENFJ·ESFJ 등 포함'},
+      {role:'외향형 소통',ok:eCount>0,who:'E 유형 1명 이상'},
+      {role:'감성 균형 (F)',ok:fCount>0,who:'F 유형 1명 이상'},
+    ];
+    var warnings=[],recs=[];
+    if(istjCount/team.length>0.5) warnings.push('ISTJ가 '+Math.round(istjCount/team.length*100)+'%로 과다 — 집단사고 위험');
+    if(!hasNT) recs.push('NT(INTJ·INTP) 추가로 전략 설계 역량 보완');
+    if(!hasConn) recs.push('NF/ESFJ 추가로 팀 화합 및 소통 허브 확보');
+    if(eCount===0) recs.push('E 유형 추가로 대외 소통·퍼실리테이션 보완');
+    if(fCount===0) recs.push('F 유형 추가로 팀 감성 균형 보완');
+    res.innerHTML=
+      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:.9rem"><div style="text-align:center;background:var(--bg3);border-radius:10px;padding:.9rem"><div style="font-size:28px;font-weight:700;color:'+balCol+'">'+balance+'</div><div style="font-size:12px;color:var(--text2)">팀 균형 점수</div></div><div style="text-align:center;background:var(--bg3);border-radius:10px;padding:.9rem"><div style="font-size:28px;font-weight:700;color:'+gtCol+'">'+groupthink+'%</div><div style="font-size:12px;color:var(--text2)">집단사고 위험도</div></div><div style="text-align:center;background:var(--bg3);border-radius:10px;padding:.9rem"><div style="font-size:28px;font-weight:700;color:var(--accent)">'+synergy+'</div><div style="font-size:12px;color:var(--text2)">시너지 지수</div></div></div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.9rem">'+team.map(function(m){var col=COLORS[m.mbti]||'#888';return '<span style="font-size:11px;padding:2px 9px;border-radius:99px;background:'+col+'22;color:'+col+';border:1px solid '+col+'44">'+m.name+' '+m.mbti+'</span>';}).join('')+'</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.8rem"><div style="background:var(--bg3);border-radius:8px;padding:.8rem"><div style="font-size:11px;color:var(--text3);margin-bottom:.5rem">역할 커버리지</div>'+roleCovers.map(function(r){return '<div style="display:flex;align-items:center;gap:6px;font-size:12px;margin-bottom:.25rem"><span style="color:'+(r.ok?'#4dbb8a':'#ff6b6b')+'">'+(r.ok?'✓':'✗')+'</span><span style="color:'+(r.ok?'var(--text2)':'var(--text3)')+'">'+r.role+'</span>'+(r.ok?'':'<span style="font-size:10px;color:var(--text3)">← '+r.who+'</span>')+'</div>';}).join('')+'</div><div style="background:var(--bg3);border-radius:8px;padding:.8rem"><div style="font-size:11px;color:var(--text3);margin-bottom:.5rem">구성 분포</div>'+[['I/E','I '+iCount+'명 · E '+eCount+'명'],['T/F','T '+tCount+'명 · F '+fCount+'명'],['J/P','J '+jCount2+'명 · P '+(team.length-jCount2)+'명'],['유형 다양성',unique+'가지 유형']].map(function(kv){return '<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3)">'+kv[0]+'</span><span style="color:var(--text2)">'+kv[1]+'</span></div>';}).join('')+'</div></div>'+
+      (warnings.length?'<div style="background:#ff6b6b0d;border:1px solid #ff6b6b44;border-radius:8px;padding:.7rem;margin-bottom:.7rem"><div style="font-size:11px;color:#ff6b6b;margin-bottom:.3rem">경고</div>'+warnings.map(function(w){return '<div style="font-size:12px;color:var(--text2)">· '+w+'</div>';}).join('')+'</div>':'')+
+      (recs.length?'<div style="background:var(--accent)0d;border:1px solid var(--accent)33;border-radius:8px;padding:.7rem"><div style="font-size:11px;color:var(--accent);margin-bottom:.3rem">권장 보완 사항</div>'+recs.map(function(r){return '<div style="font-size:12px;color:var(--text2)">→ '+r+'</div>';}).join('')+'</div>':'');
+  }
+  document.getElementById('simClear').onclick=function(){selected.clear();buildPool();calcSim();};
+  document.getElementById('simAuto').onclick=function(){
+    selected.clear();
+    var picks=[members.find(function(m){return m.mbti==='INTJ';}),members.find(function(m){return m.mbti==='ISTJ'&&m.leader;}),members.find(function(m){return m.mbti==='ISTP';}),members.find(function(m){return m.mbti==='ENFJ';}),members.find(function(m){return m.mbti==='INTP';}),members.find(function(m){return m.mbti==='ESFJ';})].filter(Boolean);
+    picks.forEach(function(m){selected.add(m.name);});
+    buildPool();calcSim();
+  };
+  buildPool();calcSim();
+})();
+
+// ── OKR TAB
+(function(){
+  const ov=document.getElementById('okrView');
+  const OKR={
+    ISTJ:[{o:'운영 표준화 완성도 향상',krs:['담당 시스템 운영 매뉴얼 100% 문서화','반복 장애 유형 Top 5 재발 방지 절차 수립','분기 내 SLA 99.5% 이상 유지']},{o:'지식 공유 리더 되기',krs:['월 1회 팀 내 운영 노하우 공유 세션 진행','ISTP 팀원과 기술-문서 페어링 완료','부서 지식베이스 문서 5건 이상 기여']}],
+    ISFJ:[{o:'팀 온보딩 & 지원 체계 강화',krs:['신규 입사자 온보딩 가이드 1종 완성','팀원 2명 이상의 업무 부담 경감 지원 실행','주간 팀 체크인 퍼실리테이션 정착']},{o:'전문 역량 가시성 높이기',krs:['담당 도메인 인증 1건 취득','자신의 기여를 월 보고에 명시적으로 포함','팀 내 1:1 기술 멘토링 2건 진행']}],
+    INFJ:[{o:'팀 방향성 통찰 기여자 되기',krs:['분기별 팀 역학 관찰 리포트 파트장에게 제공','잠재 갈등 2건 이상 조기 포착 및 중재','부서 개선 아이디어 3건 문서화 후 공유']},{o:'번아웃 예방과 지속 가능 성과',krs:['주 40시간 이내 업무 유지','월 1회 파트장과 에너지 레벨 공유 면담','자신의 강점 역할 명확화 및 과부하 역할 1개 위임']}],
+    INTJ:[{o:'기술 전략 리더십 강화',krs:['담당 도메인 3~6개월 기술 로드맵 수립','아키텍처 리뷰 세션 분기 1회 주도','현재 시스템 비효율 포인트 3건 개선안 제시']},{o:'팀 내 소통 영향력 확대',krs:['분석 결과를 비기술 구성원도 이해 가능한 방식으로 공유','ISTJ 팀원 3명에게 전략적 맥락 설명 1회 이상','Red Team 역할 1회 수행 후 피드백 문서화']}],
+    ISTP:[{o:'기술 전문가 트랙 역량 확보',krs:['PoC 프로젝트 1건 완료 및 결과 공유','현장 문제해결 케이스북 3건 작성 (ISFJ와 페어링)','신기술 실험 결과를 팀 내 발표 1회']},{o:'지식 축적 & 공유 습관 형성',krs:['장애 대응 과정 기록 5건 이상','월 1회 기술 공유 세션 참여','ISFJ와 기술-문서 페어링 완료']}],
+    ISFP:[{o:'팀 기여의 가시성 높이기',krs:['매월 자신의 기여 사항을 팀 회의에서 1회 이상 공유','담당 업무 결과물을 측정 가능한 지표로 표현 연습','파트장과 커리어 방향 면담 1회']},{o:'장기 목표 설정과 실행',krs:['분기 목표 3개를 문서화하고 주간 점검','도메인 전문성 강화를 위한 학습 계획 수립','갈등 상황 1건에서 회피 대신 건설적 참여 시도']}],
+    INFP:[{o:'가치 기반 리더십 실현',krs:['분기별 팀 WHY 세션 1회 진행','구성원 1:1 면담 전원 실시 (27명)','부서 문화 개선 아이디어 로드맵 작성']},{o:'실행력 보완 파트너십',krs:['ISTJ 파트장과 주간 실행 점검 루틴 수립','데이터 기반 의사결정 사례 분기 2건 이상','모호한 지시를 구체적 액션아이템으로 전환 연습']}],
+    INTP:[{o:'분석 역량을 팀 성과로 연결',krs:['RCA 보고서 분기 2건 이상 작성','분석 결과를 실행 계획과 함께 제시 (실행 파트너 지정)','복잡한 기술 문제 탐구 결과 팀 공유 1회']},{o:'실행 추진력 강화',krs:['아이디어에서 실행 전환 시간 2주 이내 목표','ESTJ 이은정과 실행 파트너십 1건 진행','분기 목표 달성률 80% 이상']}],
+    ENFJ:[{o:'번아웃 없는 지속 가능 리더십',krs:['월간 에너지 레벨 자가 측정 및 기록','타인 지원에 쓰는 시간 주 10시간 이내 관리','분기 1회 외부 코칭 또는 동료 코칭 수혜']},{o:'팀 결속력 지표 향상',krs:['인프라 파트 분기별 팀 만족도 70점 이상 유지','개별 팀원 1:1 면담 월 1회 이상 실시','크로스 파트 협업 프로젝트 1건 주도']}],
+    ESFJ:[{o:'교육·온보딩 시스템 완성',krs:['신규 입사자 온보딩 프로그램 1종 완성','분기별 팀 교육 세션 2회 이상 진행','교육 만족도 4점/5점 이상']},{o:'대외 협업 채널 강화',krs:['타 부서 협업 프로젝트 2건 이상 참여','부서 뉴스레터 또는 공유 문서 분기 1건 발행','신규 협업 파트너 3팀 이상 관계 구축']}],
+    ESTJ:[{o:'프로세스 효율화 성과 창출',krs:['반복 업무 자동화 또는 표준화 2건 완료','팀 업무 처리 시간 10% 단축 달성','분기 목표 달성률 95% 이상']},{o:'팀 내 감성 균형 기여',krs:['F 유형 팀원과 월 1회 이상 비공식 소통','피드백 방식을 사실+영향+제안 포맷으로 전환','팀원 기여 공개 인정 월 2회 이상']}],
+  };
+
+  const synergyPairs=[
+    {pair:'INFP × ENFJ',score:94,trend:[72,78,82,88,90,94],note:'그룹장 & 인프라 파트장. NF 공명 최고 조합.'},
+    {pair:'INTJ × INTP',score:91,trend:[68,74,80,85,88,91],note:'네트워크팀. 분석·전략 완전체.'},
+    {pair:'ISTJ × ENFJ',score:87,trend:[65,70,76,80,84,87],note:'파트장 크로스. 실행+동기부여.'},
+    {pair:'ISTJ × INTJ',score:83,trend:[60,66,72,76,80,83],note:'전략 설계 → 표준화 파이프라인.'},
+    {pair:'ISTP × ISTP',score:80,trend:[58,64,70,74,77,80],note:'OpenStack 트리오. 현장 결속.'},
+    {pair:'ISTJ × ISFJ',score:77,trend:[55,60,66,70,74,77],note:'기술-문서 페어링 시너지.'},
+    {pair:'INTJ × ISTJ',score:78,trend:[52,58,64,68,73,78],note:'설계 → 실행 연결.'},
+    {pair:'INFP × ISTJ',score:60,trend:[40,45,50,54,57,60],note:'가치 vs 효율 긴장. 상호 노력 필요.'},
+  ];
+
+  var selectedOkrMember=null;
+  ov.innerHTML='<div class="card" style="margin-bottom:1rem"><div class="card-title">멤버별 맞춤 성장 OKR 자동 생성</div><div style="font-size:13px;color:var(--text2);margin-bottom:.8rem">멤버를 선택하면 MBTI 특성을 반영한 이번 분기 OKR이 생성됩니다.</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:5px;margin-bottom:.9rem" id="okrMemberGrid"></div><div id="okrResult"></div></div><div class="card"><div class="card-title">조합별 시너지 스코어 & 6개월 추이</div><div style="overflow-x:auto;margin-bottom:1rem"><table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="border-bottom:1px solid var(--border)"><th style="text-align:left;padding:7px 9px;color:var(--text2);font-weight:500">조합</th><th style="text-align:center;padding:7px;color:var(--text2);font-weight:500">점수</th><th style="text-align:left;padding:7px;color:var(--text2);font-weight:500">6개월 추이</th><th style="text-align:left;padding:7px 9px;color:var(--text2);font-weight:500">특징</th></tr></thead><tbody id="synergyTable"></tbody></table></div><div class="chart-wrap" style="height:220px"><canvas id="synergyBar"></canvas></div></div>';
+
+  var og=document.getElementById('okrMemberGrid');
+  members.forEach(function(m){
+    var col=COLORS[m.mbti]||'#888';
+    var btn=document.createElement('div');
+    btn.className='member-card';
+    btn.style.cursor='pointer';
+    btn.innerHTML='<div class="member-name" style="font-size:12px">'+m.name+'</div><span class="mbti-pill" style="background:'+col+'22;color:'+col+';font-size:10px">'+m.mbti+'</span>';
+    btn.onclick=function(){
+      selectedOkrMember=m.name;
+      document.querySelectorAll('#okrMemberGrid .member-card').forEach(function(x){x.classList.remove('selected');});
+      btn.classList.add('selected');
+      renderOkr(m);
+    };
+    og.appendChild(btn);
+  });
+
+  function renderOkr(m){
+    var col=COLORS[m.mbti]||'#888';
+    var tmpl=OKR[m.mbti]||[];
+    var d=DESC[m.mbti];
+    document.getElementById('okrResult').innerHTML='<div style="border:1px solid '+col+'44;border-radius:12px;padding:1.1rem;background:'+col+'08"><div style="display:flex;align-items:center;gap:10px;margin-bottom:.9rem;padding-bottom:.7rem;border-bottom:1px solid '+col+'22"><div style="width:42px;height:42px;border-radius:50%;background:'+col+'22;border:2px solid '+col+'44;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:'+col+'">'+m.name[0]+'</div><div><div style="font-size:15px;font-weight:500;color:var(--text)">'+m.name+'</div><div style="font-family:Space Mono;font-size:11px;color:'+col+'">'+m.mbti+(d?' — '+d.nick:'')+'</div></div></div>'+tmpl.map(function(t,i){return '<div style="margin-bottom:.9rem"><div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:.4rem"><span style="font-family:Space Mono;font-size:10px;color:'+col+';margin-right:5px">O'+(i+1)+'</span>'+t.o+'</div>'+t.krs.map(function(kr,j){return '<div style="display:flex;gap:7px;align-items:flex-start;padding:.35rem .55rem;background:var(--bg3);border-radius:6px;margin-bottom:3px"><span style="font-family:Space Mono;font-size:10px;color:var(--text3);flex-shrink:0;margin-top:1px">KR'+(j+1)+'</span><span style="font-size:12px;color:var(--text2);line-height:1.5;flex:1">'+kr+'</span><input type="checkbox" style="margin-left:auto;flex-shrink:0"></div>';}).join('')+'</div>';}).join('')+(tmpl.length===0?'<div style="font-size:13px;color:var(--text3)">OKR 템플릿 준비 중입니다.</div>':'')+'</div>';
+  }
+
+  var stb=document.getElementById('synergyTable');
+  synergyPairs.forEach(function(sp,i){
+    var col=sp.score>=90?'#4dbb8a':sp.score>=75?'#5b7fff':sp.score>=60?'#f0b840':'#ff6b6b';
+    var maxV=Math.max.apply(null,sp.trend), minV=Math.min.apply(null,sp.trend);
+    var range=maxV-minV||1;
+    var pts=sp.trend.map(function(v,j){return (j*(70/5))+','+(18-((v-minV)/range)*15);}).join(' ');
+    var svgTrend='<svg width="70" height="20" style="vertical-align:middle"><polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    stb.innerHTML+='<tr style="border-bottom:1px solid var(--border);background:'+(i%2===0?'transparent':'rgba(255,255,255,.01)')+'"><td style="padding:7px 9px;font-family:Space Mono;font-size:10px;color:var(--accent)">'+sp.pair+'</td><td style="text-align:center;padding:7px"><span style="font-size:17px;font-weight:700;color:'+col+'">'+sp.score+'</span></td><td style="padding:7px">'+svgTrend+'</td><td style="padding:7px 9px;color:var(--text2);line-height:1.5">'+sp.note+'</td></tr>';
+  });
+
+  setTimeout(function(){
+    new Chart(document.getElementById('synergyBar').getContext('2d'),{
+      type:'bar',
+      data:{
+        labels:synergyPairs.map(function(s){return s.pair;}),
+        datasets:[{label:'시너지 점수',data:synergyPairs.map(function(s){return s.score;}),
+          backgroundColor:synergyPairs.map(function(s){return s.score>=90?'#4dbb8a88':s.score>=75?'#5b7fff88':s.score>=60?'#f0b84088':'#ff6b6b88';}),
+          borderColor:synergyPairs.map(function(s){return s.score>=90?'#4dbb8a':s.score>=75?'#5b7fff':s.score>=60?'#f0b840':'#ff6b6b';}),
+          borderWidth:1,borderRadius:4}]
+      },
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+        scales:{x:{min:0,max:100,ticks:{color:'#5a6080',font:{size:10}},grid:{color:'#2a305055'}},y:{ticks:{color:'#9aa0bc',font:{size:10,family:"Space Mono"}},grid:{display:false}}}}
+    });
+  },350);
+})();
+
+// ── FUN TAB
+(function(){
+  const jCount2=members.filter(function(m){return m.mbti[3]==='J';}).length;
+  const introCount2=members.filter(function(m){return m.mbti[0]==='I';}).length;
+  const FUN=[
+    {ico:'👑',title:'ISTJ 왕국 — 전체의 30%',body:'무려 <strong>'+typeCount['ISTJ']+'명</strong>이 ISTJ. 소프트웨어 파트는 파트장 포함 5명. 부서의 구호는 아마도 "완벽하게 처리합니다. 말없이." 신뢰성 지수 999/1000'},
+    {ico:'🔱',title:'OpenStack 팀 = ISTP 삼형제',body:'곽주영·성기현·백종탁 전원 ISTP. 현장 장애가 발생하면 말보다 손이 먼저. "이거 되는지 직접 해보면 됩니다."'},
+    {ico:'🎭',title:'세 가지 완전히 다른 리더십',body:'그룹장 INFP(가치·비전) → 인프라 파트장 ENFJ(사람·동기) → 소프트웨어 파트장 ISTJ(체계·실행). 이 삼각 구도만 잘 작동해도 CI-TEC은 이미 최강 팀.'},
+    {ico:'🧲',title:'내향형 '+Math.round(introCount2/total*100)+'% — IT 부서의 정석',body:'전체의 85%가 I 성향. 팀 회식보다 개인 집중 업무에서 최고 퍼포먼스. 슬랙 채널은 조용하지만 장애 상황에선 번개처럼 움직입니다.'},
+    {ico:'🦄',title:'희귀 유형 3인방 — 팀의 다양성 엔진',body:'이승택(INFP)·임부건(ISFP)·조영상(INTP)은 각자 부서 내 유일한 유형. 집단사고를 방지하고 다른 관점을 제시하는 소중한 존재들.'},
+    {ico:'⚡',title:'NF 리더 + SJ 실무진의 긴장 — 아름다운 균형',body:'그룹장과 인프라 파트장은 NF(감성·비전). 실무진 다수는 SJ(현실·체계). 이 긴장이 잘 관리되면 현실에 기반한 이상적인 팀이 됩니다.'},
+    {ico:'📊',title:'판단형(J) '+jCount2+'명 — 마감을 사랑하는 팀',body:'J 성향이 '+Math.round(jCount2/total*100)+'%로 압도적. SLA 준수율, 티켓 처리 마감일 — 이 팀은 데드라인을 두려워하지 않습니다.'},
+    {ico:'🌱',title:'신규 합류 — DB팀 3인 체제 완성',body:'홍지희 프로(ISFJ)가 데이터베이스 지원으로 합류하면서 DB팀은 <strong>박영철(ISTJ·계획) + 민연홍(ESTJ·실행) + 홍지희(ISFJ·지원)</strong>의 3역할 균형 구조를 갖췄습니다. 소프트웨어 파트 ISFJ도 2명에서 3명으로 늘어 기술 중심 환경의 감성 균형이 강화됐습니다.'},
+    {ico:'🌊',title:'양은지(ESFJ) — 27명 중 가장 외향적 F 유형',body:'기획/교육 소속 양은지는 팀 전체에서 거의 유일한 E+F 조합. 부서 대외 소통, 교육 프로그램, 신규 입사자 온보딩에서 이 분의 역할이 생각보다 훨씬 큽니다.'},
+  ];
+  var fv=document.getElementById('funView');
+  FUN.forEach(function(f){
+    fv.innerHTML+='<div class="fun-card"><span class="fun-ico">'+f.ico+'</span><div><div class="fun-title">'+f.title+'</div><div class="fun-body">'+f.body+'</div></div></div>';
+  });
+})();
+</script></body></html>
